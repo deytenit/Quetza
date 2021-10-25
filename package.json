@@ -18,6 +18,9 @@
     "@discordjs/voice": "0.6.0",
     "discord-ytdl-core": "5.0.4",
     "ytsr": "3.5.3",
-    "ytdl-core": "4.9.1"
+    "ytdl-core": "4.9.1",
+    "@discordjs/opus": "0.6.0",
+    "opusscript": "0.0.8",
+    "node-opus": "0.3.3"
   }
 }
