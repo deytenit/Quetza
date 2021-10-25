@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const Client_1 = require("./types/Client");
-const token = "NzIyMjE0MTA3MjM5MDIyNjcy.Xuf0TQ.R4epY00OqZSiY5zcfQ86Wo1GPg0";
+const token = process.env.DISCORD_TOKEN;
 const client = new Client_1.MyClient("./commands/", "./events");
 client.on("ready", () => {
     if (!client.user)
