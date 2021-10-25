@@ -17,6 +17,7 @@
     "discord.js": "13.2.0",
     "@discordjs/voice": "0.6.0",
     "discord-ytdl-core": "5.0.4",
-    "ytsr": "3.5.3"
+    "ytsr": "3.5.3",
+    "ytdl-core": "4.9.1"
   }
 }
