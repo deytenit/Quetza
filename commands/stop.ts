@@ -29,8 +29,8 @@ export async function run(client: MyClient, ctx: CommandInteraction) {
 }
 
 const data = {
-    name: "pause",
-    description: "Toggle pause.",
+    name: "stop",
+    description: "Destroys player.",
 }
 
 export { data }

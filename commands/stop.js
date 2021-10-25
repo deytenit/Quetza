@@ -20,8 +20,8 @@ async function run(client, ctx) {
 }
 exports.run = run;
 const data = {
-    name: "pause",
-    description: "Toggle pause.",
+    name: "stop",
+    description: "Destroys player.",
 };
 exports.data = data;
 //# sourceMappingURL=stop.js.map
