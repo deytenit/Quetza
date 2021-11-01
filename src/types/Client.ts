@@ -16,12 +16,12 @@ export class MyClient extends Client {
                 Intents.FLAGS.GUILD_MESSAGES, 
                 Intents.FLAGS.GUILD_VOICE_STATES
             ] 
-        });
+        }); 
 
         const cmdFiles = readdirSync(commandsPath).filter(file => file.endsWith(".js"));
 
         for (const file of cmdFiles) {
-            import(`../commands/${file}`).then((command) => {
+            import(`${commandsPath}/${file}`).then((command) => {
                 const name = command.data.name;
                 this.restCommands.push(command.data);
                 this.commands.set(name, command);

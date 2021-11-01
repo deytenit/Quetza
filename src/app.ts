@@ -4,7 +4,7 @@ import { MyClient } from "./types/Client";
 
 const token = process.env.DISCORD_TOKEN;
 
-const client = new MyClient("./commands/", "./events");
+const client = new MyClient("./dist/commands", "./dist/events");
 
 client.on("ready", () => {
     if (!client.user)
