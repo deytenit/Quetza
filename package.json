@@ -12,7 +12,8 @@
   "scripts": {
     "build": "tsc --build",
     "clean": "tsc --build --clean",
-    "gcp-build": "tsc -p ."
+    "gcp-build": "tsc -p tsconfig.json",
+    "start": "node ./dist/app.js"
   },
   "dependencies": {
     "@discordjs/opus": "^0.6.0",
