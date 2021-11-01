@@ -20,9 +20,9 @@ export function generateQueue(queue: track[], page: number, pos: number): string
         const track = queue[i];
 
         if (i === pos)
-            response += `${i + 1}. Current => ${track.title.slice(0, 35).padEnd(45, " ")} ${Math.floor(parseInt(track.duration) / 60)}:${parseInt(track.duration) % 60}\n`;
+            response += `${i + 1}. ${'Current =>' + track.title.slice(0, 35).padEnd(45, " ")} ${track.duration / 60}:${track.duration % 60}\n`;
          else 
-            response += `${i + 1}. ${track.title.slice(0, 35).padEnd(45, " ")} ${Math.floor(parseInt(track.duration) / 60)}:${parseInt(track.duration) % 60}\n`;
+            response += `${ i + 1 }. ${track.title.slice(0, 35).padEnd(45, " ")} ${track.duration / 60}:${track.duration % 60}\n`;
 
     }
 

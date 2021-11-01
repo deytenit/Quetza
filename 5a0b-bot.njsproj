@@ -2,7 +2,7 @@
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">14.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-    <Name>NodejsConsoleApp1</Name>
+    <Name>5a0b-bot</Name>
     <RootNamespace>NodejsConsoleApp1</RootNamespace>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
@@ -10,7 +10,8 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>0dde9ded-3734-43ac-a218-393675657d81</ProjectGuid>
-    <ProjectHome>.</ProjectHome>
+    <ProjectHome>
+    </ProjectHome>
     <StartupFile>app.ts</StartupFile>
     <StartWebBrowser>False</StartWebBrowser>
     <SearchPath>
@@ -29,55 +30,37 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="app.ts" />
+    <Content Include=".gitignore" />
+    <Content Include="app.yaml">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="package.json" />
     <Content Include="README.md" />
     <Content Include="tsconfig.json" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="commands\" />
-    <Folder Include="types\" />
+    <Folder Include="src\" />
+    <Folder Include="src\commands\" />
+    <Folder Include="src\types\" />
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="commands\clear.ts">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
-    <TypeScriptCompile Include="commands\insert.ts">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
-    <TypeScriptCompile Include="commands\jump.ts">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
-    <TypeScriptCompile Include="commands\pause.ts">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
-    <TypeScriptCompile Include="commands\play.ts" />
-    <TypeScriptCompile Include="commands\connect.ts">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
-    <TypeScriptCompile Include="commands\next.ts">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
-    <TypeScriptCompile Include="commands\queue.ts">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
-    <TypeScriptCompile Include="commands\remove.ts">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
-    <TypeScriptCompile Include="commands\seek.ts">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
-    <TypeScriptCompile Include="commands\stop.ts">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
-    <TypeScriptCompile Include="config.ts" />
-    <TypeScriptCompile Include="Procfile">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
-    <TypeScriptCompile Include="types\Client.ts" />
-    <TypeScriptCompile Include="types\interfaces.ts" />
-    <TypeScriptCompile Include="types\Misc.ts" />
-    <TypeScriptCompile Include="types\Music.ts" />
+    <TypeScriptCompile Include="src\app.ts" />
+    <TypeScriptCompile Include="src\commands\clear.ts" />
+    <TypeScriptCompile Include="src\commands\connect.ts" />
+    <TypeScriptCompile Include="src\commands\insert.ts" />
+    <TypeScriptCompile Include="src\commands\jump.ts" />
+    <TypeScriptCompile Include="src\commands\next.ts" />
+    <TypeScriptCompile Include="src\commands\pause.ts" />
+    <TypeScriptCompile Include="src\commands\play.ts" />
+    <TypeScriptCompile Include="src\commands\queue.ts" />
+    <TypeScriptCompile Include="src\commands\remove.ts" />
+    <TypeScriptCompile Include="src\commands\seek.ts" />
+    <TypeScriptCompile Include="src\commands\stop.ts" />
+    <TypeScriptCompile Include="src\config.ts" />
+    <TypeScriptCompile Include="src\types\Client.ts" />
+    <TypeScriptCompile Include="src\types\interfaces.ts" />
+    <TypeScriptCompile Include="src\types\Misc.ts" />
+    <TypeScriptCompile Include="src\types\Music.ts" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsToolsV2.targets" />
   <ProjectExtensions>

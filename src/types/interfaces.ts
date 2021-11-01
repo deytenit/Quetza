@@ -4,7 +4,7 @@ export interface track {
     url: string;
     title: string;
     thumbnail: string;
-    duration: string;
+    duration: number;
     requester: User;
 }
 

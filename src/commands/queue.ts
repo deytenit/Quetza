@@ -1,6 +1,6 @@
 import { design } from "../config";
 
-import { ButtonInteraction, ColorResolvable, CommandInteraction, Message, MessageActionRow, MessageButton, MessageEmbed } from "discord.js";
+import { ButtonInteraction, CollectorFilter, ColorResolvable, CommandInteraction, Message, MessageActionRow, MessageButton, MessageComponentInteraction, MessageEmbed } from "discord.js";
 import { MyClient } from "../types/Client";
 import { generateQueue } from "../types/Misc";
 import { EmojiIdentifierResolvable } from "discord.js";
@@ -54,22 +54,26 @@ export async function run(client: MyClient, ctx: CommandInteraction) {
                 components: [row]
             });
 
-            const filter = (btn: ButtonInteraction) => btn.message === ctx.fetchReply() as unknown as Message;
+            const filter: CollectorFilter<MessageComponentInteraction[]> = (btn) => {
+                return btn.message === ctx.fetchReply() as unknown as Message;
+            };
 
-            const collector = ctx.channel.createMessageComponentCollector({ filter, time: 15000 });
+            if (ctx.channel) {
+                const collector = ctx.channel.createMessageComponentCollector({ filter, time: 15000 });
 
-            collector.on("collect", async (btn: ButtonInteraction) => {
-                switch (btn.customId) {
-                    case "QueueTop": page = 0;
-                    case "QueueUp": page = Math.max(page - 1, 0);
-                    case "QueueDown": page = Math.min(page + 1, maxPage);
-                    case "QueueEnd": page = maxPage;
-                }
+                collector.on("collect", async (btn: ButtonInteraction) => {
+                    switch (btn.customId) {
+                        case "QueueTop": page = 0;
+                        case "QueueUp": page = Math.max(page - 1, 0);
+                        case "QueueDown": page = Math.min(page + 1, maxPage);
+                        case "QueueEnd": page = maxPage;
+                    }
 
-                await btn.update({
-                    content: generateQueue(queue, page, player.queuePosition)
+                    await btn.update({
+                        content: generateQueue(queue, page, player.queuePosition)
+                    });
                 });
-            });
+            }
 
         }
     }

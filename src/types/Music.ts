@@ -1,10 +1,10 @@
 import { VoiceConnection, AudioPlayer, createAudioResource, AudioPlayerStatus, joinVoiceChannel, createAudioPlayer, AudioResource, DiscordGatewayAdapterCreator } from "@discordjs/voice";
 import { ColorResolvable, Guild, Message, MessageEmbed, StageChannel, User, VoiceChannel } from "discord.js";
 import { design } from "../config";
-const ytdl = require("discord-ytdl-core");
-const ytsr = require("ytsr");
+import ytdl from "discord-ytdl-core";
 import { track, filter } from "./interfaces";
 import { random_shuffle } from "./Misc";
+import yts from "yt-search";
 
 export class Player {
     guild: Guild;
@@ -40,11 +40,10 @@ export class Player {
         });
 
         const resource = createAudioResource(stream, {
-            inlineVolume: true,
-            metadata: track
+            inlineVolume: true
         });
 
-        this.player = await createAudioPlayer();
+        this.player = createAudioPlayer();
         this.connection.subscribe(this.player);
 
         await this.player.play(resource);
@@ -87,18 +86,13 @@ export class Player {
     }
 
     async addTrack(query: string, requester: User, index?: number): Promise<track> {
-        let songInfo;
-
-        if (ytdl.validateURL(query))
-            songInfo = await ytdl.getInfo(query);
-        else
-            songInfo = await ytdl.getInfo((await ytsr(query)).refinements[0].url);
-
+        const songInfo = (await yts(query)).videos[0];
+       
         const metadata: track = {
-            url: songInfo.videoDetails.video_url,
-            title: songInfo.videoDetails.title,
-            thumbnail: songInfo.videoDetails.thumbnails[0].url,
-            duration: songInfo.videoDetails.lengthSeconds,
+            url: songInfo.url,
+            title: songInfo.title,
+            thumbnail: songInfo.thumbnail,
+            duration: songInfo.duration.seconds,
             requester: requester
         };
 
@@ -151,7 +145,7 @@ export class Player {
 
     remove(query: number | string): boolean {
         if (typeof query === "number" && query < this.queue.length && query >= 0) {
-            if (query === this.queuePosition)
+            if (query === this.queuePosition && this.player)
                 this.player.stop();
             this.queue.splice(query);
             return true;
@@ -160,7 +154,7 @@ export class Player {
             for (let i = 0; i < this.queue.length; i++) {
                 const track = this.queue[i];
                 if (track.title.toLowerCase().includes(String(query).toLowerCase())) {
-                    if (i === this.queuePosition)
+                    if (i === this.queuePosition && this.player)
                         this.player.stop();
                     this.queue.splice(i);
                     return true;
@@ -225,9 +219,15 @@ export class Music {
     }
 
     genPlayer(guildId: string): Player {
-        const player = new module.exports.Player();
-        this.players.set(guildId, player);
-        return player;
+       const player = this.players.get(guildId);
+        if (!player) {
+            const newPlayer = new module.exports.Player();
+            this.players.set(guildId, newPlayer);
+            return newPlayer;
+        }
+        else {
+            return player;
+        }
     }
 
     delPlayer(guildId: string) {

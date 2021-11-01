@@ -2,6 +2,7 @@ import { design } from "../config";
 
 import { ColorResolvable, CommandInteraction, GuildMember, MessageEmbed } from "discord.js";
 import { MyClient } from "../types/Client";
+import { VoiceConnectionStatus } from "@discordjs/voice";
 
 
 
@@ -15,7 +16,7 @@ export async function run(client: MyClient, ctx: CommandInteraction) {
     if (!player)
         player = client.players.genPlayer(ctx.guildId);
 
-    if (!player.connection) {
+    if (!player.connection || player.connection.state.status === VoiceConnectionStatus.Disconnected) {
         const channel = (ctx.member as GuildMember).voice.channel;
         if (channel) {
             await player.connect(channel);
@@ -39,6 +40,15 @@ export async function run(client: MyClient, ctx: CommandInteraction) {
                 await ctx.reply({ embeds: [embed] });
             } catch { }
         }
+    }
+    else {
+        const embed = new MessageEmbed()
+            .setColor(design.color as ColorResolvable)
+            .setTitle("Already connected.")
+
+        try {
+            await ctx.reply({ embeds: [embed] });
+        } catch { }
     }
 }
 
