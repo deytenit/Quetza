@@ -5,15 +5,14 @@
   },
   "version": "0.0.0",
   "description": "Discord multifunctional bot",
-  "main": "app.js",
+  "main": "dist/app.js",
   "author": {
     "name": "unknowableshade"
   },
   "scripts": {
     "build": "tsc --build",
     "clean": "tsc --build --clean",
-    "gcp-build": "tsc -p tsconfig.json",
-    "start": "node ./dist/app.js"
+    "start": "tsc && node dist/app.js"
   },
   "dependencies": {
     "@discordjs/opus": "^0.6.0",

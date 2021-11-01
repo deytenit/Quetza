@@ -31,9 +31,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include=".gitignore" />
-    <Content Include="app.yaml">
-      <SubType>Code</SubType>
-    </Content>
+    <Content Include="Dockerfile" />
     <Content Include="package.json" />
     <Content Include="README.md" />
     <Content Include="tsconfig.json" />
