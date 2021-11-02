@@ -2,9 +2,9 @@
 
 import { MyClient } from "./types/Client";
 
-const token = process.env.DISCORD_TOKEN;
+const token = "NzIyMjE0MTA3MjM5MDIyNjcy.Xuf0TQ.UwFKXzc8cj_oVz_DQZn17whgoGo";
 
-const client = new MyClient("./dist/commands", "./dist/events");
+const client = new MyClient("./commands", "./events");
 
 client.on("ready", () => {
     if (!client.user)

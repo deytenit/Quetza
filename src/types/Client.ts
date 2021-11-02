@@ -21,7 +21,7 @@ export class MyClient extends Client {
         const cmdFiles = readdirSync(commandsPath).filter(file => file.endsWith(".js"));
 
         for (const file of cmdFiles) {
-            import(`${commandsPath}/${file}`).then((command) => {
+            import(`.${commandsPath}/${file}`).then((command) => {
                 const name = command.data.name;
                 this.restCommands.push(command.data);
                 this.commands.set(name, command);
