@@ -48,4 +48,4 @@ $ npm install
 
 ## Licence 
 
-**[Licence](https://github.com/unknowableshade/5a0a-bot/blob/main/LICENSE)**
+**[Licence](https://github.com/unknowableshade/5a0b-bot/blob/main/LICENSE)**
