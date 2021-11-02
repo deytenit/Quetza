@@ -22,7 +22,7 @@ Python discord bot.
 
 ### Download bot repository
 
-- **[Download](https://github.com/unknowableshade/5a0b-bot/archive/refs/heads/main.zip)**
+- **[Download](https://github.com/unknowableshade/5a0b-bot/archive/refs/heads/master.zip)**
 
 ### Requirements
 
@@ -48,4 +48,4 @@ $ npm install
 
 ## Licence 
 
-**[Licence](https://github.com/unknowableshade/5a0b-bot/blob/main/LICENSE)**
+**[Licence](https://github.com/unknowableshade/5a0b-bot/blob/master/LICENSE)**
