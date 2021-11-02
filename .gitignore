@@ -366,4 +366,4 @@ FodyWeavers.xsd
 dist/
 
 # safety
-env_variables.yaml
+env.yaml
