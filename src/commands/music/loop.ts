@@ -6,7 +6,7 @@ import { MyClient } from "../../types/Client";
 
 
 export async function run(client: MyClient, ctx: CommandInteraction) {
-    const query = ctx.options.getString("position");
+    const query = ctx.options.getString("option");
 
     if (ctx.guild === null || query === null)
         return;
