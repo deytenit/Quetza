@@ -33,7 +33,7 @@ export class Player {
     public channel: TextChannel;
     public message: Message | undefined;
 
-    constructor(playerGuild: Guild, clientMusic: Music, ctxChannel: TextChannel) {
+    public constructor(playerGuild: Guild, clientMusic: Music, ctxChannel: TextChannel) {
         this.music = clientMusic;
         this.guild = playerGuild;
         this.channel = ctxChannel;
@@ -123,7 +123,7 @@ export class Player {
         await this._messageResolvable(track);
     }
 
-    connect(channel: VoiceChannel | StageChannel): void {
+    public connect(channel: VoiceChannel | StageChannel): void {
         this.connection = joinVoiceChannel({
             channelId: channel.id,
             guildId: channel.guildId,
@@ -144,7 +144,7 @@ export class Player {
         });
     }
 
-    async addTrack(query: string, requester: User, index?: number): Promise<track> {
+    public async addTrack(query: string, requester: User, index?: number): Promise<track> {
         const songInfo = await this._songFinder(query);
        
         const metadata: track = {
@@ -166,7 +166,7 @@ export class Player {
         return metadata;
     }
 
-    clear() {
+    public clear() {
         this.queue = [];
         this.queuePosition = 0;
         this.nowPlaying = undefined;
@@ -174,13 +174,13 @@ export class Player {
             this.player.stop();
     }
 
-    destroy() {
+    public destroy() {
         if (this.connection)
             this.connection.destroy();
         this.music.delPlayer(this.guild.id);
     }
 
-    async jump(query: number | string): Promise<boolean> {
+    public async jump(query: number | string): Promise<boolean> {
         if (!this.player)
             return false;
 
@@ -202,7 +202,7 @@ export class Player {
         return false;
     }
 
-    async remove(query: number | string): Promise<boolean> {
+    public async remove(query: number | string): Promise<boolean> {
         if (typeof query === "number" && query < this.queue.length && query >= 0) {
             this.queue.splice(query, 1);
             if (query === this.queuePosition)
@@ -223,11 +223,11 @@ export class Player {
         return false;
     }
     
-    async seek(time: number) {
+    public async seek(time: number): Promise<void> {
         await this.play(time);
     }
 
-    pause(): boolean {
+    public pause(): boolean {
         if (!this.player)
             return false;
 
@@ -241,11 +241,11 @@ export class Player {
         }
     }
 
-    repeat(mode: loopOption): void {
+    public repeat(mode: loopOption): void {
         this.repeatMode = mode;
     }
 
-    volume(amount: number): boolean {
+    public volume(amount: number): boolean {
         if (amount > 0 && amount < Infinity && this.nowPlaying && this.nowPlaying.volume) {
             this.nowPlaying.volume.setVolumeLogarithmic(amount / 100);
             return true;
@@ -253,30 +253,30 @@ export class Player {
         return false;
     }
 
-    shuffle(): void {
+    public shuffle(): void {
         this.queue = random_shuffle(this.queue);
     }
 
-    skip(): void {
+    public skip(): void {
         if (this.player)
             this.player.stop();
     }
 }
 
 export class Music {
-    players = new Map<string, Player>();
+    private _players = new Map<string, Player>();
 
-    getPlayer(guildId: string): Player | undefined {
-        const player = this.players.get(guildId);
+    public getPlayer(guildId: string): Player | undefined {
+        const player = this._players.get(guildId);
         if (player)
             return player;
     }
 
-    genPlayer(guild: Guild, music: Music, channel: TextChannel): Player {
-       const player = this.players.get(guild.id);
+    public genPlayer(guild: Guild, music: Music, channel: TextChannel): Player {
+       const player = this._players.get(guild.id);
         if (!player) {
             const newPlayer = new module.exports.Player(guild, music, channel);
-            this.players.set(guild.id, newPlayer);
+            this._players.set(guild.id, newPlayer);
             return newPlayer;
         }
         else {
@@ -284,7 +284,7 @@ export class Music {
         }
     }
 
-    delPlayer(guildId: string) {
-        this.players.delete(guildId);
+    public delPlayer(guildId: string) {
+        this._players.delete(guildId);
     }
 }
