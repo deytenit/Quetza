@@ -1,7 +1,7 @@
-# 5a0b - 2110.1  <soundrewrite>
-Python discord bot.
+# 5a0b - 2110.2  <soundrewrite>
+ Typescript discord bot.
  
-**Since discord.py has been archived and probably will be deprecated. This repo does the same.** 
+**Since discord.py has been archived and probably will be deprecated. This is a new breath for a bot.** 
 
 ## Latest update
 
