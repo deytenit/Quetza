@@ -1,21 +1,23 @@
-import { design } from "../config";
+import { design } from "../../config";
 
-import { ColorResolvable, CommandInteraction, GuildMember, MessageEmbed } from "discord.js";
-import { MyClient } from "../types/Client";
+import { ColorResolvable, CommandInteraction, MessageEmbed } from "discord.js";
+import { MyClient } from "../../types/Client";
 
 
 
 export async function run(client: MyClient, ctx: CommandInteraction) {
     const query = ctx.options.getString("position");
 
-    if (ctx.guildId === null || query === null)
+    if (ctx.guild === null || query === null)
         return;
 
 
-    let player = client.players.getPlayer(ctx.guildId);
+    let player = client.players.getPlayer(ctx.guild.id);
 
     if (!player)
         return;
+
+    await ctx.deferReply();
 
     let state: boolean;
 
@@ -25,16 +27,17 @@ export async function run(client: MyClient, ctx: CommandInteraction) {
         state = await player.jump(query);
     }
 
+    let embed = new MessageEmbed()
+        .setColor(design.color as ColorResolvable)
+        .setTitle("Could not find track specified.");
+
     if (state) {
-        const embed = new MessageEmbed()
+        embed = new MessageEmbed()
             .setColor(design.color as ColorResolvable)
             .setTitle("Jumped.");
-
-        try {
-            await ctx.reply({ embeds: [embed] });
-        } catch { }
     }
 
+    await ctx.editReply({ embeds: [embed] });
 }
 
 const data = {

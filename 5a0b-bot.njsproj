@@ -4,6 +4,7 @@
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
     <Name>5a0b-bot</Name>
     <RootNamespace>NodejsConsoleApp1</RootNamespace>
+    <SaveNodeJsSettingsInProjectFile>True</SaveNodeJsSettingsInProjectFile>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -17,11 +18,11 @@
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
-    <OutputPath>.</OutputPath>
+    <OutputPath>./dist</OutputPath>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <ProjectTypeGuids>{3AF33F2E-1136-4D97-BBB7-1795711AC8B8};{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}</ProjectTypeGuids>
     <EnableTypeScript>true</EnableTypeScript>
-    <StartWebBrowser>false</StartWebBrowser>
+    <StartWebBrowser>False</StartWebBrowser>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -38,24 +39,38 @@
   <ItemGroup>
     <Folder Include="src\" />
     <Folder Include="src\commands\" />
+    <Folder Include="src\commands\music\" />
+    <Folder Include="src\events\" />
     <Folder Include="src\types\" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="src\app.ts" />
-    <TypeScriptCompile Include="src\commands\clear.ts" />
-    <TypeScriptCompile Include="src\commands\connect.ts" />
-    <TypeScriptCompile Include="src\commands\insert.ts" />
-    <TypeScriptCompile Include="src\commands\jump.ts" />
-    <TypeScriptCompile Include="src\commands\next.ts" />
-    <TypeScriptCompile Include="src\commands\pause.ts" />
-    <TypeScriptCompile Include="src\commands\play.ts" />
-    <TypeScriptCompile Include="src\commands\queue.ts" />
-    <TypeScriptCompile Include="src\commands\remove.ts" />
-    <TypeScriptCompile Include="src\commands\seek.ts" />
-    <TypeScriptCompile Include="src\commands\stop.ts" />
+    <TypeScriptCompile Include="src\commands\music\clear.ts" />
+    <TypeScriptCompile Include="src\commands\music\connect.ts" />
+    <TypeScriptCompile Include="src\commands\music\insert.ts" />
+    <TypeScriptCompile Include="src\commands\music\jump.ts" />
+    <TypeScriptCompile Include="src\commands\music\loop.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="src\commands\music\next.ts" />
+    <TypeScriptCompile Include="src\commands\music\pause.ts" />
+    <TypeScriptCompile Include="src\commands\music\play.ts" />
+    <TypeScriptCompile Include="src\commands\music\queue.ts" />
+    <TypeScriptCompile Include="src\commands\music\remove.ts" />
+    <TypeScriptCompile Include="src\commands\music\seek.ts" />
+    <TypeScriptCompile Include="src\commands\music\stop.ts" />
     <TypeScriptCompile Include="src\config.ts" />
+    <TypeScriptCompile Include="src\events\interactionCreate.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="src\events\messageCreate.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="src\events\ready.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="src\types\Client.ts" />
-    <TypeScriptCompile Include="src\types\interfaces.ts" />
+    <TypeScriptCompile Include="src\types\Types.ts" />
     <TypeScriptCompile Include="src\types\Misc.ts" />
     <TypeScriptCompile Include="src\types\Music.ts" />
   </ItemGroup>

@@ -1,36 +1,46 @@
-import { VoiceConnection, AudioPlayer, createAudioResource, AudioPlayerStatus, joinVoiceChannel, createAudioPlayer, AudioResource, DiscordGatewayAdapterCreator } from "@discordjs/voice";
-import { ColorResolvable, Guild, Message, MessageEmbed, StageChannel, User, VoiceChannel } from "discord.js";
+import {
+    VoiceConnection, AudioPlayer, createAudioResource,
+    AudioPlayerStatus, joinVoiceChannel, createAudioPlayer,
+    AudioResource, DiscordGatewayAdapterCreator, VoiceConnectionStatus,
+    entersState
+} from "@discordjs/voice";
+
+import {
+    ColorResolvable, Guild, Message,
+    MessageEmbed, StageChannel, TextChannel, User,
+    VoiceChannel
+} from "discord.js";
+
 import { design } from "../config";
 import ytdl from "discord-ytdl-core";
-import { track, filter } from "./interfaces";
+import { track, filter, loopOption } from "./Types";
 import { random_shuffle } from "./Misc";
 import yts from "yt-search";
 
 export class Player {
-    guild: Guild;
-    music: Music;
+    public guild: Guild;
+    public music: Music;
 
-    connection: VoiceConnection | undefined;
-    player: AudioPlayer | undefined;
-    message: Message | undefined; 
+    public connection: VoiceConnection | undefined;
+    public player: AudioPlayer | undefined;
 
-    queue: track[] = [];
-    queuePosition = 0;
-    nowPlaying: AudioResource | undefined = undefined;
-    filters: filter[] = [];
-    repeatMode = 0;
+    public queue: track[] = [];
+    public queuePosition: number = 0;
+    public nowPlaying: AudioResource | undefined;
+    public filters: filter = {};
+    public repeatMode: loopOption = "LOOP";
 
-    constructor(clientMusic: Music, playerGuild: Guild) {
+    public channel: TextChannel;
+    public message: Message | undefined;
+
+    constructor(playerGuild: Guild, clientMusic: Music, ctxChannel: TextChannel) {
         this.music = clientMusic;
         this.guild = playerGuild;
+        this.channel = ctxChannel;
     }
 
-    async play(seek = 0) {
-        if (!this.connection || this.queue.length === 0)
-            return;
-
-       
-        const track = this.queue[this.queuePosition];
+    private async _playerCreator(track: track, seek: number): Promise<AudioPlayer> {
+        const player = createAudioPlayer();
 
         const stream = ytdl(track.url, {
             opusEncoded: true,
@@ -39,54 +49,103 @@ export class Player {
             seek: seek
         });
 
-        const resource = createAudioResource(stream, {
-            inlineVolume: true
+        this.nowPlaying = createAudioResource(stream, {
+            inlineVolume: true,
+            metadata: track
         });
 
-        this.player = createAudioPlayer();
-        this.connection.subscribe(this.player);
+        await player.play(this.nowPlaying);
 
-        await this.player.play(resource);
-        this.nowPlaying = resource;
+        return player;
+    }
 
+    private _resourceEndResolvable(): boolean {
+        switch (this.repeatMode) {
+            case "NONE": {
+                if (++this.queuePosition >= this.queue.length) {
+                    this.queuePosition = 0;
+                    this.nowPlaying = undefined;
+                    return false;
+                }
+                return true;
+            }
+            case "LOOP": {
+                this.queuePosition = (this.queuePosition + 1) % this.queue.length;
+                return true;
+            }
+            case "SONG": return true;
+        }
+
+        return true;
+    }
+
+    private async _messageResolvable(track: track): Promise<void> {
+        
         if (this.message) {
-            const channel = this.message.channel;
+            this.channel = this.message.channel as TextChannel;
 
             try {
                 await this.message.delete();
             } catch (err) {
                 console.log(err);
             }
-
-            const embed = new MessageEmbed()
-                .setColor(design.color as ColorResolvable)
-                .setTitle(track.title)
-                .setURL(track.url)
-                .setThumbnail(track.thumbnail)
-                .setAuthor(`@${track.requester.tag}`, track.requester.avatarURL() as string)
-                .setDescription("Is now beeing played.");
-
-            this.message = await channel.send({ embeds: [embed] });
         }
-              
 
-        this.player.on(AudioPlayerStatus.Idle, async () => {
-            this.queuePosition = (this.queuePosition + 1) % this.queue.length;
-            await this.play();
-        });
+        const embed = new MessageEmbed()
+            .setColor(design.color as ColorResolvable)
+            .setTitle(track.title)
+            .setURL(track.url)
+            .setThumbnail(track.thumbnail)
+            .setAuthor(`@${track.requester.tag}`, track.requester.avatarURL() as string)
+            .setDescription("Is now beeing played.");
+
+        this.message = await this.channel.send({ embeds: [embed] });
     }
 
-    async connect(channel: VoiceChannel | StageChannel) {
+    private async _songFinder(query: string) {
+        return (await yts(query)).videos[0];
+    }
+
+    public async play(seek: number = 0): Promise<void> {
+        if (!this.connection || this.queue.length === 0)
+            return;
+       
+        const track = this.queue[this.queuePosition];
+
+        this.player = await this._playerCreator(track, seek);
+        this.connection.subscribe(this.player);
+
+        this.player.on(AudioPlayerStatus.Idle, async () => {
+            if (this._resourceEndResolvable())
+                await this.play();
+        });
+
+        await this._messageResolvable(track);
+    }
+
+    connect(channel: VoiceChannel | StageChannel): void {
         this.connection = joinVoiceChannel({
             channelId: channel.id,
             guildId: channel.guildId,
             selfDeaf: true,
             adapterCreator: channel.guild.voiceAdapterCreator as unknown as DiscordGatewayAdapterCreator
         });
+
+        this.connection.on(VoiceConnectionStatus.Disconnected, async (oldState, newState) => {
+            try {
+                await Promise.race([
+                    entersState(this.connection as VoiceConnection, VoiceConnectionStatus.Signalling, 5_000),
+                    entersState(this.connection as VoiceConnection, VoiceConnectionStatus.Connecting, 5_000),
+                ]);
+            }
+            catch (error) {
+                this.destroy();
+            }
+        });
     }
 
     async addTrack(query: string, requester: User, index?: number): Promise<track> {
-        const songInfo = (await yts(query)).videos[0];
+        const songInfo = await this._songFinder(query);
        
         const metadata: track = {
             url: songInfo.url,
@@ -96,10 +155,10 @@ export class Player {
             requester: requester
         };
 
-        if (!index)
+        if (!index || index >= this.queue.length)
             this.queue.push(metadata);
         else {
-            this.queue.splice(index, 0, metadata)
+            this.queue.splice(Math.max(0, index), 0, metadata)
             if (this.queuePosition >= index)
                 this.queuePosition++;
         }
@@ -117,7 +176,7 @@ export class Player {
 
     destroy() {
         if (this.connection)
-            this.connection.disconnect();
+            this.connection.destroy();
         this.music.delPlayer(this.guild.id);
     }
 
@@ -143,20 +202,20 @@ export class Player {
         return false;
     }
 
-    remove(query: number | string): boolean {
+    async remove(query: number | string): Promise<boolean> {
         if (typeof query === "number" && query < this.queue.length && query >= 0) {
-            if (query === this.queuePosition && this.player)
-                this.player.stop();
             this.queue.splice(query);
+            if (query === this.queuePosition)
+                await this.play();
             return true;
         }
         else {
             for (let i = 0; i < this.queue.length; i++) {
                 const track = this.queue[i];
                 if (track.title.toLowerCase().includes(String(query).toLowerCase())) {
-                    if (i === this.queuePosition && this.player)
-                        this.player.stop();
                     this.queue.splice(i);
+                    if (i === this.queuePosition)
+                        await this.play();
                     return true;
                 }
             }
@@ -182,7 +241,7 @@ export class Player {
         }
     }
 
-    repeat(mode: number) {
+    repeat(mode: loopOption): void {
         this.repeatMode = mode;
     }
 
@@ -194,19 +253,14 @@ export class Player {
         return false;
     }
 
-    shuffle() {
+    shuffle(): void {
         this.queue = random_shuffle(this.queue);
     }
 
-    skip() {
+    skip(): void {
         if (this.player)
             this.player.stop();
     }
-
-    setMessage(message: Message) {
-        this.message = message;
-    }
-
 }
 
 export class Music {
@@ -218,11 +272,11 @@ export class Music {
             return player;
     }
 
-    genPlayer(guildId: string): Player {
-       const player = this.players.get(guildId);
+    genPlayer(guild: Guild, music: Music, channel: TextChannel): Player {
+       const player = this.players.get(guild.id);
         if (!player) {
-            const newPlayer = new module.exports.Player();
-            this.players.set(guildId, newPlayer);
+            const newPlayer = new module.exports.Player(guild, music, channel);
+            this.players.set(guild.id, newPlayer);
             return newPlayer;
         }
         else {

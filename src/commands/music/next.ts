@@ -1,27 +1,26 @@
-import { design } from "../config";
+import { design } from "../../config";
 
 import { ColorResolvable, CommandInteraction, MessageEmbed } from "discord.js";
-import { MyClient } from "../types/Client";
+import { MyClient } from "../../types/Client";
 
 
 
 export async function run(client: MyClient, ctx: CommandInteraction) {
-    if (ctx.guildId === null)
+    if (ctx.guild === null)
         return;
 
 
-    const player = client.players.getPlayer(ctx.guildId);
+    const player = client.players.getPlayer(ctx.guild.id);
 
-    if (player)
+    if (player) {
         player.skip();
 
-    const embed = new MessageEmbed()
-        .setColor(design.color as ColorResolvable)
-        .setTitle("Skipped.");
+        const embed = new MessageEmbed()
+            .setColor(design.color as ColorResolvable)
+            .setTitle("Skipped.");
 
-    try {
         await ctx.reply({ embeds: [embed] });
-    } catch { }
+    }
 }
 
 const data = {

@@ -1,4 +1,8 @@
-import { track } from "./interfaces";
+import { track } from "./Types";
+
+export async function sleep(ms: number): Promise<unknown> {
+    return new Promise(r => setTimeout(r, ms));
+}
 
 export function random_shuffle(array: Array<any>) {
     let currentIndex = array.length,  randomIndex;
@@ -20,7 +24,7 @@ export function generateQueue(queue: track[], page: number, pos: number): string
         const track = queue[i];
 
         if (i === pos)
-            response += `${i + 1}. ${'Current =>' + track.title.slice(0, 35).padEnd(45, " ")} ${track.duration / 60}:${track.duration % 60}\n`;
+            response += `${i + 1}. ${"Current => " + track.title.slice(0, 35).padEnd(45, " ")} ${Math.floor(track.duration / 60)}:${track.duration % 60}\n`;
          else 
             response += `${ i + 1 }. ${track.title.slice(0, 35).padEnd(45, " ")} ${track.duration / 60}:${track.duration % 60}\n`;
 

@@ -43,3 +43,5 @@ export interface filter {
     dim?: boolean;
     earrape?: boolean;
 }
+
+export type loopOption = "LOOP" | "SONG" | "NONE" | "AUTO";
