@@ -39,7 +39,5 @@ export class MyClient extends DiscordClient {
                 });
             });
         }
-        
     }
-
 }

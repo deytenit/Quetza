@@ -20,8 +20,6 @@ export async function run(client: MyClient, ctx: CommandInteraction) {
 
         await ctx.reply({ embeds: [embed] });
     }
-
-
 }
 
 const data = {

@@ -1,6 +1,9 @@
 import { design } from "../../config";
 
-import { ColorResolvable, CommandInteraction, GuildMember, MessageEmbed, TextChannel } from "discord.js";
+import {
+    ColorResolvable, CommandInteraction, GuildMember,
+    MessageEmbed, TextChannel
+} from "discord.js";
 import { MyClient } from "../../types/Client";
 
 

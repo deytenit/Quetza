@@ -1,6 +1,11 @@
 import { design } from "../../config";
 
-import { ButtonInteraction, CollectorFilter, ColorResolvable, CommandInteraction, Message, MessageActionRow, MessageButton, MessageComponentInteraction, MessageEmbed } from "discord.js";
+import {
+    ButtonInteraction, CollectorFilter, ColorResolvable,
+    CommandInteraction, Message, MessageActionRow,
+    MessageButton, MessageComponentInteraction, MessageEmbed
+} from "discord.js";
+
 import { MyClient } from "../../types/Client";
 import { generateQueue } from "../../types/Misc";
 

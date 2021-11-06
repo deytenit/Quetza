@@ -1,9 +1,7 @@
 import { design } from "../../config";
 
-import { ButtonInteraction, ColorResolvable, CommandInteraction, Message, MessageActionRow, MessageButton, MessageEmbed } from "discord.js";
+import { ColorResolvable, CommandInteraction, MessageEmbed } from "discord.js";
 import { MyClient } from "../../types/Client";
-import { generateQueue } from "../../types/Misc";
-import { EmojiIdentifierResolvable } from "discord.js";
 
 
 
@@ -22,8 +20,6 @@ export async function run(client: MyClient, ctx: CommandInteraction) {
 
         await ctx.reply({ embeds: [embed] });
     }
-
-
 }
 
 const data = {

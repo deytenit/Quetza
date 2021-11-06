@@ -5,7 +5,6 @@ import { MyClient } from "../../types/Client";
 
 
 
-
 export async function run(client: MyClient, ctx: CommandInteraction) {
     await ctx.deferReply();
     if (ctx.guild === null)
