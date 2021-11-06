@@ -2,11 +2,12 @@ import { design } from "../../config";
 
 import { ColorResolvable, CommandInteraction, MessageEmbed } from "discord.js";
 import { MyClient } from "../../types/Client";
+import { loopOption } from "../../types/Types";
 
 
 
 export async function run(client: MyClient, ctx: CommandInteraction) {
-    const query = ctx.options.getString("position");
+    const query = ctx.options.getString("option");
 
     if (ctx.guild === null || query === null)
         return;
@@ -19,22 +20,23 @@ export async function run(client: MyClient, ctx: CommandInteraction) {
 
     await ctx.deferReply();
 
-    let state: boolean;
-
-    if (!isNaN(Number(query))) {
-        state = await player.jump(Number(query) - 1);
-    } else {
-        state = await player.jump(query);
-    }
+    player.repeat(query as loopOption);
 
     let embed = new MessageEmbed()
-        .setColor(design.color as ColorResolvable)
-        .setTitle("Could not find track specified.");
+        .setColor(design.color as ColorResolvable);
 
-    if (state) {
-        embed = new MessageEmbed()
-            .setColor(design.color as ColorResolvable)
-            .setTitle("Jumped.");
+    switch (query as loopOption) {
+        case "LOOP": {
+            embed.setTitle("Now looping queue.");
+            break;
+        }
+        case "SONG": {
+            embed.setTitle("Now looping current song.");
+            break;
+        }
+        case "NONE": {
+            embed.setTitle("After queue end player will be destroyed.")
+        }
     }
 
     await ctx.editReply({ embeds: [embed] });

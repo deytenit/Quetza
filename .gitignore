@@ -364,3 +364,5 @@ FodyWeavers.xsd
 
 # typescript restrictions
 dist/
+*.js
+*.js.map

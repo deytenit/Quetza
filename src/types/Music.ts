@@ -204,7 +204,7 @@ export class Player {
 
     async remove(query: number | string): Promise<boolean> {
         if (typeof query === "number" && query < this.queue.length && query >= 0) {
-            this.queue.splice(query);
+            this.queue.splice(query, 1);
             if (query === this.queuePosition)
                 await this.play();
             return true;
@@ -213,7 +213,7 @@ export class Player {
             for (let i = 0; i < this.queue.length; i++) {
                 const track = this.queue[i];
                 if (track.title.toLowerCase().includes(String(query).toLowerCase())) {
-                    this.queue.splice(i);
+                    this.queue.splice(i, 1);
                     if (i === this.queuePosition)
                         await this.play();
                     return true;
