@@ -223,7 +223,7 @@ export class Player {
         return false;
     }
     
-    public async seek(time: number) {
+    public async seek(time: number): Promise<void> {
         await this.play(time);
     }
 
