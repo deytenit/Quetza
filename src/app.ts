@@ -2,7 +2,7 @@
 
 import { MyClient } from "./types/Client";
 
-const token = "NzIyMjE0MTA3MjM5MDIyNjcy.Xuf0TQ.9uJbIhlTUDCsKnt0_UcuHOG7i94";
+const token = process.env.DISCORD_TOKEN;
 
 const client = new MyClient("./commands", "./events");
 
