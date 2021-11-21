@@ -20,17 +20,35 @@ import yts from "yt-search";
 export class Player {
     public guild: Guild;
     public music: Music;
+    public channel: TextChannel;
 
-    public connection: VoiceConnection | undefined;
-    public player: AudioPlayer | undefined;
+    private _connection: VoiceConnection | undefined;
+    get connection(): VoiceConnection | undefined {
+        return this._connection;
+    }
+
+
+    private _player: AudioPlayer | undefined;
+    get player(): AudioPlayer | undefined {
+        return this._player;
+    }
 
     public queue: track[] = [];
-    public queuePosition: number = 0;
-    public nowPlaying: AudioResource | undefined;
-    public filters: filter = {};
-    public repeatMode: loopOption = "LOOP";
 
-    public channel: TextChannel;
+    private _queuePosition: number = 0;
+    get queuePosition(): number {
+        return this._queuePosition;
+    }
+
+    private _nowPlaying: AudioResource | undefined;
+
+    get nowPlaying(): AudioResource | undefined {
+        return this._nowPlaying;
+    }
+
+    public filters: filter = {};
+
+    public repeatMode: loopOption = "LOOP";
     public message: Message | undefined;
 
     public constructor(playerGuild: Guild, clientMusic: Music, ctxChannel: TextChannel) {
@@ -49,28 +67,31 @@ export class Player {
             seek: seek
         });
 
-        this.nowPlaying = createAudioResource(stream, {
+        this._nowPlaying = createAudioResource(stream, {
             inlineVolume: true,
             metadata: track
         });
 
-        await player.play(this.nowPlaying);
+        await player.play(this._nowPlaying);
 
         return player;
     }
 
     private _resourceEndResolvable(): boolean {
+        if (this._nowPlaying)
+            this._nowPlaying.encoder?.destroy();
+
         switch (this.repeatMode) {
             case "NONE": {
-                if (++this.queuePosition >= this.queue.length) {
-                    this.queuePosition = 0;
-                    this.nowPlaying = undefined;
+                if (++this._queuePosition >= this.queue.length) {
+                    this._queuePosition = 0;
+                    this._nowPlaying = undefined;
                     return false;
                 }
                 return true;
             }
             case "LOOP": {
-                this.queuePosition = (this.queuePosition + 1) % this.queue.length;
+                this._queuePosition = (this._queuePosition + 1) % this.queue.length;
                 return true;
             }
             case "SONG": return true;
@@ -107,15 +128,15 @@ export class Player {
     }
 
     public async play(seek: number = 0): Promise<void> {
-        if (!this.connection || this.queue.length === 0)
+        if (!this._connection || this.queue.length === 0)
             return;
        
-        const track = this.queue[this.queuePosition];
+        const track = this.queue[this._queuePosition];
 
-        this.player = await this._playerCreator(track, seek);
-        this.connection.subscribe(this.player);
+        this._player = await this._playerCreator(track, seek);
+        this._connection.subscribe(this._player);
 
-        this.player.on(AudioPlayerStatus.Idle, async () => {
+        this._player.on(AudioPlayerStatus.Idle, async () => {
             if (this._resourceEndResolvable())
                 await this.play();
         });
@@ -124,18 +145,18 @@ export class Player {
     }
 
     public connect(channel: VoiceChannel | StageChannel): void {
-        this.connection = joinVoiceChannel({
+        this._connection = joinVoiceChannel({
             channelId: channel.id,
             guildId: channel.guildId,
-            selfDeaf: true,
+            // selfDeaf: true,
             adapterCreator: channel.guild.voiceAdapterCreator as unknown as DiscordGatewayAdapterCreator
         });
 
-        this.connection.on(VoiceConnectionStatus.Disconnected, async (oldState, newState) => {
+        this._connection.on(VoiceConnectionStatus.Disconnected, async (oldState, newState) => {
             try {
                 await Promise.race([
-                    entersState(this.connection as VoiceConnection, VoiceConnectionStatus.Signalling, 5_000),
-                    entersState(this.connection as VoiceConnection, VoiceConnectionStatus.Connecting, 5_000),
+                    entersState(this._connection as VoiceConnection, VoiceConnectionStatus.Signalling, 5_000),
+                    entersState(this._connection as VoiceConnection, VoiceConnectionStatus.Connecting, 5_000),
                 ]);
             }
             catch (error) {
@@ -159,8 +180,8 @@ export class Player {
             this.queue.push(metadata);
         else {
             this.queue.splice(Math.max(0, index), 0, metadata)
-            if (this.queuePosition >= index)
-                this.queuePosition++;
+            if (this._queuePosition >= index)
+                this._queuePosition++;
         }
 
         return metadata;
@@ -168,24 +189,24 @@ export class Player {
 
     public clear() {
         this.queue = [];
-        this.queuePosition = 0;
-        this.nowPlaying = undefined;
-        if (this.player)
-            this.player.stop();
+        this._queuePosition = 0;
+        this._nowPlaying = undefined;
+        if (this._player)
+            this._player.stop();
     }
 
     public destroy() {
-        if (this.connection)
-            this.connection.destroy();
+        if (this._connection)
+            this._connection.destroy();
         this.music.delPlayer(this.guild.id);
     }
 
     public async jump(query: number | string): Promise<boolean> {
-        if (!this.player)
+        if (!this._player)
             return false;
 
         if (typeof query === "number" && query < this.queue.length && query >= 0) {
-            this.queuePosition = query;
+            this._queuePosition = query;
             await this.play();
             return true;
         }
@@ -193,7 +214,7 @@ export class Player {
             for (let i = 0; i < this.queue.length; i++) {
                 const track = this.queue[i];
                 if (track.title.toLowerCase().includes(String(query).toLowerCase())) {
-                    this.queuePosition = i;
+                    this._queuePosition = i;
                     await this.play();
                     return true;
                 }
@@ -205,7 +226,7 @@ export class Player {
     public async remove(query: number | string): Promise<boolean> {
         if (typeof query === "number" && query < this.queue.length && query >= 0) {
             this.queue.splice(query, 1);
-            if (query === this.queuePosition)
+            if (query === this._queuePosition)
                 await this.play();
             return true;
         }
@@ -214,7 +235,7 @@ export class Player {
                 const track = this.queue[i];
                 if (track.title.toLowerCase().includes(String(query).toLowerCase())) {
                     this.queue.splice(i, 1);
-                    if (i === this.queuePosition)
+                    if (i === this._queuePosition)
                         await this.play();
                     return true;
                 }
@@ -228,15 +249,15 @@ export class Player {
     }
 
     public pause(): boolean {
-        if (!this.player)
+        if (!this._player)
             return false;
 
-        if (this.player.state.status === AudioPlayerStatus.Paused) {
-            this.player.unpause();
+        if (this._player.state.status === AudioPlayerStatus.Paused) {
+            this._player.unpause();
             return false;
         }
         else {
-            this.player.pause();
+            this._player.pause();
             return true;
         }
     }
@@ -246,8 +267,8 @@ export class Player {
     }
 
     public volume(amount: number): boolean {
-        if (amount > 0 && amount < Infinity && this.nowPlaying && this.nowPlaying.volume) {
-            this.nowPlaying.volume.setVolumeLogarithmic(amount / 100);
+        if (amount > 0 && amount < Infinity && this._nowPlaying && this._nowPlaying.volume) {
+            this._nowPlaying.volume.setVolumeLogarithmic(amount / 100);
             return true;
         }
         return false;
@@ -258,8 +279,8 @@ export class Player {
     }
 
     public skip(): void {
-        if (this.player)
-            this.player.stop();
+        if (this._player)
+            this._player.stop();
     }
 }
 
