@@ -1,7 +1,7 @@
 import { design } from "../../config";
 
 import { ColorResolvable, CommandInteraction, MessageEmbed } from "discord.js";
-import { MyClient } from "../../types/MyClient";
+import { MyClient } from "../../types/Client";
 import { loopOption } from "../../types/Types";
 
 

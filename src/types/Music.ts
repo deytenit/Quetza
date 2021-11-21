@@ -20,35 +20,17 @@ import yts from "yt-search";
 export class Player {
     public guild: Guild;
     public music: Music;
-    public channel: TextChannel;
 
-    private _connection: VoiceConnection | undefined;
-    get connection(): VoiceConnection | undefined {
-        return this._connection;
-    }
-
-
-    private _player: AudioPlayer | undefined;
-    get player(): AudioPlayer | undefined {
-        return this._player;
-    }
+    public connection: VoiceConnection | undefined;
+    public player: AudioPlayer | undefined;
 
     public queue: track[] = [];
-
-    private _queuePosition: number = 0;
-    get queuePosition(): number {
-        return this._queuePosition;
-    }
-
-    private _nowPlaying: AudioResource | undefined;
-
-    get nowPlaying(): AudioResource | undefined {
-        return this._nowPlaying;
-    }
-
+    public queuePosition: number = 0;
+    public nowPlaying: AudioResource | undefined;
     public filters: filter = {};
-
     public repeatMode: loopOption = "LOOP";
+
+    public channel: TextChannel;
     public message: Message | undefined;
 
     public constructor(playerGuild: Guild, clientMusic: Music, ctxChannel: TextChannel) {
@@ -67,31 +49,28 @@ export class Player {
             seek: seek
         });
 
-        this._nowPlaying = createAudioResource(stream, {
+        this.nowPlaying = createAudioResource(stream, {
             inlineVolume: true,
             metadata: track
         });
 
-        await player.play(this._nowPlaying);
+        await player.play(this.nowPlaying);
 
         return player;
     }
 
     private _resourceEndResolvable(): boolean {
-        if (this._nowPlaying)
-            this._nowPlaying.encoder?.destroy();
-
         switch (this.repeatMode) {
             case "NONE": {
-                if (++this._queuePosition >= this.queue.length) {
-                    this._queuePosition = 0;
-                    this._nowPlaying = undefined;
+                if (++this.queuePosition >= this.queue.length) {
+                    this.queuePosition = 0;
+                    this.nowPlaying = undefined;
                     return false;
                 }
                 return true;
             }
             case "LOOP": {
-                this._queuePosition = (this._queuePosition + 1) % this.queue.length;
+                this.queuePosition = (this.queuePosition + 1) % this.queue.length;
                 return true;
             }
             case "SONG": return true;
@@ -128,15 +107,15 @@ export class Player {
     }
 
     public async play(seek: number = 0): Promise<void> {
-        if (!this._connection || this.queue.length === 0)
+        if (!this.connection || this.queue.length === 0)
             return;
        
-        const track = this.queue[this._queuePosition];
+        const track = this.queue[this.queuePosition];
 
-        this._player = await this._playerCreator(track, seek);
-        this._connection.subscribe(this._player);
+        this.player = await this._playerCreator(track, seek);
+        this.connection.subscribe(this.player);
 
-        this._player.on(AudioPlayerStatus.Idle, async () => {
+        this.player.on(AudioPlayerStatus.Idle, async () => {
             if (this._resourceEndResolvable())
                 await this.play();
         });
@@ -145,18 +124,18 @@ export class Player {
     }
 
     public connect(channel: VoiceChannel | StageChannel): void {
-        this._connection = joinVoiceChannel({
+        this.connection = joinVoiceChannel({
             channelId: channel.id,
             guildId: channel.guildId,
-            // selfDeaf: true,
+            selfDeaf: true,
             adapterCreator: channel.guild.voiceAdapterCreator as unknown as DiscordGatewayAdapterCreator
         });
 
-        this._connection.on(VoiceConnectionStatus.Disconnected, async (oldState, newState) => {
+        this.connection.on(VoiceConnectionStatus.Disconnected, async (oldState, newState) => {
             try {
                 await Promise.race([
-                    entersState(this._connection as VoiceConnection, VoiceConnectionStatus.Signalling, 5_000),
-                    entersState(this._connection as VoiceConnection, VoiceConnectionStatus.Connecting, 5_000),
+                    entersState(this.connection as VoiceConnection, VoiceConnectionStatus.Signalling, 5_000),
+                    entersState(this.connection as VoiceConnection, VoiceConnectionStatus.Connecting, 5_000),
                 ]);
             }
             catch (error) {
@@ -180,8 +159,8 @@ export class Player {
             this.queue.push(metadata);
         else {
             this.queue.splice(Math.max(0, index), 0, metadata)
-            if (this._queuePosition >= index)
-                this._queuePosition++;
+            if (this.queuePosition >= index)
+                this.queuePosition++;
         }
 
         return metadata;
@@ -189,24 +168,24 @@ export class Player {
 
     public clear() {
         this.queue = [];
-        this._queuePosition = 0;
-        this._nowPlaying = undefined;
-        if (this._player)
-            this._player.stop();
+        this.queuePosition = 0;
+        this.nowPlaying = undefined;
+        if (this.player)
+            this.player.stop();
     }
 
     public destroy() {
-        if (this._connection)
-            this._connection.destroy();
+        if (this.connection)
+            this.connection.destroy();
         this.music.delPlayer(this.guild.id);
     }
 
     public async jump(query: number | string): Promise<boolean> {
-        if (!this._player)
+        if (!this.player)
             return false;
 
         if (typeof query === "number" && query < this.queue.length && query >= 0) {
-            this._queuePosition = query;
+            this.queuePosition = query;
             await this.play();
             return true;
         }
@@ -214,7 +193,7 @@ export class Player {
             for (let i = 0; i < this.queue.length; i++) {
                 const track = this.queue[i];
                 if (track.title.toLowerCase().includes(String(query).toLowerCase())) {
-                    this._queuePosition = i;
+                    this.queuePosition = i;
                     await this.play();
                     return true;
                 }
@@ -226,7 +205,7 @@ export class Player {
     public async remove(query: number | string): Promise<boolean> {
         if (typeof query === "number" && query < this.queue.length && query >= 0) {
             this.queue.splice(query, 1);
-            if (query === this._queuePosition)
+            if (query === this.queuePosition)
                 await this.play();
             return true;
         }
@@ -235,7 +214,7 @@ export class Player {
                 const track = this.queue[i];
                 if (track.title.toLowerCase().includes(String(query).toLowerCase())) {
                     this.queue.splice(i, 1);
-                    if (i === this._queuePosition)
+                    if (i === this.queuePosition)
                         await this.play();
                     return true;
                 }
@@ -249,15 +228,15 @@ export class Player {
     }
 
     public pause(): boolean {
-        if (!this._player)
+        if (!this.player)
             return false;
 
-        if (this._player.state.status === AudioPlayerStatus.Paused) {
-            this._player.unpause();
+        if (this.player.state.status === AudioPlayerStatus.Paused) {
+            this.player.unpause();
             return false;
         }
         else {
-            this._player.pause();
+            this.player.pause();
             return true;
         }
     }
@@ -267,8 +246,8 @@ export class Player {
     }
 
     public volume(amount: number): boolean {
-        if (amount > 0 && amount < Infinity && this._nowPlaying && this._nowPlaying.volume) {
-            this._nowPlaying.volume.setVolumeLogarithmic(amount / 100);
+        if (amount > 0 && amount < Infinity && this.nowPlaying && this.nowPlaying.volume) {
+            this.nowPlaying.volume.setVolumeLogarithmic(amount / 100);
             return true;
         }
         return false;
@@ -279,8 +258,8 @@ export class Player {
     }
 
     public skip(): void {
-        if (this._player)
-            this._player.stop();
+        if (this.player)
+            this.player.stop();
     }
 }
 

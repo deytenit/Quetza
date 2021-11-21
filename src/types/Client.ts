@@ -1,28 +1,15 @@
-import { ApplicationCommandData, Client as DiscordClient, Intents, User } from "discord.js";
+import { ApplicationCommandData, Client as DiscordClient, Intents } from "discord.js";
 import { readdirSync } from "fs";
 import { Music } from "./Music";
 
 
 export class MyClient extends DiscordClient {
-    private _commands = new Map<string, any>();
-    private _restCommands: ApplicationCommandData[] = [];
-    private _owner: string;
-    public players = new Music();
-
-    get commands(): Map<string, any> {
-        return this._commands;
-    }
-
-    get restCommands(): ApplicationCommandData[] {
-        return this._restCommands;
-    }
-
-    get owner(): string {
-        return this._owner;
-    }
+    commands = new Map<string, any>();
+    restCommands: ApplicationCommandData[] = [];
+    players = new Music();
 
 
-    public constructor(commandsPath: string, eventsPath: string, ownerId: string) {
+    constructor(commandsPath: string, eventsPath: string) {
         super({
             intents: [
                 Intents.FLAGS.GUILDS, 
@@ -37,8 +24,8 @@ export class MyClient extends DiscordClient {
             for (const file of cmdFiles) {
                 import(`.${commandsPath}/${dir}/${file}`).then((command) => {
                     const name = command.data.name;
-                    this._restCommands.push(command.data);
-                    this._commands.set(name, command);
+                    this.restCommands.push(command.data);
+                    this.commands.set(name, command);
                 });
             }
         });
@@ -52,7 +39,5 @@ export class MyClient extends DiscordClient {
                 });
             });
         }
-
-        this._owner = ownerId;
     }
 }

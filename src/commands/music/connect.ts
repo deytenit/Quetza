@@ -4,7 +4,7 @@ import {
     ColorResolvable, CommandInteraction, GuildMember,
     MessageEmbed, TextChannel
 } from "discord.js";
-import { MyClient } from "../../types/MyClient";
+import { MyClient } from "../../types/Client";
 
 
 

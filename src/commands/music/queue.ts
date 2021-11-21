@@ -6,7 +6,7 @@ import {
     MessageButton, MessageComponentInteraction, MessageEmbed
 } from "discord.js";
 
-import { MyClient } from "../../types/MyClient";
+import { MyClient } from "../../types/Client";
 import { generateQueue } from "../../types/Misc";
 
 

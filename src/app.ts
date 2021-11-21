@@ -1,9 +1,9 @@
 "use strict";
 
-import { MyClient } from "./types/MyClient";
+import { MyClient } from "./types/Client";
 
 const token = process.env.DISCORD_TOKEN;
 
-const client = new MyClient("./commands", "./events", "214422162906415106");
+const client = new MyClient("./commands", "./events");
 
 client.login(token);

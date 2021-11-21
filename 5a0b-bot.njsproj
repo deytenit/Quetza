@@ -72,7 +72,7 @@
     <TypeScriptCompile Include="src\events\voiceStateUpdate.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
-    <TypeScriptCompile Include="src\types\MyClient.ts" />
+    <TypeScriptCompile Include="src\types\Client.ts" />
     <TypeScriptCompile Include="src\types\Types.ts" />
     <TypeScriptCompile Include="src\types\Misc.ts" />
     <TypeScriptCompile Include="src\types\Music.ts" />
