@@ -1,5 +1,5 @@
-import { ClientApplication, Message, User } from "discord.js";
-import { MyClient } from "../types/MyClient";
+import { ClientApplication, Message } from "discord.js";
+import { MyClient } from "../assets/MyClient";
 
 export async function run(args: Message[], client: MyClient): Promise<void> {
     const [message] = args;
@@ -12,6 +12,10 @@ export async function run(args: Message[], client: MyClient): Promise<void> {
                 application.commands.set(client.restCommands);
                 await message.reply("Setting up command interactions. (It can take up to 1 hour)");
                 break;
+            }
+            case `!${client.user?.username}-dev-kill-me`: {
+                await message.channel.send("**_I never stopped smiling surrounded by the winds of death._**");
+                process.exit(0);
             }
         }
     }

@@ -362,7 +362,7 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 
-# typescript restrictions
+# assetscript restrictions
 dist/
 *.js
 *.js.map

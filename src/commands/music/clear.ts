@@ -1,7 +1,7 @@
 import { design } from "../../config";
 
 import { ColorResolvable, CommandInteraction, Message, MessageEmbed } from "discord.js";
-import { MyClient } from "../../types/MyClient";
+import { MyClient } from "../../assets/MyClient";
 
 
 
@@ -25,7 +25,7 @@ export async function run(client: MyClient, ctx: CommandInteraction) {
 
 const data = {
     name: "clear",
-    description: "Clears queue.",
+    description: "Clears queue."
 }
 
 export { data }

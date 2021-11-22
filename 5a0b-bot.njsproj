@@ -13,7 +13,7 @@
     <ProjectGuid>0dde9ded-3734-43ac-a218-393675657d81</ProjectGuid>
     <ProjectHome>
     </ProjectHome>
-    <StartupFile>app.ts</StartupFile>
+    <StartupFile>dist\app.js</StartupFile>
     <StartWebBrowser>False</StartWebBrowser>
     <SearchPath>
     </SearchPath>
@@ -38,25 +38,42 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="src\" />
+    <Folder Include="src\assets\" />
     <Folder Include="src\commands\" />
     <Folder Include="src\commands\music\" />
     <Folder Include="src\events\" />
-    <Folder Include="src\types\" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="src\app.ts" />
+    <TypeScriptCompile Include="src\assets\Misc.ts" />
+    <TypeScriptCompile Include="src\assets\Music.ts" />
+    <TypeScriptCompile Include="src\assets\MyClient.ts" />
+    <TypeScriptCompile Include="src\assets\QueueStorage.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="src\assets\Types.ts" />
     <TypeScriptCompile Include="src\commands\music\clear.ts" />
     <TypeScriptCompile Include="src\commands\music\connect.ts" />
+    <TypeScriptCompile Include="src\commands\music\delete.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="src\commands\music\insert.ts" />
     <TypeScriptCompile Include="src\commands\music\jump.ts" />
+    <TypeScriptCompile Include="src\commands\music\load.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="src\commands\music\loop.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="src\commands\music\next.ts" />
     <TypeScriptCompile Include="src\commands\music\pause.ts" />
+    <TypeScriptCompile Include="src\commands\music\peak.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="src\commands\music\play.ts" />
     <TypeScriptCompile Include="src\commands\music\queue.ts" />
     <TypeScriptCompile Include="src\commands\music\remove.ts" />
+    <TypeScriptCompile Include="src\commands\music\save.ts" />
     <TypeScriptCompile Include="src\commands\music\seek.ts" />
     <TypeScriptCompile Include="src\commands\music\stop.ts" />
     <TypeScriptCompile Include="src\config.ts" />
@@ -72,10 +89,6 @@
     <TypeScriptCompile Include="src\events\voiceStateUpdate.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
-    <TypeScriptCompile Include="src\types\MyClient.ts" />
-    <TypeScriptCompile Include="src\types\Types.ts" />
-    <TypeScriptCompile Include="src\types\Misc.ts" />
-    <TypeScriptCompile Include="src\types\Music.ts" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsToolsV2.targets" />
   <ProjectExtensions>

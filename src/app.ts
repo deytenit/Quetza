@@ -1,6 +1,6 @@
 "use strict";
 
-import { MyClient } from "./types/MyClient";
+import { MyClient } from "./assets/MyClient";
 
 const token = process.env.DISCORD_TOKEN;
 

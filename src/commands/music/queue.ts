@@ -6,8 +6,8 @@ import {
     MessageButton, MessageComponentInteraction, MessageEmbed
 } from "discord.js";
 
-import { MyClient } from "../../types/MyClient";
-import { generateQueue } from "../../types/Misc";
+import { MyClient } from "../../assets/MyClient";
+import { generateQueue } from "../../assets/Misc";
 
 
 
@@ -55,31 +55,26 @@ export async function run(client: MyClient, ctx: CommandInteraction) {
                 .setStyle("SECONDARY")
         );
 
-    await ctx.editReply({
-        content: generateQueue(queue, page, player.queuePosition),
+    const message = await ctx.editReply({
+        embeds: [generateQueue(queue, page, player.queuePosition)],
         components: [row]
-    });
+    }) as Message;
 
-    const filter: CollectorFilter<MessageComponentInteraction[]> = (btn) => {
-        return btn.message === ctx.fetchReply() as unknown as Message;
-    };
+    const collector = message.createMessageComponentCollector({ time: 15000 });
 
-    if (ctx.channel) {
-        const collector = ctx.channel.createMessageComponentCollector({ filter, time: 15000 });
+    collector.on("collect", async (btn: ButtonInteraction) => {
+        console.log(page);
+        switch (btn.customId) {
+            case "QueueTop": { page = 0; break; }
+            case "QueueUp": { page = Math.max(page - 1, 0); break; }
+            case "QueueDown": { page = Math.min(page + 1, maxPage); break; }
+            case "QueueEnd": page = maxPage;
+        }
 
-        collector.on("collect", async (btn: ButtonInteraction) => {
-            switch (btn.customId) {
-                case "QueueTop": page = 0;
-                case "QueueUp": page = Math.max(page - 1, 0);
-                case "QueueDown": page = Math.min(page + 1, maxPage);
-                case "QueueEnd": page = maxPage;
-            }
-
-            await btn.update({
-                content: generateQueue(queue, page, player.queuePosition)
-            });
+        await btn.update({
+            embeds: [generateQueue(queue, page, player.queuePosition)]
         });
-    }
+    });
 }
 
 const data = {

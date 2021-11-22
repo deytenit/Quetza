@@ -1,8 +1,9 @@
 import { design } from "../../config";
 
 import { ColorResolvable, CommandInteraction, MessageEmbed } from "discord.js";
-import { MyClient } from "../../types/MyClient";
+import { MyClient } from "../../assets/MyClient";
 import { run as connect } from "./connect";
+import { track } from "../../assets/Types";
 
 
 
@@ -22,7 +23,13 @@ export async function run(client: MyClient, ctx: CommandInteraction) {
         .setAuthor(`@${ctx.user.tag}`, ctx.user.avatarURL() as string);
 
     if (query) {
-        const track = await player.addTrack(query, ctx.user);
+        let track: track;
+        try {
+            track = await player.addPlaylist(query, ctx.user);
+        }
+        catch {
+            track = await player.addTrack(query, ctx.user);
+        }
         embed = new MessageEmbed()
             .setColor(design.color as ColorResolvable)
             .setTitle(track.title)

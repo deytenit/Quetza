@@ -1,27 +1,19 @@
 import { design } from "../../config";
 
 import { ColorResolvable, CommandInteraction, MessageEmbed } from "discord.js";
-import { MyClient } from "../../types/MyClient";
+import { MyClient } from "../../assets/MyClient";
 
 
 
 export async function run(client: MyClient, ctx: CommandInteraction) {
-    const hours = ctx.options.getInteger("hrs");
-    const minutes = ctx.options.getInteger("mins");
-    const seconds = ctx.options.getInteger("secs");
+    const hours = ctx.options.getInteger("hrs") as number;
+    const minutes = ctx.options.getInteger("mins") as number;
+    const seconds = ctx.options.getInteger("secs") as number;
 
-    if (ctx.guild === null || (hours === null && minutes === null && seconds === null))
+    if (ctx.guild === null)
         return;
 
-    let time = 0;
-
-    if (hours !== null)
-        time += hours * 3600;
-    if (minutes !== null)
-        time += minutes * 60;
-    if (seconds !== null)
-        time += seconds;
-
+    const time = hours * 3600 + minutes * 60 + seconds;
 
     let player = client.players.getPlayer(ctx.guild.id);
 

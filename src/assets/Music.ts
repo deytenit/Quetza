@@ -16,6 +16,7 @@ import ytdl from "discord-ytdl-core";
 import { track, filter, loopOption } from "./Types";
 import { random_shuffle } from "./Misc";
 import yts from "yt-search";
+import ytpl from "ytpl";
 
 export class Player {
     public guild: Guild;
@@ -117,14 +118,16 @@ export class Player {
             .setTitle(track.title)
             .setURL(track.url)
             .setThumbnail(track.thumbnail)
-            .setAuthor(`@${track.requester.tag}`, track.requester.avatarURL() as string)
             .setDescription("Is now beeing played.");
 
-        this.message = await this.channel.send({ embeds: [embed] });
-    }
+        try {
+            embed.setAuthor(`@${track.requester.tag}`, track.requester.avatarURL() as string);
+        }
+        catch {
+            embed.setAuthor(`@${track.requester.tag}`, track.requester.avatarURL as unknown as string);
+        }
 
-    private async _songFinder(query: string) {
-        return (await yts(query)).videos[0];
+        this.message = await this.channel.send({ embeds: [embed] });
     }
 
     public async play(seek: number = 0): Promise<void> {
@@ -134,6 +137,7 @@ export class Player {
         const track = this.queue[this._queuePosition];
 
         this._player = await this._playerCreator(track, seek);
+
         this._connection.subscribe(this._player);
 
         this._player.on(AudioPlayerStatus.Idle, async () => {
@@ -148,7 +152,6 @@ export class Player {
         this._connection = joinVoiceChannel({
             channelId: channel.id,
             guildId: channel.guildId,
-            // selfDeaf: true,
             adapterCreator: channel.guild.voiceAdapterCreator as unknown as DiscordGatewayAdapterCreator
         });
 
@@ -166,7 +169,7 @@ export class Player {
     }
 
     public async addTrack(query: string, requester: User, index?: number): Promise<track> {
-        const songInfo = await this._songFinder(query);
+        const songInfo = (await yts(query)).videos[0];
        
         const metadata: track = {
             url: songInfo.url,
@@ -185,6 +188,30 @@ export class Player {
         }
 
         return metadata;
+    }
+
+    public async addPlaylist(query: string, requester: User): Promise<track> {
+        const playlistInfo = await ytpl(query);
+
+        playlistInfo.items.forEach((songInfo) => {
+            const metadata: track = {
+                url: songInfo.url,
+                title: songInfo.title,
+                thumbnail: songInfo.bestThumbnail.url !== null ? songInfo.bestThumbnail.url : "https://img.youtube.com/vi/hqdefault.jpg",
+                duration: songInfo.durationSec as number,
+                requester: requester
+            }
+
+            this.queue.push(metadata);
+        });
+
+        return {
+            url: playlistInfo.url,
+            title: playlistInfo.title,
+            thumbnail: playlistInfo.bestThumbnail.url !== null ? playlistInfo.bestThumbnail.url : "https://img.youtube.com/vi/hqdefault.jpg",
+            duration: playlistInfo.estimatedItemCount,
+            requester: requester
+        };
     }
 
     public clear() {

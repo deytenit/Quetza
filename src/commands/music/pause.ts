@@ -1,7 +1,7 @@
 import { design } from "../../config";
 
 import { ColorResolvable, CommandInteraction, MessageEmbed } from "discord.js";
-import { MyClient } from "../../types/MyClient";
+import { MyClient } from "../../assets/MyClient";
 
 
 
@@ -16,7 +16,7 @@ export async function run(client: MyClient, ctx: CommandInteraction) {
 
         const embed = new MessageEmbed()
             .setColor(design.color as ColorResolvable)
-            .setTitle(`Pause is now ${state ? "resumed" : "paused"}.`);
+            .setTitle(`Player is now ${state ? "paused" : "resumed"}.`);
 
         await ctx.reply({ embeds: [embed] });
     }

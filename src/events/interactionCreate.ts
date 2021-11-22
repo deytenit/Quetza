@@ -1,5 +1,5 @@
 import { Interaction } from "discord.js";
-import { MyClient } from "../types/MyClient";
+import { MyClient } from "../assets/MyClient";
 
 export async function run(args: Interaction[], client: MyClient): Promise<void> {
     const [interaction] = args;

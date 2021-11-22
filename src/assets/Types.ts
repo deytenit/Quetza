@@ -8,11 +8,17 @@ export interface track {
     requester: User;
 }
 
+export interface saveEntry {
+    description: string,
+    owner: string,
+    tracks: track[]
+}
+
 export interface filter {
     bassboost_low?: boolean;
     bassboost?: boolean;
     bassboost_high?: boolean;
-    "8D"?: boolean;
+    dimentional?: boolean;
     vaporwave?: boolean;
     nightcore?: boolean;
     phaser?: boolean;
