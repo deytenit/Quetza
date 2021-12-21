@@ -34,11 +34,13 @@
     <Content Include=".gitignore" />
     <Content Include="package.json" />
     <Content Include="README.md" />
+    <Content Include="requirements.txt" />
     <Content Include="tsconfig.json" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="src\" />
     <Folder Include="src\assets\" />
+    <Folder Include="src\assets\DiscordMusic\" />
     <Folder Include="src\commands\" />
     <Folder Include="src\commands\music\" />
     <Folder Include="src\events\" />
@@ -46,9 +48,9 @@
   <ItemGroup>
     <TypeScriptCompile Include="src\app.ts" />
     <TypeScriptCompile Include="src\assets\Misc.ts" />
-    <TypeScriptCompile Include="src\assets\Music.ts" />
+    <TypeScriptCompile Include="src\assets\DiscordMusic\Music.ts" />
     <TypeScriptCompile Include="src\assets\MyClient.ts" />
-    <TypeScriptCompile Include="src\assets\QueueStorage.ts">
+    <TypeScriptCompile Include="src\assets\DiscordMusic\QueueStorage.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="src\assets\Types.ts" />

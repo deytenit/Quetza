@@ -2,8 +2,7 @@ import { design } from "../../config";
 
 import { ColorResolvable, CommandInteraction, MessageEmbed } from "discord.js";
 import { MyClient } from "../../assets/MyClient";
-import { QueueStorage } from "../../assets/QueueStorage";
-import { run as connect } from "./connect";
+import { QueueStorage } from "../../assets/DiscordMusic/QueueStorage";
 
 
 
@@ -16,9 +15,10 @@ export async function run(client: MyClient, ctx: CommandInteraction) {
     const data = new QueueStorage(`./data/queues/${ctx.guild.id}.json`);
 
     let embed = new MessageEmbed()
+        .setColor(design.color as ColorResolvable)
         .setTitle(`${ctx.guild.name} queues:`);
 
-    data.data.forEach((entry, title) => {
+    data.Data.forEach((entry, title) => {
         embed.addField(title, entry.description);
     });
 

@@ -15,7 +15,7 @@ export async function run(client: MyClient, ctx: CommandInteraction) {
 
     const time = hours * 3600 + minutes * 60 + seconds;
 
-    let player = client.players.getPlayer(ctx.guild.id);
+    let player = client.Players.getPlayer(ctx.guild.id);
 
     if (player) {
         await ctx.deferReply();

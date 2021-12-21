@@ -7,7 +7,7 @@ import {
 } from "discord.js";
 
 import { MyClient } from "../../assets/MyClient";
-import { generateQueue } from "../../assets/Misc";
+import { queueDesigner } from "../../assets/Misc";
 
 
 
@@ -15,13 +15,13 @@ export async function run(client: MyClient, ctx: CommandInteraction) {
     if (ctx.guild === null)
         return;
 
-    const player = client.players.getPlayer(ctx.guild.id);
+    const player = client.Players.getPlayer(ctx.guild.id);
 
     if (!player)
         return;
 
     await ctx.deferReply();
-    const queue = player.queue;
+    const queue = player.Queue;
 
     if (queue.length === 0) {
         const embed = new MessageEmbed()
@@ -56,7 +56,7 @@ export async function run(client: MyClient, ctx: CommandInteraction) {
         );
 
     const message = await ctx.editReply({
-        embeds: [generateQueue(queue, page, player.queuePosition)],
+        embeds: [queueDesigner(queue, page, player.NowPlayingPos)],
         components: [row]
     }) as Message;
 
@@ -72,7 +72,7 @@ export async function run(client: MyClient, ctx: CommandInteraction) {
         }
 
         await btn.update({
-            embeds: [generateQueue(queue, page, player.queuePosition)]
+            embeds: [queueDesigner(queue, page, player.NowPlayingPos)]
         });
     });
 }

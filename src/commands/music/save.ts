@@ -1,9 +1,8 @@
 import { design } from "../../config";
 
-import { ButtonInteraction, CollectorFilter, ColorResolvable, CommandInteraction, Message, MessageActionRow, MessageButton, MessageComponentInteraction, MessageEmbed } from "discord.js";
+import { ColorResolvable, CommandInteraction, MessageEmbed } from "discord.js";
 import { MyClient } from "../../assets/MyClient";
-import { readFile, readFileSync } from "fs";
-import { QueueStorage } from "../../assets/QueueStorage";
+import { QueueStorage } from "../../assets/DiscordMusic/QueueStorage";
 
 
 
@@ -15,14 +14,14 @@ export async function run(client: MyClient, ctx: CommandInteraction) {
         return;
 
 
-    let player = client.players.getPlayer(ctx.guild.id);
+    let player = client.Players.getPlayer(ctx.guild.id);
 
     if (!player)
         return;
 
     await ctx.deferReply();
 
-    if (player.queue.length !== 0) {
+    if (player.Queue.length !== 0) {
         const data = new QueueStorage(`./data/queues/${ctx.guild.id}.json`);
 
         const slot = data.getEntry(title);
@@ -44,7 +43,7 @@ export async function run(client: MyClient, ctx: CommandInteraction) {
             }
         }
 
-        data.createEntry(player.queue, title, description, ctx.user.id);
+        data.createEntry(player.Queue, title, description, ctx.user.id);
         data.saveData(`./data/queues/${ctx.guild.id}.json`)
 
         const embed = new MessageEmbed()

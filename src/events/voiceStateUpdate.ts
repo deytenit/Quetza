@@ -6,14 +6,14 @@ import { sleep } from "../assets/Misc";
 export async function run(args: VoiceState[], client: MyClient): Promise<void> {
     const [oldState, newState] = args;
 
-    const player = client.players.getPlayer(newState.guild.id);
+    const player = client.Players.getPlayer(newState.guild.id);
 
     if (!player)
         return;
 
     if (oldState.channel?.members.size === 1 && oldState.channel.members.first()?.id === client.user?.id) {
         await sleep(30000);
-        const channel = player.channel;
+        const channel = player.Channel;
         if (oldState.channel.members.size === 1) {
             const embed = new MessageEmbed()
                 .setColor(design.color as ColorResolvable)

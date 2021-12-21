@@ -2,7 +2,7 @@ import { design } from "../../config";
 
 import { ColorResolvable, CommandInteraction, MessageEmbed } from "discord.js";
 import { MyClient } from "../../assets/MyClient";
-import { loopOption } from "../../assets/Types";
+import { loopOption } from "../../assets/DiscordMusic/Types";
 
 
 
@@ -13,7 +13,7 @@ export async function run(client: MyClient, ctx: CommandInteraction) {
         return;
 
 
-    let player = client.players.getPlayer(ctx.guild.id);
+    let player = client.Players.getPlayer(ctx.guild.id);
 
     if (!player)
         return;

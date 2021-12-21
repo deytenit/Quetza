@@ -3,7 +3,7 @@ import { design } from "../../config";
 import { ColorResolvable, CommandInteraction, MessageEmbed } from "discord.js";
 import { MyClient } from "../../assets/MyClient";
 import { run as connect } from "./connect";
-import { track } from "../../assets/Types";
+import { track } from "../../assets/DiscordMusic/Types";
 
 
 
@@ -43,7 +43,7 @@ export async function run(client: MyClient, ctx: CommandInteraction) {
 
     await ctx.editReply({ embeds: [embed] });
 
-    if (!player.nowPlaying) {
+    if (!player.NowPlaying) {
         await player.play();
     }
 }

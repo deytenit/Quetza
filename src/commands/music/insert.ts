@@ -12,7 +12,7 @@ export async function run(client: MyClient, ctx: CommandInteraction) {
     if (!ctx.guild || !query || pos === null)
         return;
 
-    const player = client.players.getPlayer(ctx.guild.id);
+    const player = client.Players.getPlayer(ctx.guild.id);
 
     if (!player)
         return;

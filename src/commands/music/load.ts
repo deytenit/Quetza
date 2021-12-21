@@ -2,7 +2,7 @@ import { design } from "../../config";
 
 import { ColorResolvable, CommandInteraction, MessageEmbed } from "discord.js";
 import { MyClient } from "../../assets/MyClient";
-import { QueueStorage } from "../../assets/QueueStorage";
+import { QueueStorage } from "../../assets/DiscordMusic/QueueStorage";
 import { run as connect } from "./connect";
 
 
@@ -24,7 +24,7 @@ export async function run(client: MyClient, ctx: CommandInteraction) {
     const slot = data.getEntry(title);
 
     if (slot) {
-        player.queue = player.queue.concat(slot.tracks);
+        player.Queue = player.Queue.concat(slot.tracks);
         const embed = new MessageEmbed()
             .setColor(design.color as ColorResolvable)
             .setTitle(`${title} has been appended to queue.`)
@@ -33,7 +33,7 @@ export async function run(client: MyClient, ctx: CommandInteraction) {
         await ctx.reply({ embeds: [embed] });
     }
 
-    if (!player.nowPlaying) {
+    if (!player.NowPlaying) {
         await player.play();
     }
 }

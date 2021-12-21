@@ -9,7 +9,7 @@ export async function run(client: MyClient, ctx: CommandInteraction) {
     if (ctx.guild === null)
         return;
 
-    const player = client.players.getPlayer(ctx.guild.id);
+    const player = client.Players.getPlayer(ctx.guild.id);
 
     if (player) {
         player.destroy();

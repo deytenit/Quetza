@@ -12,7 +12,7 @@ export async function run(client: MyClient, ctx: CommandInteraction) {
         return;
 
 
-    let player = client.players.getPlayer(ctx.guild.id);
+    let player = client.Players.getPlayer(ctx.guild.id);
 
     if (!player)
         return;

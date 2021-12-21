@@ -1,24 +1,28 @@
 import { ApplicationCommandData, Client as DiscordClient, Intents, User } from "discord.js";
 import { readdirSync } from "fs";
-import { Music } from "./Music";
+import { Music } from "./DiscordMusic/Music";
 
 
 export class MyClient extends DiscordClient {
-    private _commands = new Map<string, any>();
-    private _restCommands: ApplicationCommandData[] = [];
-    private _owner: string;
-    public players = new Music();
+    private commands = new Map<string, any>();
+    private restCommands: ApplicationCommandData[] = [];
+    private owner: string;
+    private players = new Music();
 
-    get commands(): Map<string, any> {
-        return this._commands;
+    get Commands(): Map<string, any> {
+        return this.commands;
     }
 
-    get restCommands(): ApplicationCommandData[] {
-        return this._restCommands;
+    get RestCommands(): ApplicationCommandData[] {
+        return this.restCommands;
     }
 
-    get owner(): string {
-        return this._owner;
+    get Owner(): string {
+        return this.owner;
+    }
+
+    get Players(): Music {
+        return this.players;
     }
 
 
@@ -37,15 +41,15 @@ export class MyClient extends DiscordClient {
             for (const file of cmdFiles) {
                 import(`.${commandsPath}/${dir}/${file}`).then((command) => {
                     const name = command.data.name;
-                    this._restCommands.push(command.data);
-                    this._commands.set(name, command);
+                    this.restCommands.push(command.data);
+                    this.commands.set(name, command);
                 });
             }
         });
 
-        const evntFiles = readdirSync(eventsPath).filter(file => file.endsWith(".js"));
+        const eventFiles = readdirSync(eventsPath).filter(file => file.endsWith(".js"));
 
-        for (const file of evntFiles) {
+        for (const file of eventFiles) {
             import(`.${eventsPath}/${file}`).then((event) => {
                 this.on(event.name, (...args: unknown[]) => {
                     event.run(args, this);
@@ -53,6 +57,6 @@ export class MyClient extends DiscordClient {
             });
         }
 
-        this._owner = ownerId;
+        this.owner = ownerId;
     }
 }

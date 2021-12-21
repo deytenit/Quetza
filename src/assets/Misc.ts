@@ -1,15 +1,16 @@
-import { MessageEmbed } from "discord.js";
-import { track } from "./Types";
+import { ColorResolvable, MessageEmbed } from "discord.js";
+import { design } from "../config";
+import { track } from "./DiscordMusic/Types";
 
 export async function sleep(ms: number): Promise<unknown> {
     return new Promise(r => setTimeout(r, ms));
 }
 
-export function random_shuffle(array: Array<any>) {
-    let currentIndex = array.length,  randomIndex;
+export function randomShuffle(array: Array<any>) {
+    let currentIndex = array.length;
 
     while (currentIndex != 0) {
-        randomIndex = Math.floor(Math.random() * currentIndex);
+        let randomIndex = Math.floor(Math.random() * currentIndex);
         currentIndex--;
 
         [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
@@ -18,11 +19,12 @@ export function random_shuffle(array: Array<any>) {
     return array;
 }
 
-export function generateQueue(queue: track[], page: number, pos: number): MessageEmbed {
+export function queueDesigner(queue: track[], page: number, pos: number): MessageEmbed {
     let h = `${Math.floor(queue[pos].duration / 60 / 10)}${Math.floor(queue[pos].duration / 60) % 10}`;
     let m = `${Math.floor(queue[pos].duration % 60 / 10)}${queue[pos].duration % 60 % 10}`;
 
     let response = new MessageEmbed()
+        .setColor(design.color as ColorResolvable)
         .setTitle(`${pos + 1}. ${queue[pos].title.slice(0, 50)}`)
         .setDescription(`${h}:${m}`)
         .setURL(queue[pos].url);
