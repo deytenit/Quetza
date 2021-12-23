@@ -1,5 +1,5 @@
 import { design } from "../../config";
-import { getConstructors, getSchedule } from "../../assets/FormulaApi/Formula";
+import { getConstructors, getSchedule } from "../../assets/FormulaApi/d";
 
 import {
     ColorResolvable, CommandInteraction, GuildMember,
