@@ -1,14 +1,24 @@
 {
   "name": "5a0a-bot",
   "engines": {
-    "node": "16.x.x"
+    "node": "16.x.x",
+    "npm": "*"
   },
-  "version": "0.0.0",
+  "version": "1.2.0",
   "description": "Discord multifunctional bot",
   "main": "dist/app.js",
   "author": {
     "name": "unknowableshade"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unknowableshade/5a0b-bot.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/unknowableshade/5a0b-bot/issues"
+  },
+  "homepage": "https://github.com/unknowableshade/5a0b-bot#readme",
   "scripts": {
     "build": "tsc --build",
     "clean": "tsc --build --clean",
