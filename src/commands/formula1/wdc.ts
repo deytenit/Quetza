@@ -1,5 +1,5 @@
 import { design } from "../../config";
-import { getDrivers } from "../../assets/FormulaApi/d";
+import { getDrivers } from "../../assets/FormulaApi/Formula";
 
 import {
     ColorResolvable, CommandInteraction, GuildMember,
