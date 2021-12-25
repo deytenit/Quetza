@@ -13,10 +13,11 @@ import {
 
 import { design } from "../../config";
 import ytdl from "discord-ytdl-core";
-import { track, filter, loopOption } from "./Types";
+import { track, loopOption } from "./Types";
 import { randomShuffle } from "../Misc";
 import yts from "yt-search";
 import ytpl from "ytpl";
+import { Filter } from "./Filter";
 
 export class Player {
     private guild: Guild;
@@ -55,7 +56,11 @@ export class Player {
         return this.nowPlaying;
     }
 
-    private filters: filter = {}; // currently unusable
+    private filters: Filter = new Filter();
+
+    public Filters(): string[] {
+        return this.filters.ActiveFilters;
+    }
 
     private repeatMode: loopOption = "LOOP";
     private message: Message | undefined;
@@ -73,7 +78,8 @@ export class Player {
             opusEncoded: true,
             filter: "audioonly",
             highWaterMark: 1 << 25,
-            seek: seek
+            seek: seek / 1000,
+            encoderArgs: this.filters.empty() ? ["-af", this.filters.toString()] : []
         });
 
         this.nowPlaying = createAudioResource(stream, {
@@ -141,6 +147,9 @@ export class Player {
     public async play(seek: number = 0): Promise<void> {
         if (!this.connection || this.queue.length === 0)
             return;
+
+        if (this.nowPlaying)
+            this.nowPlaying.encoder?.destroy();
     
         const track = this.queue[this.nowPlayingPos];
 
@@ -233,6 +242,8 @@ export class Player {
     public destroy() {
         if (this.connection)
             this.connection.destroy();
+        if (this.nowPlaying)
+            this.nowPlaying.encoder?.destroy;
         this.music.delPlayer(this.guild.id);
     }
 
@@ -280,7 +291,7 @@ export class Player {
     }
     
     public async seek(time: number): Promise<void> {
-        await this.play(time);
+        await this.play(time * 1000);
     }
 
     public pause(): boolean {
@@ -316,6 +327,14 @@ export class Player {
     public skip(): void {
         if (this.player)
             this.player.stop();
+    }
+
+    public async filter(filter: string | null): Promise<boolean> {
+        if (this.filters.toggleFilter(filter)) {
+            await this.play(this.nowPlaying?.playbackDuration);
+            return true;
+        }
+        return false;
     }
 }
 

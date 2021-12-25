@@ -14,40 +14,4 @@ export interface saveEntry {
     tracks: track[]
 }
 
-export interface filter {
-    bassboost_low?: boolean;
-    bassboost?: boolean;
-    bassboost_high?: boolean;
-    dimentional?: boolean;
-    vaporwave?: boolean;
-    nightcore?: boolean;
-    phaser?: boolean;
-    tremolo?: boolean;
-    vibrato?: boolean;
-    reverse?: boolean;
-    treble?: boolean;
-    normalizer?: boolean;
-    normalizer2?: boolean;
-    surrounding?: boolean;
-    pulsator?: boolean;
-    subboost?: boolean;
-    karaoke?: boolean;
-    flanger?: boolean;
-    gate?: boolean;
-    haas?: boolean;
-    mcompand?: boolean;
-    mono?: boolean;
-    mstlr?: boolean;
-    mstrr?: boolean;
-    compressor?: boolean;
-    expander?: boolean;
-    softlimiter?: boolean;
-    chorus?: boolean;
-    chorus2d?: boolean;
-    chorus3d?: boolean;
-    fadein?: boolean;
-    dim?: boolean;
-    earrape?: boolean;
-}
-
 export type loopOption = "LOOP" | "SONG" | "NONE" | "AUTO";
