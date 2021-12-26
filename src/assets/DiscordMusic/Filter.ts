@@ -58,7 +58,7 @@ export class Filter {
     }
 
     public empty(): boolean {
-        return this.filters.size == 0;
+        return this.activeFilters.size == 0;
     }
 
     public toString(): string {

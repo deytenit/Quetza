@@ -24,17 +24,17 @@ export class Player {
     private music: Music;
 
     private channel: TextChannel;
-    get Channel(): TextChannel {
+    public get Channel(): TextChannel {
         return this.channel;
     }
 
     private connection: VoiceConnection | undefined;
-    get Connection(): VoiceConnection | undefined {
+    public get Connection(): VoiceConnection | undefined {
         return this.connection;
     }
 
     private player: AudioPlayer | undefined;
-    get Player(): AudioPlayer | undefined {
+    public get Player(): AudioPlayer | undefined {
         return this.player;
     }
 
@@ -46,19 +46,18 @@ export class Player {
         this.queue = queue;
     }
 
-    private nowPlayingPos: number = 0;
-    get NowPlayingPos(): number {
+    private nowPlayingPos: number;
+    public get NowPlayingPos(): number {
         return this.nowPlayingPos;
     }
 
-    private nowPlaying: AudioResource | undefined;
-    get NowPlaying(): AudioResource | undefined {
+    private nowPlaying: AudioResource<track> | undefined;
+    public get NowPlaying(): AudioResource<track> | undefined {
         return this.nowPlaying;
     }
 
-    private filters: Filter = new Filter();
-
-    public Filters(): string[] {
+    private filters: Filter;
+    public get Filters(): string[] {
         return this.filters.ActiveFilters;
     }
 
@@ -69,6 +68,8 @@ export class Player {
         this.music = clientMusic;
         this.guild = playerGuild;
         this.channel = ctxChannel;
+        this.filters = new Filter();
+        this.nowPlayingPos = 0;
     }
 
     private async playerCreator(track: track, seek: number): Promise<AudioPlayer> {
@@ -79,7 +80,7 @@ export class Player {
             filter: "audioonly",
             highWaterMark: 1 << 25,
             seek: seek / 1000,
-            encoderArgs: this.filters.empty() ? ["-af", this.filters.toString()] : []
+            encoderArgs: !this.filters.empty() ? ["-af", this.filters.toString()] : []
         });
 
         this.nowPlaying = createAudioResource(stream, {
@@ -144,7 +145,7 @@ export class Player {
         this.message = await this.channel.send({ embeds: [embed] });
     }
 
-    public async play(seek: number = 0): Promise<void> {
+    public async play(seek = 0): Promise<void> {
         if (!this.connection || this.queue.length === 0)
             return;
 
@@ -175,8 +176,8 @@ export class Player {
         this.connection.on(VoiceConnectionStatus.Disconnected, async (oldState, newState) => {
             try {
                 await Promise.race([
-                    entersState(this.connection as VoiceConnection, VoiceConnectionStatus.Signalling, 5_000),
-                    entersState(this.connection as VoiceConnection, VoiceConnectionStatus.Connecting, 5_000),
+                    entersState(this.connection as VoiceConnection, VoiceConnectionStatus.Signalling, 10_000),
+                    entersState(this.connection as VoiceConnection, VoiceConnectionStatus.Connecting, 10_000),
                 ]);
             }
             catch (error) {
@@ -196,8 +197,9 @@ export class Player {
             requester: requester
         };
 
-        if (!index || index >= this.queue.length)
+        if (!index || index >= this.queue.length) {
             this.queue.push(metadata);
+        }
         else {
             this.queue.splice(Math.max(0, index), 0, metadata)
             if (this.nowPlayingPos >= index)
