@@ -2,6 +2,7 @@ import { ytdlArgs, ytdlResponse } from "./Types"
 import { execFile } from "child_process"
 import { promisify } from "util";
 import { getTracks, getPreview } from "spotify-url-info";
+import { buildUp } from "./BuildUp";
 
 const execFileAsync = promisify(execFile);
 
@@ -27,7 +28,7 @@ async function ytdlExec(query: string, args: ytdlArgs): Promise<ytdlResponse | u
         return JSON.parse(executable.stdout);
     }
     catch {
-        console.log("youtube-dl not found. Please install it first with npm run build.");
+        await buildUp();
         return undefined;
     }
 }
