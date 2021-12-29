@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/unknowableshade/5a0b-bot#readme",
   "scripts": {
-    "build": "tsc --build && python -m pip install youtube-dl --target=dist/assets/SearchTakts/youtube-dl",
+    "build": "tsc --build",
     "clean": "tsc --build --clean",
     "start": "node dist/app.js"
   },
