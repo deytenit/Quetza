@@ -2,7 +2,6 @@ import { ytdlArgs, ytdlResponse } from "./Types"
 import { execFile } from "child_process"
 import { promisify } from "util";
 import { getTracks, getPreview } from "spotify-url-info";
-import { buildUp } from "./BuildUp";
 
 const execFileAsync = promisify(execFile);
 
@@ -22,13 +21,11 @@ function argumentsResolver(args: ytdlArgs): string[] {
 
 async function ytdlExec(query: string, args: ytdlArgs): Promise<ytdlResponse | undefined> { 
     try {
-        const executable = await execFileAsync(__dirname + "/bin/youtube-dl", [`${query}`].concat(argumentsResolver(args)));
+        const executable = await execFileAsync("$1/bin/youtube-dl", [`${query}`].concat(argumentsResolver(args)));
         console.log(executable.stderr);
-        console.log(__dirname);
         return JSON.parse(executable.stdout);
     }
     catch {
-        await buildUp();
         return undefined;
     }
 }
