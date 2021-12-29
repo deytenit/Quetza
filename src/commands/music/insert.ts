@@ -20,16 +20,25 @@ export async function run(client: MyClient, ctx: CommandInteraction) {
     await ctx.deferReply()
 
     const track = await player.addTrack(query, ctx.user, pos - 1);
+    let embed: MessageEmbed;
 
-    const embed = new MessageEmbed()
-        .setColor(design.color as ColorResolvable)
-        .setTitle(track.title)
-        .setDescription("Has been inserted to queue.")
-        .setURL(track.url)
-        .setThumbnail(track.thumbnail)
-        .setAuthor(`@${ctx.user.tag}`, ctx.user.avatarURL() as string);
+    if (!track) {
+        embed = new MessageEmbed()
+            .setColor(design.color as ColorResolvable)
+            .setTitle("Cannot append the track or playlist.")
+            .setAuthor({ name: `@${ctx.user.tag}`, iconURL: ctx.user.avatarURL() as string });
+    }
+    else {
+        embed = new MessageEmbed()
+            .setColor(design.color as ColorResolvable)
+            .setTitle(track.title)
+            .setDescription("Has been pushed to queue.")
+            .setURL(track.url)
+            .setThumbnail(track.thumbnail)
+            .setAuthor({ name: `@${ctx.user.tag}`, iconURL: ctx.user.avatarURL() as string });
+        console.log(`${track.title} added to ${ctx.guildId}`);
+    }
 
-    console.log(`${track.title} added to ${ctx.guildId}`);
 
     await ctx.editReply({ embeds: [embed] });
 }

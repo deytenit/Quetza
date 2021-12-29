@@ -15,8 +15,7 @@ import { design } from "../../config";
 import ytdl from "discord-ytdl-core";
 import { track, loopOption } from "./Types";
 import { randomShuffle } from "../Misc";
-import yts from "yt-search";
-import ytpl from "ytpl";
+import { searchTakts } from "../SearchTakts/SearchInfo";
 import { Filter } from "./Filter";
 
 export class Player {
@@ -135,14 +134,48 @@ export class Player {
             .setThumbnail(track.thumbnail)
             .setDescription("Is now beeing played.");
 
-        try {
-            embed.setAuthor(`@${track.requester.tag}`, track.requester.avatarURL() as string);
-        }
-        catch {
-            embed.setAuthor(`@${track.requester.tag}`, track.requester.avatarURL as unknown as string);
-        }
+        embed.setAuthor({ name: `@${track.requester.tag}`, iconURL: track.requester.avatarURL() || track.requester.avatarURL as unknown as string});
 
         this.message = await this.channel.send({ embeds: [embed] });
+    }
+
+    private async searchStream(query: string, requester: User): Promise<track[] | undefined> {
+        const response = await searchTakts(query, {
+            dumpSingleJson: true,
+            noWarnings: true,
+            noCheckCertificate: true,
+            flatPlaylist: true,
+            skipDownload: true,
+            defaultSearch: "ytsearch"
+        });
+        
+        if (!response)
+            return undefined;
+
+        let tracks: track[] = [];
+
+        if (response.entries) {
+            for (const entry of response.entries) {        
+                tracks.push({
+                    url: `https://youtube.com/watch?v=${entry.id}`,
+                    title: entry.title,
+                    thumbnail: `https://img.youtube.com/vi/${entry.id}/default.jpg`,
+                    duration: entry.duration,
+                    requester: requester
+                });
+            }
+        }
+        else {
+            tracks.push({
+                url: `https://youtube.com/watch?v=${response.id}`,
+                title: response.title,
+                thumbnail: `https://img.youtube.com/vi/${response.id}/default.jpg`,
+                duration: response.duration,
+                requester: requester
+            });
+        }
+
+        return tracks;
     }
 
     public async play(seek = 0): Promise<void> {
@@ -186,51 +219,23 @@ export class Player {
         });
     }
 
-    public async addTrack(query: string, requester: User, index?: number): Promise<track> {
-        const songInfo = (await yts(query)).videos[0];
-    
-        const metadata: track = {
-            url: songInfo.url,
-            title: songInfo.title,
-            thumbnail: songInfo.thumbnail,
-            duration: songInfo.duration.seconds,
-            requester: requester
-        };
+    public async addTrack(query: string, requester: User, index?: number): Promise<track | undefined> {
+        const metadata = await this.searchStream(query, requester);
+
+        if (!metadata) {
+            return undefined;
+        }
 
         if (!index || index >= this.queue.length) {
-            this.queue.push(metadata);
+            this.queue = this.queue.concat(metadata);
         }
         else {
-            this.queue.splice(Math.max(0, index), 0, metadata)
+            this.queue.splice(Math.max(0, index), 0, ...metadata)
             if (this.nowPlayingPos >= index)
                 this.nowPlayingPos++;
         }
 
-        return metadata;
-    }
-
-    public async addPlaylist(query: string, requester: User): Promise<track> {
-        const playlistInfo = await ytpl(query);
-
-        playlistInfo.items.forEach((songInfo) => {
-            const metadata: track = {
-                url: songInfo.url,
-                title: songInfo.title,
-                thumbnail: songInfo.bestThumbnail.url !== null ? songInfo.bestThumbnail.url : "https://img.youtube.com/vi/hqdefault.jpg",
-                duration: songInfo.durationSec as number,
-                requester: requester
-            }
-
-            this.queue.push(metadata);
-        });
-
-        return {
-            url: playlistInfo.url,
-            title: playlistInfo.title,
-            thumbnail: playlistInfo.bestThumbnail.url !== null ? playlistInfo.bestThumbnail.url : "https://img.youtube.com/vi/hqdefault.jpg",
-            duration: playlistInfo.estimatedItemCount,
-            requester: requester
-        };
+        return metadata[0];
     }
 
     public clear() {
