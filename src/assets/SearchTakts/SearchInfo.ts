@@ -21,7 +21,7 @@ function argumentsResolver(args: ytdlArgs): string[] {
 
 async function ytdlExec(query: string, args: ytdlArgs): Promise<ytdlResponse | undefined> { 
     try {
-        const executable = await execFileAsync("$1/bin/youtube-dl", [`${query}`].concat(argumentsResolver(args)));
+        const executable = await execFileAsync(__dirname + "/../../../bin/youtube-dl", [`${query}`].concat(argumentsResolver(args)));
         console.log(executable.stderr);
         return JSON.parse(executable.stdout);
     }
