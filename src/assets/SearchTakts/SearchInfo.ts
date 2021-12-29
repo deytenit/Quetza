@@ -47,6 +47,13 @@ export async function searchTakts(query: string, args: ytdlArgs): Promise<ytdlRe
         return undefined;
     }
     catch {
-        return await ytdlExec(query, args);
+        const response = await ytdlExec(query, args);
+        if (!response) 
+            return undefined;
+
+        if (!response.extractor.includes("youtube")) {
+            return await ytdlExec(`${response.title} - ${response.creator}`, args);
+        }
+        return response;
     }
 }
