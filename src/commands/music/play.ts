@@ -20,25 +20,28 @@ export async function run(client: MyClient, ctx: CommandInteraction) {
     let embed = new MessageEmbed()
         .setColor(design.color as ColorResolvable)
         .setTitle("Now playing.")
-        .setAuthor(`@${ctx.user.tag}`, ctx.user.avatarURL() as string);
+        .setAuthor({ name:`@${ctx.user.tag}`, iconURL: ctx.user.avatarURL() as string });
 
     if (query) {
-        let track: track;
-        try {
-            track = await player.addPlaylist(query, ctx.user);
-        }
-        catch {
-            track = await player.addTrack(query, ctx.user);
-        }
-        embed = new MessageEmbed()
-            .setColor(design.color as ColorResolvable)
-            .setTitle(track.title)
-            .setDescription("Has been pushed to queue.")
-            .setURL(track.url)
-            .setThumbnail(track.thumbnail)
-            .setAuthor(`@${ctx.user.tag}`, ctx.user.avatarURL() as string);
+        const track = await player.addTrack(query, ctx.user);
 
-        console.log(`${track.title} added to ${ctx.guildId}`);
+        if (!track) {
+            embed = new MessageEmbed()
+                .setColor(design.color as ColorResolvable)
+                .setTitle("Cannot append the track or playlist.")
+                .setAuthor({ name: `@${ctx.user.tag}`, iconURL: ctx.user.avatarURL() as string });
+        }
+        else {
+            embed = new MessageEmbed()
+                .setColor(design.color as ColorResolvable)
+                .setTitle(track.title)
+                .setDescription("Has been pushed to queue.")
+                .setURL(track.url)
+                .setThumbnail(track.thumbnail)
+                .setAuthor({ name: `@${ctx.user.tag}`, iconURL: ctx.user.avatarURL() as string });
+            console.log(`${track.title} added to ${ctx.guildId}`);
+        }
+            
     }
 
     await ctx.editReply({ embeds: [embed] });

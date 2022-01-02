@@ -55,8 +55,13 @@ export async function run(client: MyClient, ctx: CommandInteraction) {
                 .setStyle("SECONDARY")
         );
 
+    const playTime = player.NowPlaying?.playbackDuration as number;
+    const nowPlayingTime = player.NowPlaying?.metadata.duration as number;
+
     const message = await ctx.editReply({
-        embeds: [queueDesigner(queue, page, player.NowPlayingPos)],
+        embeds: [queueDesigner(queue, page, player.NowPlayingPos)
+            .setDescription(`${Math.floor(playTime / 60000)}:${playTime / 1000 % 60} / ${Math.floor(nowPlayingTime / 60000)}:${nowPlayingTime / 1000 % 60}`)
+        ],
         components: [row]
     }) as Message;
 
@@ -71,8 +76,13 @@ export async function run(client: MyClient, ctx: CommandInteraction) {
             case "QueueEnd": page = maxPage;
         }
 
+        const playTime = player.NowPlaying?.playbackDuration as number;
+        const nowPlayingTime = player.NowPlaying?.metadata.duration as number;
+    
         await btn.update({
-            embeds: [queueDesigner(queue, page, player.NowPlayingPos)]
+            embeds: [queueDesigner(queue, page, player.NowPlayingPos)
+                .setDescription(`${Math.floor(playTime / 60000)}:${playTime / 1000 % 60} / ${Math.floor(nowPlayingTime / 60000)}:${nowPlayingTime / 1000 % 60}`)
+            ]
         });
     });
 }

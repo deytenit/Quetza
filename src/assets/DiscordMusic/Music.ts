@@ -13,27 +13,27 @@ import {
 
 import { design } from "../../config";
 import ytdl from "discord-ytdl-core";
-import { track, filter, loopOption } from "./Types";
+import { track, loopOption } from "./Types";
 import { randomShuffle } from "../Misc";
-import yts from "yt-search";
-import ytpl from "ytpl";
+import { searchTakts } from "../SearchTakts/SearchInfo";
+import { Filter } from "./Filter";
 
 export class Player {
     private guild: Guild;
     private music: Music;
 
     private channel: TextChannel;
-    get Channel(): TextChannel {
+    public get Channel(): TextChannel {
         return this.channel;
     }
 
     private connection: VoiceConnection | undefined;
-    get Connection(): VoiceConnection | undefined {
+    public get Connection(): VoiceConnection | undefined {
         return this.connection;
     }
 
     private player: AudioPlayer | undefined;
-    get Player(): AudioPlayer | undefined {
+    public get Player(): AudioPlayer | undefined {
         return this.player;
     }
 
@@ -45,17 +45,20 @@ export class Player {
         this.queue = queue;
     }
 
-    private nowPlayingPos: number = 0;
-    get NowPlayingPos(): number {
+    private nowPlayingPos: number;
+    public get NowPlayingPos(): number {
         return this.nowPlayingPos;
     }
 
-    private nowPlaying: AudioResource | undefined;
-    get NowPlaying(): AudioResource | undefined {
+    private nowPlaying: AudioResource<track> | undefined;
+    public get NowPlaying(): AudioResource<track> | undefined {
         return this.nowPlaying;
     }
 
-    private filters: filter = {}; // currently unusable
+    private filters: Filter;
+    public get Filters(): string[] {
+        return this.filters.ActiveFilters;
+    }
 
     private repeatMode: loopOption = "LOOP";
     private message: Message | undefined;
@@ -64,6 +67,8 @@ export class Player {
         this.music = clientMusic;
         this.guild = playerGuild;
         this.channel = ctxChannel;
+        this.filters = new Filter();
+        this.nowPlayingPos = 0;
     }
 
     private async playerCreator(track: track, seek: number): Promise<AudioPlayer> {
@@ -73,7 +78,8 @@ export class Player {
             opusEncoded: true,
             filter: "audioonly",
             highWaterMark: 1 << 25,
-            seek: seek
+            seek: seek / 1000,
+            encoderArgs: !this.filters.empty() ? ["-af", this.filters.toString()] : []
         });
 
         this.nowPlaying = createAudioResource(stream, {
@@ -128,19 +134,56 @@ export class Player {
             .setThumbnail(track.thumbnail)
             .setDescription("Is now beeing played.");
 
-        try {
-            embed.setAuthor(`@${track.requester.tag}`, track.requester.avatarURL() as string);
-        }
-        catch {
-            embed.setAuthor(`@${track.requester.tag}`, track.requester.avatarURL as unknown as string);
-        }
+        embed.setAuthor({ name: `@${track.requester.tag}`, iconURL: track.requester.avatarURL() || track.requester.avatarURL as unknown as string});
 
         this.message = await this.channel.send({ embeds: [embed] });
     }
 
-    public async play(seek: number = 0): Promise<void> {
+    private async searchStream(query: string, requester: User): Promise<track[] | undefined> {
+        const response = await searchTakts(query, {
+            dumpSingleJson: true,
+            noWarnings: true,
+            noCheckCertificate: true,
+            flatPlaylist: true,
+            skipDownload: true,
+            defaultSearch: "ytsearch"
+        });
+        
+        if (!response)
+            return undefined;
+
+        let tracks: track[] = [];
+
+        if (response.entries) {
+            for (const entry of response.entries) {        
+                tracks.push({
+                    url: `https://youtube.com/watch?v=${entry.id}`,
+                    title: entry.title,
+                    thumbnail: `https://img.youtube.com/vi/${entry.id}/default.jpg`,
+                    duration: entry.duration,
+                    requester: requester
+                });
+            }
+        }
+        else {
+            tracks.push({
+                url: `https://youtube.com/watch?v=${response.id}`,
+                title: response.title,
+                thumbnail: `https://img.youtube.com/vi/${response.id}/default.jpg`,
+                duration: response.duration,
+                requester: requester
+            });
+        }
+
+        return tracks;
+    }
+
+    public async play(seek = 0): Promise<void> {
         if (!this.connection || this.queue.length === 0)
             return;
+
+        if (this.nowPlaying)
+            this.nowPlaying.encoder?.destroy();
     
         const track = this.queue[this.nowPlayingPos];
 
@@ -166,8 +209,8 @@ export class Player {
         this.connection.on(VoiceConnectionStatus.Disconnected, async (oldState, newState) => {
             try {
                 await Promise.race([
-                    entersState(this.connection as VoiceConnection, VoiceConnectionStatus.Signalling, 5_000),
-                    entersState(this.connection as VoiceConnection, VoiceConnectionStatus.Connecting, 5_000),
+                    entersState(this.connection as VoiceConnection, VoiceConnectionStatus.Signalling, 10_000),
+                    entersState(this.connection as VoiceConnection, VoiceConnectionStatus.Connecting, 10_000),
                 ]);
             }
             catch (error) {
@@ -176,50 +219,23 @@ export class Player {
         });
     }
 
-    public async addTrack(query: string, requester: User, index?: number): Promise<track> {
-        const songInfo = (await yts(query)).videos[0];
-    
-        const metadata: track = {
-            url: songInfo.url,
-            title: songInfo.title,
-            thumbnail: songInfo.thumbnail,
-            duration: songInfo.duration.seconds,
-            requester: requester
-        };
+    public async addTrack(query: string, requester: User, index?: number): Promise<track | undefined> {
+        const metadata = await this.searchStream(query, requester);
 
-        if (!index || index >= this.queue.length)
-            this.queue.push(metadata);
+        if (!metadata) {
+            return undefined;
+        }
+
+        if (!index || index >= this.queue.length) {
+            this.queue = this.queue.concat(metadata);
+        }
         else {
-            this.queue.splice(Math.max(0, index), 0, metadata)
+            this.queue.splice(Math.max(0, index), 0, ...metadata)
             if (this.nowPlayingPos >= index)
                 this.nowPlayingPos++;
         }
 
-        return metadata;
-    }
-
-    public async addPlaylist(query: string, requester: User): Promise<track> {
-        const playlistInfo = await ytpl(query);
-
-        playlistInfo.items.forEach((songInfo) => {
-            const metadata: track = {
-                url: songInfo.url,
-                title: songInfo.title,
-                thumbnail: songInfo.bestThumbnail.url !== null ? songInfo.bestThumbnail.url : "https://img.youtube.com/vi/hqdefault.jpg",
-                duration: songInfo.durationSec as number,
-                requester: requester
-            }
-
-            this.queue.push(metadata);
-        });
-
-        return {
-            url: playlistInfo.url,
-            title: playlistInfo.title,
-            thumbnail: playlistInfo.bestThumbnail.url !== null ? playlistInfo.bestThumbnail.url : "https://img.youtube.com/vi/hqdefault.jpg",
-            duration: playlistInfo.estimatedItemCount,
-            requester: requester
-        };
+        return metadata[0];
     }
 
     public clear() {
@@ -233,6 +249,8 @@ export class Player {
     public destroy() {
         if (this.connection)
             this.connection.destroy();
+        if (this.nowPlaying)
+            this.nowPlaying.encoder?.destroy;
         this.music.delPlayer(this.guild.id);
     }
 
@@ -280,7 +298,7 @@ export class Player {
     }
     
     public async seek(time: number): Promise<void> {
-        await this.play(time);
+        await this.play(time * 1000);
     }
 
     public pause(): boolean {
@@ -316,6 +334,14 @@ export class Player {
     public skip(): void {
         if (this.player)
             this.player.stop();
+    }
+
+    public async filter(filter: string | null): Promise<boolean> {
+        if (this.filters.toggleFilter(filter)) {
+            await this.play(this.nowPlaying?.playbackDuration);
+            return true;
+        }
+        return false;
     }
 }
 

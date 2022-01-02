@@ -25,6 +25,7 @@ export async function run(args: unknown[], client: MyClient): Promise<void> {
 
     console.log(`${client.user.username} logged in as ${client.user.tag}!`);
     client.user.setActivity("on sound waves.", { type: "PLAYING" });
+    client.application?.commands.set(client.RestCommands);
 }
 
 

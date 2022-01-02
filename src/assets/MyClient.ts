@@ -35,11 +35,11 @@ export class MyClient extends DiscordClient {
             ] 
         }); 
 
-        readdirSync(commandsPath).forEach((dir) => {
-            const cmdFiles = readdirSync(`${commandsPath}/${dir}`).filter(file => file.endsWith(".js"));
+        readdirSync(`${__dirname}/../${commandsPath}`).forEach((dir) => {
+            const cmdFiles = readdirSync(`${__dirname}/../${commandsPath}/${dir}`).filter(file => file.endsWith(".js"));
 
             for (const file of cmdFiles) {
-                import(`.${commandsPath}/${dir}/${file}`).then((command) => {
+                import(`${__dirname}/../${commandsPath}/${dir}/${file}`).then((command) => {
                     const name = command.data.name;
                     this.restCommands.push(command.data);
                     this.commands.set(name, command);
@@ -47,10 +47,10 @@ export class MyClient extends DiscordClient {
             }
         });
 
-        const eventFiles = readdirSync(eventsPath).filter(file => file.endsWith(".js"));
+        const eventFiles = readdirSync(`${__dirname}/../${eventsPath}`).filter(file => file.endsWith(".js"));
 
         for (const file of eventFiles) {
-            import(`.${eventsPath}/${file}`).then((event) => {
+            import(`${__dirname}/../${eventsPath}/${file}`).then((event) => {
                 this.on(event.name, (...args: unknown[]) => {
                     event.run(args, this);
                 });
