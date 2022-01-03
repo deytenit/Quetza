@@ -49,7 +49,7 @@
     <TypeScriptCompile Include="src\app.ts" />
     <TypeScriptCompile Include="src\assets\Misc.ts" />
     <TypeScriptCompile Include="src\assets\DiscordMusic\Music.ts" />
-    <TypeScriptCompile Include="src\assets\MyClient.ts" />
+    <TypeScriptCompile Include="src\assets\QuetzaClient.ts" />
     <TypeScriptCompile Include="src\assets\DiscordMusic\QueueStorage.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
