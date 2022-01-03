@@ -1,3 +1,4 @@
+import { AudioResource } from "@discordjs/voice";
 import { ColorResolvable, MessageEmbed } from "discord.js";
 import { design } from "../config";
 import { track } from "./DiscordMusic/Types";
@@ -19,15 +20,22 @@ export function randomShuffle(array: Array<any>) {
     return array;
 }
 
-export function queueDesigner(queue: track[], page: number, pos: number): MessageEmbed {
-    let h = `${Math.floor(queue[pos].duration / 60 / 10)}${Math.floor(queue[pos].duration / 60) % 10}`;
-    let m = `${Math.floor(queue[pos].duration % 60 / 10)}${queue[pos].duration % 60 % 10}`;
-
+export function queueDesigner(queue: track[], page: number, nowPlaying: AudioResource<track> | undefined, nowPlayingPos: number): MessageEmbed {
     let response = new MessageEmbed()
         .setColor(design.color as ColorResolvable)
-        .setTitle(`${pos + 1}. ${queue[pos].title.slice(0, 50)}`)
-        .setDescription(`${h}:${m}`)
-        .setURL(queue[pos].url);
+        .setTitle("Server queue:");
+
+    if (nowPlaying) {
+        const hDuration = `${Math.floor(nowPlaying.metadata.duration / 60 / 10)}${Math.floor(nowPlaying.metadata.duration / 60) % 10}`;
+        const mDuration = `${Math.floor(nowPlaying.metadata.duration % 60 / 10)}${nowPlaying.metadata.duration % 60 % 10}`; 
+        const hPlayed = `${Math.floor(nowPlaying.playbackDuration / 1000 / 60 / 10)}${Math.floor(nowPlaying.playbackDuration / 1000 / 60) % 10}`;
+        const mPlayed = `${Math.floor(Math.floor(nowPlaying.playbackDuration / 1000) % 60 / 10)}${Math.floor(nowPlaying.playbackDuration / 1000) % 60 % 10}`; 
+
+        response.setTitle(`${nowPlayingPos}. ${nowPlaying.metadata.title}`)
+            .setURL(nowPlaying.metadata.url)
+            .setThumbnail(nowPlaying.metadata.thumbnail)
+            .setDescription(`${hPlayed}:${mPlayed} / ${hDuration}:${mDuration}`);
+    }
 
     for (let i = page * 10; i < Math.min(queue.length, (page + 1) * 10); i++) {
         const track = queue[i];
