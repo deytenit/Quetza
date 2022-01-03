@@ -1,28 +1,27 @@
-# 5a0b - 2110.2  <soundrewrite>
- Typescript discord bot.
- 
-**Since discord.py has been archived and probably will be deprecated. This is a new breath for a bot.** 
+# QuetzaBot - 2201.1  <soundrewrite>
+ Typescript/node js discord bot.
 
 ## Latest update
 
-- learn adapt overcome.
-
+- Rebuilt structure allows to write seperated modules for bot.
+ 
 ## Features
 
-### Music player
+### Music
 
-- Play music from YouTube and other supported platforms
-- *Create your queues and save them* [**Deprecated**]
+- Play music from YouTube and many other sites.
+- Create your own queues and save them
 - Loop queue, song.
 - Play next, stop, pause, resume.
+- Seek for a time code.
 - Queue jump, remove.
-- And another features.
+- Lots of different filters (nightcore, earrape).
   
 ## Installation
 
 ### Download bot repository
 
-- **[Download](https://github.com/unknowableshade/5a0b-bot/archive/refs/heads/master.zip)**
+- **[Download](https://github.com/unknowableshade/quetza-bot/archive/refs/heads/master.zip)**
 
 ### Requirements
 
@@ -37,14 +36,23 @@ $ npm install
 ```
 
 - **Install** [ffmpeg](https://www.ffmpeg.org/download.html)
+- **Install** [youtube-dl](https://github.com/ytdl-org/youtube-dl/releases/tag/2021.12.17)
+ 
+- **Place** youtube-dl in "/bin" directory.
 
 ### Bot startup
 
-- **Insert** bot token in main.py file
+- **Configure** "config.ts" file.
  
-- **Build** via typescript compiller
+- **Build**
+  ```bash
+ npm run build
+ ```
 
-- **Start** ./dist/app.js
+- **Start**
+ ```bash
+ npm run start
+ ```
 
 ## Licence 
 
