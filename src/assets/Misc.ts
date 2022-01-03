@@ -31,7 +31,7 @@ export function queueDesigner(queue: track[], page: number, nowPlaying: AudioRes
         const hPlayed = `${Math.floor(nowPlaying.playbackDuration / 1000 / 60 / 10)}${Math.floor(nowPlaying.playbackDuration / 1000 / 60) % 10}`;
         const mPlayed = `${Math.floor(Math.floor(nowPlaying.playbackDuration / 1000) % 60 / 10)}${Math.floor(nowPlaying.playbackDuration / 1000) % 60 % 10}`; 
 
-        response.setTitle(`${nowPlayingPos}. ${nowPlaying.metadata.title}`)
+        response.setTitle(`${nowPlayingPos + 1}. ${nowPlaying.metadata.title}`)
             .setURL(nowPlaying.metadata.url)
             .setThumbnail(nowPlaying.metadata.thumbnail)
             .setDescription(`${hPlayed}:${mPlayed} / ${hDuration}:${mDuration}`);
