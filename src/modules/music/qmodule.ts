@@ -3,7 +3,7 @@ import { Music } from "./assets/QuetzaMusic/Music";
 const data = {
     key: "music",
     name: "QuetzaMusic",
-    description: "Quetza music module v.1.4.0",
+    description: "Quetza music module v.1.5.0",
     author: "unknowableshade"
 }
 

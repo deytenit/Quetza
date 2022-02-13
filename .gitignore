@@ -366,3 +366,6 @@ FodyWeavers.xsd
 dist/
 *.js
 *.js.map
+
+#binaries
+bin/
