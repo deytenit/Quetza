@@ -1,5 +1,5 @@
 export class Filter {
-    filters: Record<string, string> = {
+    public readonly filters: Record<string, string> = {
         "bassboost_low": "bass=g=15:f=110:w=0.3",
         "bassboost": "bass=g=20:f=110:w=0.3",
         "bassboost_high": "bass=g=30:f=110:w=0.3",
@@ -48,13 +48,12 @@ export class Filter {
         }
 
         const arg = this.filters[filter];
+
         if (arg) {
-            if (this.activeFilters.has(filter))
-                this.activeFilters.delete(filter);
-            else
-                this.activeFilters.set(filter, arg);
+            this.activeFilters.has(filter) ? this.activeFilters.delete(filter) : this.activeFilters.set(filter, arg);
             return true;
         }
+
         return false;
     }
 

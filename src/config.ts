@@ -4,7 +4,7 @@
  * @field token Discord API token.
  * @field color Bot color theme for Embeds.
  * @field rootDir Directory that goes before commands and events.
- * @field commands Directories for bot's modules.
+ * @field modules Directories for bot's modules.
  */
 const quetzaConfig = {
     opId: "214422162906415106",

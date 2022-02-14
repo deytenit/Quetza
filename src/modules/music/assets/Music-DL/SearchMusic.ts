@@ -6,17 +6,15 @@ import { quetzaConfig } from "../../../../config";
 const execFileAsync = promisify(execFile);
 
 function argumentsResolver(args: ytdlArgs): string[] {
-    let response: string[] = [];
     const options = Object.entries(args);
-    options.forEach(([key, value]) => {
-        if (typeof value == "boolean" && value == true) {
-            response.push(`--${key.split(/(?=[A-Z])/).join("-").toLowerCase()}`);
+    return options.map(([key, value]) => {
+        if (typeof value === "boolean" && value) {
+           return `--${key.split(/(?=[A-Z])/).join("-")}`.toLowerCase();
         }
         else {
-            response.push(`--${key.split(/(?=[A-Z])/).join("-")}=${value}`.toLowerCase())
+           return `--${key.split(/(?=[A-Z])/).join("-")}=${value}`.toLowerCase();
         }
     });
-    return response;
 }
 
 async function ytdlExec(query: string, args: ytdlArgs): Promise<ytdlResponse | undefined> { 
@@ -31,12 +29,11 @@ async function ytdlExec(query: string, args: ytdlArgs): Promise<ytdlResponse | u
 }
 
 export async function searchMusic(query: string, args: ytdlArgs): Promise<ytdlResponse | undefined> {
-    const response = await ytdlExec(query, args);
-    if (!response) 
-        return undefined;
+    let response = await ytdlExec(query, args);
 
-    if (!response.extractor.includes("youtube")) {
-        return await ytdlExec(`${response.title} - ${response.creator}`, args);
+    if (response && !response.extractor.includes("youtube")) {
+        response = await ytdlExec(`${response.title} - ${response.creator}`, args);
     }
+
     return response;
 }

@@ -78,7 +78,7 @@ export class Player {
             opusEncoded: true,
             filter: "audioonly",
             highWaterMark: 1 << 25,
-            seek: seek / 1000,
+            seek: seek,
             encoderArgs: !this.filters.empty() ? ["-af", this.filters.toString()] : []
         });
 
@@ -87,7 +87,7 @@ export class Player {
             metadata: track
         });
 
-        await player.play(this.nowPlaying);
+        player.play(this.nowPlaying);
 
         return player;
     }
@@ -134,7 +134,7 @@ export class Player {
             .setThumbnail(track.thumbnail)
             .setDescription("Is now beeing played.");
 
-        embed.setAuthor({ name: `@${track.requester.tag}`, iconURL: track.requester.avatarURL() || track.requester.avatarURL as unknown as string});
+        embed.setAuthor({ name: `${track.requester.tag}`, iconURL: track.requester.avatarURL() || track.requester.avatarURL as unknown as string});
 
         this.message = await this.channel.send({ embeds: [embed] });
     }
@@ -232,7 +232,7 @@ export class Player {
         else {
             this.queue.splice(Math.max(0, index), 0, ...metadata)
             if (this.nowPlayingPos >= index)
-                this.nowPlayingPos++;
+                this.nowPlayingPos += metadata.length;
         }
 
         return metadata[0];
@@ -255,10 +255,7 @@ export class Player {
     }
 
     public async jump(query: number | string): Promise<boolean> {
-        if (!this.player)
-            return false;
-
-        if (typeof query === "number" && query < this.queue.length && query >= 0) {
+        if (typeof query === "number" && query >= 0 && query < this.queue.length) {
             this.nowPlayingPos = query;
             await this.play();
             return true;
@@ -273,14 +270,17 @@ export class Player {
                 }
             }
         }
+
         return false;
     }
 
     public async remove(query: number | string): Promise<boolean> {
-        if (typeof query === "number" && query < this.queue.length && query >= 0) {
+        if (typeof query === "number" && query >= 0 && query < this.queue.length) {
             this.queue.splice(query, 1);
             if (query === this.nowPlayingPos)
                 await this.play();
+            else if (query >= this.nowPlayingPos)
+                this.nowPlayingPos--;
             return true;
         }
         else {
@@ -290,6 +290,8 @@ export class Player {
                     this.queue.splice(i, 1);
                     if (i === this.nowPlayingPos)
                         await this.play();
+                    else if (i >= this.nowPlayingPos)
+                        this.nowPlayingPos--;
                     return true;
                 }
             }
@@ -298,7 +300,7 @@ export class Player {
     }
     
     public async seek(time: number): Promise<void> {
-        await this.play(time * 1000);
+        await this.play(time);
     }
 
     public pause(): boolean {
@@ -327,7 +329,7 @@ export class Player {
         return false;
     }
 
-    public shuffle(): void {
+    public reshuffle(): void {
         this.queue = randomShuffle(this.queue);
     }
 
@@ -355,7 +357,7 @@ export class Music {
     }
 
     public genPlayer(guild: Guild, music: Music, channel: TextChannel): Player {
-    const player = this.players.get(guild.id);
+        const player = this.players.get(guild.id);
         if (!player) {
             const newPlayer = new module.exports.Player(guild, music, channel);
             this.players.set(guild.id, newPlayer);
