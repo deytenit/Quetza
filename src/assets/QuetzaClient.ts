@@ -1,5 +1,5 @@
 import { ApplicationCommandData, Client as DiscordClient, Intents, CommandInteraction } from "discord.js";
-import { readdirSync } from "fs";
+import { existsSync, readdirSync } from "fs";
 import { quetzaConfig } from "../config";
 
 type commandMetadata = {
@@ -54,20 +54,27 @@ export class QuetzaClient extends DiscordClient {
             import(moduleDir + "qmodule.js")
                 .then((qmodule: moduleMetadata) => this.modules[qmodule.data.key] = qmodule);
 
-            const commandFiles = readdirSync(moduleDir + "commands").filter(file => file.endsWith(".js"));
-            const eventFiles = readdirSync(moduleDir + "events").filter(file => file.endsWith(".js"));
+            if (existsSync(moduleDir + "commands")) {
 
-            for (const file of commandFiles) {
-                import(moduleDir + "commands/" + file)
+                const commandFiles = readdirSync(moduleDir + "commands").filter(file => file.endsWith(".js"));
+                
+                for (const file of commandFiles) {
+                    import(moduleDir + "commands/" + file)
                     .then((command: commandMetadata) => this.commands.set(command.data.name, command));
+                }
             }
 
-            for (const file of eventFiles) {
-                import(moduleDir + "events/" + file).then((event: eventMetadata) => {
-                    this.on(event.name, (...args: unknown[]) => {
-                        event.run(this, args);
+            if (existsSync(moduleDir + "events")) {
+
+                const eventFiles = readdirSync(moduleDir + "events").filter(file => file.endsWith(".js"));
+                
+                for (const file of eventFiles) {
+                    import(moduleDir + "events/" + file).then((event: eventMetadata) => {
+                        this.on(event.name, (...args: unknown[]) => {
+                            event.run(this, args);
+                        });
                     });
-                });
+                }
             }
         });
 

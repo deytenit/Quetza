@@ -8,13 +8,13 @@
  */
 const quetzaConfig = {
     opId: "214422162906415106",
-    token: process.env.DISCORD_TOKEN || "NzgzNDQwMjU3NjE3MzYyOTQ1.X8axmQ.vVvNHeA-vgbxRaI-sIA_2iYUES0",
+    token: process.env.DISCORD_TOKEN || "NzgzNDQwMjU3NjE3MzYyOTQ1.X8axmQ.wu37vNARAr-NlexYIXL5zIxrHUM",
     color: "#C4A4BE",
     rootDir: __dirname + "/",
     modules: [
         "quetza/",
         "music/",
-        "activities/"
+        "codeshr/"
     ]
 }
 
