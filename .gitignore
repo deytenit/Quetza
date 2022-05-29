@@ -367,5 +367,5 @@ dist/
 *.js
 *.js.map
 
-#binaries
+# binaries will bot bundle
 bin/

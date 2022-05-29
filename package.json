@@ -1,39 +1,45 @@
 {
-  "name": "5a0a-bot",
+  "name": "quetza-bot",
   "engines": {
-    "node": "17.x.x",
+    "node": "16.14.x",
     "npm": "*"
   },
-  "version": "1.5.0",
+  "version": "2205.1",
   "description": "Discord multifunctional bot",
-  "main": "dist/app.js",
   "author": {
-    "name": "unknowableshade"
+    "name": "unknowableshade",
+    "email": "60275123+unknowableshade@users.noreply.github.com",
+    "url": "https://unknowableshade.ru"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/unknowableshade/5a0b-bot.git"
+    "url": "git+https://github.com/unknowableshade/quetza-bot.git"
   },
-  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/unknowableshade/5a0b-bot/issues"
+    "url": "https://github.com/unknowableshade/quetza-bot/issues"
   },
-  "homepage": "https://github.com/unknowableshade/5a0b-bot#readme",
+  "readme": "https://github.com/unknowableshade/quetza-bot#readme",
+  "license": "MIT",
+  "main": "dist/index.js",
   "scripts": {
+    "start": "node dist/index.js",
     "build": "tsc --build",
     "clean": "tsc --build --clean",
-    "start": "node dist/app.js"
+    "postinstall": "npm run build"
   },
   "dependencies": {
     "@discordjs/opus": "^0.7.0",
     "@discordjs/voice": "^0.8.0",
     "discord-ytdl-core": "^5.0.4",
     "discord.js": "^13.6.0",
-    "libsodium-wrappers": "^0.7.9",
-    "typescript": "^4.5.5",
+    "tweetnacl": "^1.0.3",
     "ytdl-core": "^4.10.1"
   },
   "devDependencies": {
-    "@types/node": "^17.0.17"
+    "@types/node": "^17.0.17",
+    "@typescript-eslint/eslint-plugin": "^5.26.0",
+    "@typescript-eslint/parser": "^5.26.0",
+    "eslint": "^8.16.0",
+    "typescript": "^4.5.5"
   }
 }

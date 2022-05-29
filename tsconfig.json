@@ -1,12 +1,13 @@
 {
   "compilerOptions": {
+    "baseUrl": "src",
     "module": "CommonJS",
     "outDir": "./dist",
     "strict": true,
     "target": "ESNext",
     "esModuleInterop": true,
     "moduleResolution": "Node",
-    "lib": [ "ESNext", "DOM" ],
+    "lib": [ "ESNext" ],
     "sourceMap": true,
     "types": [ "node" ]
   },
