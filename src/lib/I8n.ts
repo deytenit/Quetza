@@ -162,7 +162,7 @@ export default class I8n {
                 return new MessageEmbed()
                     .setColor("LUMINOUS_VIVID_PINK")
                     .setTitle(
-                        `${player.Queue.Position}. ${player.Resource.metadata.title}`
+                        `${player.Queue.Position + 1}. ${player.Resource.metadata.title}`
                     )
                     .setDescription(
                         statusBarGenerator(

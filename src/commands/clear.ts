@@ -17,7 +17,7 @@ export async function run(client: Client, ctx: CommandInteraction) {
 
 const data = {
     name: "clear",
-    description: "Clears queue.",
+    description: "Clears the player's queue.",
 };
 
 export { data };

@@ -19,18 +19,18 @@ export async function run(client: Client, ctx: CommandInteraction) {
 
 const data = {
     name: "loop",
-    description: "Set player loop option.",
+    description: "Select player's loop mode.",
     options: [
         {
             name: "option",
-            description: "Update player loop option.",
+            description: "Loop options.",
             type: "STRING",
             required: true,
             choices: [
                 { name: "loop queue", value: "LOOP" },
-                { name: "loop current track", value: "SONG" },
-                { name: "Destroy player on end", value: "NONE" },
-                { name: "Random order without suffling queue.", value: "AUTO" },
+                { name: "loop single track", value: "SONG" },
+                { name: "Till end", value: "NONE" },
+                { name: "Random order", value: "AUTO" },
             ],
         },
     ],

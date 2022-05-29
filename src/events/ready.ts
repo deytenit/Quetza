@@ -9,7 +9,7 @@ export async function run(client: Client): Promise<void> {
 
     console.log(`${client.user.username} logged in as ${client.user.tag}!`);
     console.log(generateDependencyReport());
-    client.user.setActivity("over you.", { type: "WATCHING" });
+    client.user.setActivity("over you", { type: "WATCHING" });
 
     const restCommands = Array.from(client.Commands.values()).map(
         value => value.data

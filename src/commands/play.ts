@@ -23,7 +23,7 @@ export async function run(client: Client, ctx: CommandInteraction) {
 
 const data = {
     name: "play",
-    description: "Play a song or add it to queue.",
+    description: "Launch player and add songs to the queue.",
     options: [
         {
             name: "query",

@@ -16,7 +16,7 @@ export async function run(client: Client, ctx: CommandInteraction) {
 
 const data = {
     name: "stop",
-    description: "Destroys player.",
+    description: "Destroys the player.",
 };
 
 export { data };

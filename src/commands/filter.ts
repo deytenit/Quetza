@@ -18,11 +18,11 @@ export async function run(client: Client, ctx: CommandInteraction) {
 
 const data = {
     name: "filter",
-    description: "Apply unique filters to a track.",
+    description: "Apply unique filters to the player's tracks.",
     options: [
         {
             name: "filter",
-            description: "Filter to apply.",
+            description: "Filter to apply...",
             type: "STRING",
             choices: [
                 {

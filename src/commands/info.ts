@@ -15,7 +15,7 @@ export async function run(client: Client, ctx: CommandInteraction) {
 
 const data = {
     name: "info",
-    description: "Information about the server's music player.",
+    description: "Information about the server's player.",
 };
 
 export { data };

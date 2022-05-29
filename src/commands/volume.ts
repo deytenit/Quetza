@@ -18,7 +18,7 @@ export async function run(client: Client, ctx: CommandInteraction) {
 
 const data = {
     name: "volume",
-    description: "Set music volume.",
+    description: "Change player's volume amount.",
     options: [
         {
             name: "volume",

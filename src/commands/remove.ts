@@ -18,7 +18,7 @@ export async function run(client: Client, ctx: CommandInteraction) {
 
 const data = {
     name: "remove",
-    description: "Remove specific track in queue.",
+    description: "Remove specific track in the queue.",
     options: [
         {
             name: "position",

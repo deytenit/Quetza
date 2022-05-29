@@ -21,7 +21,7 @@ export async function run(client: Client, ctx: CommandInteraction) {
 
 const data = {
     name: "insert",
-    description: "Insert new track to specific position.",
+    description: "Insert a new track to specific position in the queue.",
     options: [
         {
             name: "query",

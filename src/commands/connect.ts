@@ -33,7 +33,7 @@ export async function run(client: Client, ctx: CommandInteraction) {
 
 const data = {
     name: "connect",
-    description: "Connect to voice channel.",
+    description: "Connects me to a voice channel.",
 };
 
 export { data };

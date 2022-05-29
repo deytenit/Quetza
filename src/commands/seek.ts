@@ -24,7 +24,7 @@ export async function run(client: Client, ctx: CommandInteraction) {
 
 const data = {
     name: "seek",
-    description: "Fast-forward to timecode.",
+    description: "Fast-forward to the timecode.",
     options: [
         {
             name: "hrs",

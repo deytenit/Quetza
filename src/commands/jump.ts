@@ -18,7 +18,7 @@ export async function run(client: Client, ctx: CommandInteraction) {
 
 const data = {
     name: "jump",
-    description: "Jump to specific track in queue.",
+    description: "Jump to specific track in the queue.",
     options: [
         {
             name: "position",

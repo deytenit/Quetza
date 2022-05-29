@@ -16,7 +16,7 @@ export async function run(client: Client, ctx: CommandInteraction) {
 
 const data = {
     name: "next",
-    description: "Skip current song.",
+    description: "Skip to the next song.",
 };
 
 export { data };
