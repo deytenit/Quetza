@@ -3,7 +3,7 @@ import Client from "../lib/Client";
 import I8n from "../lib/I8n";
 
 export async function run(client: Client, ctx: CommandInteraction) {
-    const query = ctx.options.getInteger("position");
+    const query = ctx.options.getString("query");
 
     if (!ctx.guild || !query || !ctx.channel) return;
 
@@ -11,7 +11,7 @@ export async function run(client: Client, ctx: CommandInteraction) {
 
     if (!player) return;
 
-    const state = player.jump(query - 1);
+    const state = !isNaN(+query) && isFinite(+query) && !/e/i.test(query) ? player.jump(parseInt(query) - 1) : player.jump(query);
 
     await ctx.reply({ embeds: [I8n.en.jumped(state)] });
 }
@@ -21,9 +21,9 @@ const data = {
     description: "Jump to specific track in the queue.",
     options: [
         {
-            name: "position",
-            description: "Position to jump to.",
-            type: "INTEGER",
+            name: "query",
+            description: "Position or title to jump to.",
+            type: "STRING",
             required: true,
         },
     ],

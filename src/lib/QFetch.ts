@@ -4,6 +4,8 @@ import { promisify } from "util";
 import config from "../config";
 import path from "path";
 
+import fetch from "node-fetch";
+
 const execFileAsync = promisify(execFile);
 
 function argumentsResolver(args: ytdlArgs): string[] {
@@ -26,7 +28,7 @@ async function ytdlExec(
     try {
         const executable = await execFileAsync(
             path.join(config.binaries, "/youtube-dl"),
-            [`${query}`].concat(argumentsResolver(args))
+            [query].concat(argumentsResolver(args))
         );
         return JSON.parse(executable.stdout);
     } catch (error) {
@@ -35,7 +37,7 @@ async function ytdlExec(
     }
 }
 
-export default async function trackDL(
+export async function fetchStream(
     query: string,
     args: ytdlArgs
 ): Promise<ytdlResponse | undefined> {

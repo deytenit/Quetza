@@ -22,11 +22,12 @@ import {
 import Music from "./Music";
 import Filter from "./Filter";
 import Queue from "./Queue";
-import trackDL from "./TrackDl";
+import { fetchStream } from "./QFetch";
 import I8n from "./I8n";
 
 import ytdl from "discord-ytdl-core";
 import { track } from "./Types";
+import { largestCommonSequence } from "./Misc";
 
 export default class Player {
     private guild: Guild;
@@ -143,7 +144,7 @@ export default class Player {
         query: string,
         requester: User
     ): Promise<track[] | undefined> {
-        const response = await trackDL(query, {
+        const response = await fetchStream(query, {
             dumpSingleJson: true,
             noWarnings: true,
             noCheckCertificate: true,
@@ -238,8 +239,21 @@ export default class Player {
         return tracks[0];
     }
 
-    public jump(query: number): boolean {
-        if (this.queue.jump(query)) {
+    public jump(query: number | string): boolean {
+        let position = typeof query === "number" ? query : -1;
+        let diff = 0;
+
+        if (typeof query === "string") {
+            this.queue.Tracks.forEach((track, index) => { 
+                const tempDiff = largestCommonSequence(track.title, query);
+                if (diff < tempDiff) {
+                    diff = tempDiff;
+                    position = index;
+                }
+            });
+        }
+
+        if (position !== -1 && this.queue.jump(position)) {
             this.play();
             return true;
         }
@@ -247,13 +261,26 @@ export default class Player {
         return false;
     }
 
-    public remove(query: number): track | undefined {
+    public remove(query?: number | string): track | undefined {
         const oldPosition = this.queue.Position;
 
-        const track = this.queue.pop(query);
+        let newPosition = typeof query === "number" ? query : this.queue.Position;
+        let diff = 0;
+
+        if (typeof query === "string") {
+            this.queue.Tracks.forEach((track, index) => { 
+                const tempDiff = largestCommonSequence(track.title, query);
+                if (diff < tempDiff) {
+                    diff = tempDiff;
+                    newPosition = index;
+                }
+            });
+        }
+
+        const track = this.queue.pop(newPosition);
 
         if (track) {
-            if (oldPosition === query) this.play();
+            if (oldPosition === newPosition) this.play();
             return track;
         }
 

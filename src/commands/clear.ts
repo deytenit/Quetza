@@ -10,9 +10,11 @@ export async function run(client: Client, ctx: CommandInteraction) {
 
     if (!player) return;
 
+    const amount = player.Queue.Tracks.length;
+
     player.clear();
 
-    await ctx.reply({ embeds: [I8n.en.cleared(player.Queue.Tracks.length)] });
+    await ctx.reply({ embeds: [I8n.en.cleared(amount)] });
 }
 
 const data = {

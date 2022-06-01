@@ -3,7 +3,7 @@ import Client from "../lib/Client";
 import I8n from "../lib/I8n";
 
 export async function run(client: Client, ctx: CommandInteraction) {
-    const query = ctx.options.getInteger("position");
+    const query = ctx.options.getString("query");
 
     if (!ctx.guild || !query || !ctx.channel) return;
 
@@ -11,7 +11,7 @@ export async function run(client: Client, ctx: CommandInteraction) {
 
     if (!player) return;
 
-    const track = player.remove(query - 1);
+    const track = !isNaN(+query) && isFinite(+query) && !/e/i.test(query) ? player.remove(parseInt(query) - 1) : player.remove(query);
 
     await ctx.reply({ embeds: [I8n.en.removed(track)] });
 }
@@ -21,9 +21,9 @@ const data = {
     description: "Remove specific track in the queue.",
     options: [
         {
-            name: "position",
-            description: "Position to remove.",
-            type: "INTEGER",
+            name: "query",
+            description: "Position or title to remove.",
+            type: "STRING",
             required: true,
         },
     ],
