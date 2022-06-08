@@ -367,5 +367,8 @@ dist/
 *.js
 *.js.map
 
-# binaries will bot bundle
+# binaries is not bundled
 bin/
+
+# Keep enviromental variables out of version control
+*.env

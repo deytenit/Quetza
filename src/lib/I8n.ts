@@ -47,7 +47,7 @@ export default class I8n {
         filtered: (filter?: string) => {
             return new MessageEmbed()
                 .setColor("GREEN")
-                .setTitle(`**✅  ${filter} was applied to the player.**`);
+                .setTitle(filter ? `**✅  ${filter} was applied to the player.**` : "**✅  All filters were declined.**");
         },
         appended: (track?: track) => {
             return !track
@@ -210,7 +210,7 @@ export default class I8n {
             } else {
                 return new MessageEmbed()
                     .setColor("BLUE")
-                    .setTitle("💿 Insert the disk...")
+                    .setTitle("💿  Insert the disk...")
                     .setDescription(statusBarGenerator(0, 0))
                     .setURL(
                         "https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley"
@@ -267,7 +267,7 @@ export default class I8n {
                 .setTitle(
                     resource
                         ? `${queue.Position + 1}. ${resource.metadata.title}`
-                        : "💿 Insert the disk..."
+                        : "💿  Insert the disk..."
                 )
                 .setURL(
                     resource
@@ -303,7 +303,7 @@ export default class I8n {
         fullyAlone: () => {
             return new MessageEmbed()
                 .setColor("LUMINOUS_VIVID_PINK")
-                .setTitle("🥬 I have decided to leave to conserve my energy.")
+                .setTitle("🥬  I have decided to leave to conserve my energy.")
                 .setDescription(
                     "_**Since there was nobody in the voice channel.**_"
                 );
@@ -311,7 +311,30 @@ export default class I8n {
         reshuffle: () => {
             return new MessageEmbed()
                 .setColor("GREEN")
-                .setTitle("✅  Successfuly reshuffled queue.");
+                .setTitle("**✅  Successfuly reshuffled queue.**");
+        },
+        savedQueue: (title: string) => {
+            return new MessageEmbed()
+                .setColor("GREEN")
+                .setTitle(`**✅  Successfuly saved ${title} to the server's storage.**`);
+        },
+        savedExceed: (title: string) => {
+            return new MessageEmbed()
+                .setColor("RED")
+                .setTitle(`**🚫  Could not save ${title} to the storage.**`)
+                .setDescription("_**Delete your old one beforehand...**_");
+        },
+        ping: (ping?: number) => {
+            const title = ping ? `I have pinged ${ping} ms late.` : "There is no application.";
+
+            const comment = !ping ? "How am I speaking then?" : ping > 250 ? "I'm kinda slowpoke ngl." :
+                ping > 200 ? "I can do better than this." :
+                    "Dream's speed!";
+
+            return new MessageEmbed()
+                .setColor("RANDOM")
+                .setTitle(`**${title}**`)
+                .setDescription(`_**${comment}**_`);
         }
     };
 }

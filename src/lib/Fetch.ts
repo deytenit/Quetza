@@ -4,8 +4,6 @@ import { promisify } from "util";
 import config from "../config";
 import path from "path";
 
-import fetch from "node-fetch";
-
 const execFileAsync = promisify(execFile);
 
 function argumentsResolver(args: ytdlArgs): string[] {

@@ -22,7 +22,7 @@ import {
 import Music from "./Music";
 import Filter from "./Filter";
 import Queue from "./Queue";
-import { fetchStream } from "./QFetch";
+import { fetchStream } from "./Fetch";
 import I8n from "./I8n";
 
 import ytdl from "discord-ytdl-core";
@@ -30,8 +30,8 @@ import { track } from "./Types";
 import { largestCommonSequence } from "./Misc";
 
 export default class Player {
-    private guild: Guild;
     private music: Music;
+    private guild: Guild;
 
     private channel: TextBasedChannel;
     public get Channel(): TextBasedChannel {
