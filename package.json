@@ -25,7 +25,7 @@
     "start": "node dist/index.js",
     "build": "tsc --build",
     "clean": "tsc --build --clean",
-    "postinstall": "npm run build && npx prisma generate"
+    "postinstall": "npm run build"
   },
   "dependencies": {
     "@discordjs/opus": "^0.7.0",
