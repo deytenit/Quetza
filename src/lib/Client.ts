@@ -7,7 +7,6 @@ import path from "path";
 import Music from "./Music";
 import { command, event } from "./Types";
 import config from "../config";
-import { Storage } from "./Storage";
 
 export default class Client extends DiscordClient {
     private commands = new Map<string, command>();
@@ -17,8 +16,7 @@ export default class Client extends DiscordClient {
     }
 
     public readonly modules = {
-        music: new Music(),
-        storage: new Storage()
+        music: new Music()
     };
 
     public constructor() {
