@@ -1,10 +1,10 @@
-import { CommandInteraction } from "discord.js";
+import { CommandInteraction, SlashCommandBuilder } from "discord.js";
 import Client from "../lib/Client";
-import I8n from "../lib/I8n";
+import I18n from "../lib/I18n";
 
 export async function run(client: Client, ctx: CommandInteraction) {
-    const pos = ctx.options.getInteger("position");
-    const query = ctx.options.getString("query");
+    const pos = ctx.options.get("position")?.value as number;
+    const query = ctx.options.get("query")?.value as string;
 
     if (!ctx.guild || !query || !pos || !ctx.channel) return;
 
@@ -16,26 +16,21 @@ export async function run(client: Client, ctx: CommandInteraction) {
 
     const track = await player.add(query, ctx.user, pos - 1);
 
-    await ctx.editReply({ embeds: [I8n.en.appended(track)] });
+    await ctx.editReply({ embeds: [I18n.en.appended(track)] });
 }
 
-const data = {
-    name: "insert",
-    description: "Insert a new track to specific position in the queue.",
-    options: [
-        {
-            name: "query",
-            description: "Title or URL of the song.",
-            type: "STRING",
-            required: true,
-        },
-        {
-            name: "position",
-            description: "Position to insert.",
-            type: "INTEGER",
-            required: true,
-        },
-    ],
-};
+const data = new SlashCommandBuilder()
+    .setName("insert")
+    .setDescription("Insert a new track to specific position in the queue.")
+    .addStringOption(option => option
+        .setName("query")
+        .setDescription("Title or URL of the song.")
+        .setRequired(true)
+    )
+    .addIntegerOption(option => option
+        .setName("position")
+        .setDescription("Position to insert.",)
+        .setRequired(true)
+    );
 
 export { data };

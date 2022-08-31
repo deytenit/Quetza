@@ -1,11 +1,11 @@
-import { CommandInteraction } from "discord.js";
+import { CommandInteraction, SlashCommandBuilder } from "discord.js";
 import Client from "../lib/Client";
-import I8n from "../lib/I8n";
+import I18n from "../lib/I18n";
 
 export async function run(client: Client, ctx: CommandInteraction) {
-    const hours = ctx.options.getInteger("hrs") || 0;
-    const minutes = ctx.options.getInteger("mins") || 0;
-    const seconds = ctx.options.getInteger("secs") || 0;
+    const hours = ctx.options.get("hrs")?.value as number || 0;
+    const minutes = ctx.options.get("mins")?.value as number || 0;
+    const seconds = ctx.options.get("secs")?.value as number || 0;
 
     if (!ctx.guild || !ctx.channel) return;
 
@@ -18,33 +18,24 @@ export async function run(client: Client, ctx: CommandInteraction) {
     player.seek(time * 1000);
 
     await ctx.reply({
-        embeds: [I8n.en.fastForwarded(time)],
+        embeds: [I18n.en.fastForwarded(time)],
     });
 }
 
-const data = {
-    name: "seek",
-    description: "Fast-forward to the timecode.",
-    options: [
-        {
-            name: "hrs",
-            description: "Hours to seek.",
-            type: "INTEGER",
-            required: false,
-        },
-        {
-            name: "mins",
-            description: "Minutes to seek.",
-            type: "INTEGER",
-            required: false,
-        },
-        {
-            name: "secs",
-            description: "Seconds to seek.",
-            type: "INTEGER",
-            required: false,
-        },
-    ],
-};
+const data = new SlashCommandBuilder()
+    .setName("seek")
+    .setDescription("Fast-forward by the time.")
+    .addIntegerOption(option => option
+        .setName("hrs")
+        .setDescription("Hours to seek.")
+    )
+    .addIntegerOption(option => option
+        .setName("mins")
+        .setDescription("Minutes to seek.")
+    )
+    .addIntegerOption(option => option
+        .setName("secs")
+        .setDescription("Seconds to seek.")
+    );
 
 export { data };

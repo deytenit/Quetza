@@ -1,6 +1,5 @@
 import {
-    Client as DiscordClient,
-    Intents,
+    Client as DiscordClient
 } from "discord.js";
 import { existsSync, readdirSync } from "fs";
 import path from "path";
@@ -22,9 +21,9 @@ export default class Client extends DiscordClient {
     public constructor() {
         super({
             intents: [
-                Intents.FLAGS.GUILDS,
-                Intents.FLAGS.GUILD_MESSAGES,
-                Intents.FLAGS.GUILD_VOICE_STATES,
+                "Guilds",
+                "GuildMessages",
+                "GuildVoiceStates",
             ],
         });
 

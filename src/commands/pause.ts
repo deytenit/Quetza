@@ -1,6 +1,6 @@
-import { CommandInteraction } from "discord.js";
+import { CommandInteraction, SlashCommandBuilder } from "discord.js";
 import Client from "../lib/Client";
-import I8n from "../lib/I8n";
+import I18n from "../lib/I18n";
 
 export async function run(client: Client, ctx: CommandInteraction) {
     if (!ctx.guild || !ctx.channel) return;
@@ -11,12 +11,11 @@ export async function run(client: Client, ctx: CommandInteraction) {
 
     const state = player.pause();
 
-    await ctx.reply({ embeds: [I8n.en.paused(state)] });
+    await ctx.reply({ embeds: [I18n.en.paused(state)] });
 }
 
-const data = {
-    name: "pause",
-    description: "Toggle pause on player.",
-};
+const data = new SlashCommandBuilder()
+    .setName("pause")
+    .setDescription("Toggle pause on player.");
 
 export { data };

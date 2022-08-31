@@ -1,7 +1,7 @@
 import Client from "../lib/Client";
 
-import { CommandInteraction, GuildMember } from "discord.js";
-import I8n from "../lib/I8n";
+import { CommandInteraction, GuildMember, SlashCommandBuilder } from "discord.js";
+import I18n from "../lib/I18n";
 
 export async function run(client: Client, ctx: CommandInteraction) {
     if (!ctx.guild || !ctx.channel || !ctx.member) return;
@@ -17,23 +17,22 @@ export async function run(client: Client, ctx: CommandInteraction) {
         if (channel) {
             player.connect(channel);
 
-            await ctx.editReply({ embeds: [I8n.en.okConnected(channel.name)] });
+            await ctx.editReply({ embeds: [I18n.en.okConnected(channel.name)] });
         } else {
             client.modules.music.del(ctx.guild.id);
 
-            await ctx.editReply({ embeds: [I8n.en.notConnected()] });
+            await ctx.editReply({ embeds: [I18n.en.notConnected()] });
             return undefined;
         }
     } else {
-        await ctx.editReply({ embeds: [I8n.en.wasConnected()] });
+        await ctx.editReply({ embeds: [I18n.en.wasConnected()] });
     }
 
     return player;
 }
 
-const data = {
-    name: "connect",
-    description: "Connects me to a voice channel.",
-};
+const data = new SlashCommandBuilder()
+    .setName("connect")
+    .setDescription("Connect me to a voice channel.");
 
 export { data };

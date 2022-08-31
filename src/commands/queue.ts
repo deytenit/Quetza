@@ -1,13 +1,16 @@
 import {
+    ActionRowBuilder,
+    ButtonBuilder,
     ButtonInteraction,
+    ButtonStyle,
     CommandInteraction,
     Message,
-    MessageActionRow,
-    MessageButton,
+    MessageActionRowComponentBuilder,
+    SlashCommandBuilder
 } from "discord.js";
 
 import Client from "../lib/Client";
-import I8n from "../lib/I8n";
+import I18n from "../lib/I18n";
 
 export async function run(client: Client, ctx: CommandInteraction) {
     if (!ctx.guild || !ctx.channel) return;
@@ -19,33 +22,33 @@ export async function run(client: Client, ctx: CommandInteraction) {
     await ctx.deferReply();
 
     if (player.Queue.empty()) {
-        await ctx.editReply({ embeds: [I8n.en.queueEmpty()] });
+        await ctx.editReply({ embeds: [I18n.en.queueEmpty()] });
         return;
     }
 
     let page = 0;
 
-    const row = new MessageActionRow().addComponents(
-        new MessageButton()
+    const row = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
+        new ButtonBuilder()
             .setCustomId("QueueTop")
             .setLabel("🔼")
-            .setStyle("PRIMARY"),
-        new MessageButton()
+            .setStyle(ButtonStyle.Primary),
+        new ButtonBuilder()
             .setCustomId("QueueUp")
             .setLabel("🔺")
-            .setStyle("SECONDARY"),
-        new MessageButton()
+            .setStyle(ButtonStyle.Secondary),
+        new ButtonBuilder()
             .setCustomId("QueueDown")
             .setLabel("🔻")
-            .setStyle("SECONDARY"),
-        new MessageButton()
+            .setStyle(ButtonStyle.Secondary),
+        new ButtonBuilder()
             .setCustomId("QueueEnd")
             .setLabel("🔽")
-            .setStyle("PRIMARY")
+            .setStyle(ButtonStyle.Primary)
     );
 
     const message = (await ctx.editReply({
-        embeds: [I8n.en.queueDesigner(player.Queue, 0, player.Resource)],
+        embeds: [I18n.en.queueDesigner(player.Queue, 0, player.Resource)],
         components: [row],
     })) as Message;
 
@@ -70,14 +73,13 @@ export async function run(client: Client, ctx: CommandInteraction) {
         }
 
         await btn.update({
-            embeds: [I8n.en.queueDesigner(player.Queue, page, player.Resource)],
+            embeds: [I18n.en.queueDesigner(player.Queue, page, player.Resource)],
         });
     });
 }
 
-const data = {
-    name: "queue",
-    description: "Print out the queue.",
-};
+const data = new SlashCommandBuilder()
+    .setName("queue")
+    .setDescription("Print out the queue.");
 
 export { data };

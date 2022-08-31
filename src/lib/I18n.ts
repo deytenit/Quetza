@@ -1,15 +1,15 @@
-import { MessageEmbed } from "discord.js";
 import Player from "./Player";
 import { loopOption, track } from "./Types";
 import { loopMoji, secToISO, statusBarGenerator, volumeMoji } from "./Misc";
 import Queue from "./Queue";
 import { AudioResource } from "@discordjs/voice";
+import { EmbedBuilder } from "discord.js";
 
-export default class I8n {
+export default class I18n {
     public static en = {
         nowPlaying: (track: track) => {
-            return new MessageEmbed()
-                .setColor("LUMINOUS_VIVID_PINK")
+            return new EmbedBuilder()
+                .setColor("LuminousVividPink")
                 .setAuthor({
                     iconURL: track.requester.avatarURL() || undefined,
                     name: track.requester.tag,
@@ -20,42 +20,42 @@ export default class I8n {
                 .setThumbnail(track.thumbnail);
         },
         cleared: (amount: number) => {
-            return new MessageEmbed()
-                .setColor("GREEN")
+            return new EmbedBuilder()
+                .setColor("Green")
                 .setTitle(
                     `**♻️ ${amount} tracks have been cleared from the queue.**`
                 )
                 .setTimestamp(new Date());
         },
         okConnected: (channel: string) => {
-            return new MessageEmbed()
-                .setColor("GREEN")
+            return new EmbedBuilder()
+                .setColor("Green")
                 .setTitle(`**✅  Successfuly connected to:** _${channel}_.`);
         },
         notConnected: () => {
-            return new MessageEmbed()
-                .setColor("RED")
+            return new EmbedBuilder()
+                .setColor("Red")
                 .setTitle(
                     "**🚫  Make yourself connected to a voice channel beforehand.**"
                 );
         },
         wasConnected: () => {
-            return new MessageEmbed()
-                .setColor("YELLOW")
+            return new EmbedBuilder()
+                .setColor("Yellow")
                 .setTitle("**⚠️  Already connected to a voice channel.**");
         },
         filtered: (filter?: string) => {
-            return new MessageEmbed()
-                .setColor("GREEN")
+            return new EmbedBuilder()
+                .setColor("Green")
                 .setTitle(filter ? `**✅  ${filter} was applied to the player.**` : "**✅  All filters were declined.**");
         },
         appended: (track?: track) => {
             return !track
-                ? new MessageEmbed()
-                    .setColor("RED")
+                ? new EmbedBuilder()
+                    .setColor("Red")
                     .setTitle("**🚫  Could not add track to the queue.**")
-                : new MessageEmbed()
-                    .setColor("GREEN")
+                : new EmbedBuilder()
+                    .setColor("Green")
                     .setTitle(track.title)
                     .setURL(track.url)
                     .setThumbnail(track.thumbnail)
@@ -68,69 +68,69 @@ export default class I8n {
         },
         jumped: (state: boolean) => {
             return state
-                ? new MessageEmbed()
-                    .setColor("GREEN")
+                ? new EmbedBuilder()
+                    .setColor("Green")
                     .setTitle("_**Perfoming jump.**_")
-                : new MessageEmbed()
-                    .setColor("RED")
+                : new EmbedBuilder()
+                    .setColor("Red")
                     .setTitle("**❗  Bad _jump_ request.**");
         },
         looped: (query: loopOption) => {
             switch (query) {
             case "AUTO": {
-                return new MessageEmbed()
-                    .setColor("LUMINOUS_VIVID_PINK")
+                return new EmbedBuilder()
+                    .setColor("LuminousVividPink")
                     .setTitle(
                         "**🔀  Shuffle mode** _(does not affect the queue order)_."
                     );
             }
             case "LOOP": {
-                return new MessageEmbed()
-                    .setColor("BLUE")
+                return new EmbedBuilder()
+                    .setColor("Blue")
                     .setTitle("**🔁  Looping over the queue.**");
             }
             case "NONE": {
-                return new MessageEmbed()
-                    .setColor("RED")
+                return new EmbedBuilder()
+                    .setColor("Red")
                     .setTitle("**⤵️  Player will stop on the queue end.**");
             }
             case "SONG": {
-                return new MessageEmbed()
-                    .setColor("YELLOW")
+                return new EmbedBuilder()
+                    .setColor("Yellow")
                     .setTitle("**🔂  Looping a single track.**");
             }
             }
         },
         skipped: () => {
-            return new MessageEmbed()
-                .setColor("GREEN")
+            return new EmbedBuilder()
+                .setColor("Green")
                 .setTitle("**⏭️  Skipping.**");
         },
         paused: (state: boolean) => {
             return state
-                ? new MessageEmbed()
-                    .setColor("GREEN")
+                ? new EmbedBuilder()
+                    .setColor("Green")
                     .setTitle("_**▶️  Resumed.**_")
-                : new MessageEmbed()
-                    .setColor("YELLOW")
+                : new EmbedBuilder()
+                    .setColor("Yellow")
                     .setTitle("_**⏸️  Paused.**_");
         },
         removed: (track?: track) => {
             return track
-                ? new MessageEmbed()
-                    .setColor("GREEN")
+                ? new EmbedBuilder()
+                    .setColor("Green")
                     .setTitle(track.title)
                     .setDescription("**was removed from the queue.**")
                     .setTimestamp(new Date())
                     .setURL(track.url)
                     .setThumbnail(track.thumbnail)
-                : new MessageEmbed()
-                    .setColor("RED")
+                : new EmbedBuilder()
+                    .setColor("Red")
                     .setTitle("**❗  Bad _remove_ request.**");
         },
         fastForwarded: (amount: number) => {
-            return new MessageEmbed()
-                .setColor("BLUE")
+            return new EmbedBuilder()
+                .setColor("Blue")
                 .setTitle(
                     `**⏩  Fast-forwarding to ${secToISO(
                         amount
@@ -138,29 +138,29 @@ export default class I8n {
                 );
         },
         destroyed: () => {
-            return new MessageEmbed()
-                .setColor("RED")
+            return new EmbedBuilder()
+                .setColor("Red")
                 .setTitle("**💀  Destroying the player.**");
         },
         volumeSet: (amount: number) => {
-            return new MessageEmbed()
-                .setColor("GREEN")
+            return new EmbedBuilder()
+                .setColor("Green")
                 .setTitle(`**${volumeMoji(amount)} Volume has been set to ${amount}%**`);
         },
         queueEmpty: () => {
-            return new MessageEmbed()
-                .setColor("YELLOW")
+            return new EmbedBuilder()
+                .setColor("Yellow")
                 .setTitle("**❎  Queue is empty.**");
         },
         playerInfo: (player?: Player) => {
             if (!player)
-                return new MessageEmbed()
-                    .setColor("RED")
+                return new EmbedBuilder()
+                    .setColor("Red")
                     .setTitle("**🚫  Player does not exist.**");
 
             if (player.Resource) {
-                return new MessageEmbed()
-                    .setColor("LUMINOUS_VIVID_PINK")
+                return new EmbedBuilder()
+                    .setColor("LuminousVividPink")
                     .setTitle(
                         `${player.Queue.Position + 1}. ${player.Resource.metadata.title}`
                     )
@@ -208,8 +208,8 @@ export default class I8n {
                         },
                     ]);
             } else {
-                return new MessageEmbed()
-                    .setColor("BLUE")
+                return new EmbedBuilder()
+                    .setColor("Blue")
                     .setTitle("💿  Insert the disk...")
                     .setDescription(statusBarGenerator(0, 0))
                     .setURL(
@@ -262,8 +262,8 @@ export default class I8n {
                 Math.min(Math.floor(queue.Tracks.length / 11), page)
             );
 
-            return new MessageEmbed()
-                .setColor("LUMINOUS_VIVID_PINK")
+            return new EmbedBuilder()
+                .setColor("LuminousVividPink")
                 .setTitle(
                     resource
                         ? `${queue.Position + 1}. ${resource.metadata.title}`
@@ -301,28 +301,17 @@ export default class I8n {
                 );
         },
         fullyAlone: () => {
-            return new MessageEmbed()
-                .setColor("LUMINOUS_VIVID_PINK")
+            return new EmbedBuilder()
+                .setColor("LuminousVividPink")
                 .setTitle("🥬  I have decided to leave to conserve my energy.")
                 .setDescription(
                     "_**Since there was nobody in the voice channel.**_"
                 );
         },
         reshuffle: () => {
-            return new MessageEmbed()
-                .setColor("GREEN")
+            return new EmbedBuilder()
+                .setColor("Green")
                 .setTitle("**✅  Successfuly reshuffled queue.**");
-        },
-        savedQueue: (title: string) => {
-            return new MessageEmbed()
-                .setColor("GREEN")
-                .setTitle(`**✅  Successfuly saved ${title} to the server's storage.**`);
-        },
-        savedExceed: (title: string) => {
-            return new MessageEmbed()
-                .setColor("RED")
-                .setTitle(`**🚫  Could not save ${title} to the storage.**`)
-                .setDescription("_**Delete your old one beforehand...**_");
         },
         ping: (ping?: number) => {
             const title = ping ? `I have pinged ${ping} ms late.` : "There is no application.";
@@ -331,8 +320,8 @@ export default class I8n {
                 ping > 200 ? "I can do better than this." :
                     "Dream's speed!";
 
-            return new MessageEmbed()
-                .setColor("RANDOM")
+            return new EmbedBuilder()
+                .setColor("Random")
                 .setTitle(`**${title}**`)
                 .setDescription(`_**${comment}**_`);
         }

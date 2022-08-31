@@ -1,10 +1,10 @@
-import { CommandInteraction } from "discord.js";
+import { CommandInteraction, SlashCommandBuilder } from "discord.js";
 import Client from "../lib/Client";
 import { loopOption } from "../lib/Types";
-import I8n from "../lib/I8n";
+import I18n from "../lib/I18n";
 
 export async function run(client: Client, ctx: CommandInteraction) {
-    const query = ctx.options.getString("option");
+    const query = ctx.options.get("option")?.value as string;
 
     if (!ctx.guild || !query || !ctx.channel) return;
 
@@ -14,26 +14,19 @@ export async function run(client: Client, ctx: CommandInteraction) {
 
     player.Queue.Loop = query as loopOption;
 
-    await ctx.reply({ embeds: [I8n.en.looped(query as loopOption)] });
+    await ctx.reply({ embeds: [I18n.en.looped(query as loopOption)] });
 }
 
-const data = {
-    name: "loop",
-    description: "Select player's loop mode.",
-    options: [
-        {
-            name: "option",
-            description: "Loop options.",
-            type: "STRING",
-            required: true,
-            choices: [
-                { name: "loop queue", value: "LOOP" },
-                { name: "loop single track", value: "SONG" },
-                { name: "Till end", value: "NONE" },
-                { name: "Random order", value: "AUTO" },
-            ],
-        },
-    ],
-};
+const data = new SlashCommandBuilder()
+    .setName("loop")
+    .setDescription("Select player's loop mode.")
+    .addStringOption(option => option
+        .setName("option")
+        .setDescription("Select loop option.")
+        .setChoices(                { name: "loop queue", value: "LOOP" },
+            { name: "loop single track", value: "SONG" },
+            { name: "Till end", value: "NONE" },
+            { name: "Random order", value: "AUTO" })
+        .setRequired(true));
 
 export { data };

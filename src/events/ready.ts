@@ -1,5 +1,6 @@
 import Client from "../lib/Client";
 import { generateDependencyReport } from "@discordjs/voice";
+import { ActivityType } from "discord.js";
 
 export async function run(client: Client): Promise<void> {
     if (!client.user || !client.application) {
@@ -9,7 +10,7 @@ export async function run(client: Client): Promise<void> {
 
     console.log(`${client.user.username} logged in as ${client.user.tag}!`);
     console.log(generateDependencyReport());
-    client.user.setActivity("over you", { type: "WATCHING" });
+    client.user.setActivity("over you", { type: ActivityType.Watching });
 
     const restCommands = Array.from(client.Commands.values()).map(
         value => value.data

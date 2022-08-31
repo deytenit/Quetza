@@ -1,9 +1,9 @@
-import { CommandInteraction } from "discord.js";
+import { CommandInteraction, SlashCommandBuilder } from "discord.js";
 import Client from "../lib/Client";
-import I8n from "../lib/I8n";
+import I18n from "../lib/I18n";
 
 export async function run(client: Client, ctx: CommandInteraction) {
-    const query = ctx.options.getString("query");
+    const query = ctx.options.get("query")?.value as string;
 
     if (!ctx.guild || !query || !ctx.channel) return;
 
@@ -13,20 +13,16 @@ export async function run(client: Client, ctx: CommandInteraction) {
 
     const track = !isNaN(+query) && isFinite(+query) && !/e/i.test(query) ? player.remove(parseInt(query) - 1) : player.remove(query);
 
-    await ctx.reply({ embeds: [I8n.en.removed(track)] });
+    await ctx.reply({ embeds: [I18n.en.removed(track)] });
 }
 
-const data = {
-    name: "remove",
-    description: "Remove specific track in the queue.",
-    options: [
-        {
-            name: "query",
-            description: "Position or title to remove.",
-            type: "STRING",
-            required: true,
-        },
-    ],
-};
+const data = new SlashCommandBuilder()
+    .setName("remove")
+    .setDescription("Remove specific track in the queue.")
+    .addStringOption(option => option
+        .setName("query")
+        .setDescription("Position or title to remove.")
+        .setRequired(true)
+    );
 
 export { data };

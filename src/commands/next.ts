@@ -1,6 +1,6 @@
-import { CommandInteraction } from "discord.js";
+import { CommandInteraction, SlashCommandBuilder } from "discord.js";
 import Client from "../lib/Client";
-import I8n from "../lib/I8n";
+import I18n from "../lib/I18n";
 
 export async function run(client: Client, ctx: CommandInteraction) {
     if (!ctx.guild || !ctx.channel) return;
@@ -11,12 +11,11 @@ export async function run(client: Client, ctx: CommandInteraction) {
 
     player.skip();
 
-    await ctx.reply({ embeds: [I8n.en.skipped()] });
+    await ctx.reply({ embeds: [I18n.en.skipped()] });
 }
 
-const data = {
-    name: "next",
-    description: "Skip to the next song.",
-};
+const data = new SlashCommandBuilder()
+    .setName("next")
+    .setDescription("Skip current song.");
 
 export { data };

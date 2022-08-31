@@ -23,7 +23,7 @@ import Music from "./Music";
 import Filter from "./Filter";
 import Queue from "./Queue";
 import { fetchStream } from "./Fetch";
-import I8n from "./I8n";
+import I18n from "./I18n";
 
 import ytdl from "discord-ytdl-core";
 import { track } from "./Types";
@@ -136,7 +136,7 @@ export default class Player {
         if (this.message) await this.message.delete();
 
         this.message = await this.channel.send({
-            embeds: [I8n.en.nowPlaying(track)],
+            embeds: [I18n.en.nowPlaying(track)],
         });
     }
 

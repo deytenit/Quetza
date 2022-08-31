@@ -1,7 +1,7 @@
 import Client from "../lib/Client";
 
-import { CommandInteraction } from "discord.js";
-import I8n from "../lib/I8n";
+import { CommandInteraction, SlashCommandBuilder } from "discord.js";
+import I18n from "../lib/I18n";
 
 export async function run(client: Client, ctx: CommandInteraction) {
     if (!ctx.guild || !ctx.channel) return;
@@ -14,12 +14,11 @@ export async function run(client: Client, ctx: CommandInteraction) {
 
     player.clear();
 
-    await ctx.reply({ embeds: [I8n.en.cleared(amount)] });
+    await ctx.reply({ embeds: [I18n.en.cleared(amount)] });
 }
 
-const data = {
-    name: "clear",
-    description: "Clears the player's queue.",
-};
+const data = new SlashCommandBuilder()
+    .setName("clear")
+    .setDescription("Clear the player's queue.");
 
 export { data };

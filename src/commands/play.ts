@@ -1,10 +1,10 @@
-import { CommandInteraction } from "discord.js";
+import { CommandInteraction, SlashCommandBuilder } from "discord.js";
 import Client from "../lib/Client";
 import { run as connect } from "./connect";
-import I8n from "../lib/I8n";
+import I18n from "../lib/I18n";
 
 export async function run(client: Client, ctx: CommandInteraction) {
-    const query = ctx.options.getString("query");
+    const query = ctx.options.get("query")?.value as string;
 
     const player = await connect(client, ctx);
 
@@ -13,7 +13,7 @@ export async function run(client: Client, ctx: CommandInteraction) {
     if (query) {
         const track = await player.add(query, ctx.user);
 
-        await ctx.editReply({ embeds: [I8n.en.appended(track)] });
+        await ctx.editReply({ embeds: [I18n.en.appended(track)] });
     }
 
     if (!player.Resource) {
@@ -21,16 +21,12 @@ export async function run(client: Client, ctx: CommandInteraction) {
     }
 }
 
-const data = {
-    name: "play",
-    description: "Launch player and add songs to the queue.",
-    options: [
-        {
-            name: "query",
-            description: "Title or URL of the song.",
-            type: "STRING"
-        },
-    ],
-};
+const data = new SlashCommandBuilder()
+    .setName("play")
+    .setDescription("Launch player and add songs to the queue.")
+    .addStringOption(option => option
+        .setName("query")
+        .setDescription("Title or URL of the song.")
+    );
 
 export { data };
