@@ -18,13 +18,15 @@ export async function run(client: Client, ctx: CommandInteraction) {
             player.connect(channel);
 
             await ctx.editReply({ embeds: [I18n.en.okConnected(channel.name)] });
-        } else {
+        }
+        else {
             client.modules.music.del(ctx.guild.id);
 
             await ctx.editReply({ embeds: [I18n.en.notConnected()] });
             return undefined;
         }
-    } else {
+    }
+    else {
         await ctx.editReply({ embeds: [I18n.en.wasConnected()] });
     }
 

@@ -11,7 +11,8 @@ function argumentsResolver(args: ytdlArgs): string[] {
     return options.map(([key, value]) => {
         if (typeof value === "boolean" && value) {
             return `--${key.split(/(?=[A-Z])/).join("-")}`.toLowerCase();
-        } else {
+        }
+        else {
             return `--${key
                 .split(/(?=[A-Z])/)
                 .join("-")}=${value}`.toLowerCase();
@@ -29,7 +30,8 @@ async function ytdlExec(
             [query].concat(argumentsResolver(args))
         );
         return JSON.parse(executable.stdout);
-    } catch (error) {
+    }
+    catch (error) {
         console.log(error);
         return undefined;
     }

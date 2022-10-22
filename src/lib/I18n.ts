@@ -7,74 +7,58 @@ import { EmbedBuilder } from "discord.js";
 
 export default class I18n {
     public static en = {
-        nowPlaying: (track: track) => {
-            return new EmbedBuilder()
-                .setColor("LuminousVividPink")
+        nowPlaying: (track: track) => new EmbedBuilder()
+            .setColor("LuminousVividPink")
+            .setAuthor({
+                iconURL: track.requester.avatarURL() || undefined,
+                name: track.requester.tag,
+            })
+            .setTitle(track.title)
+            .setURL(track.url)
+            .setDescription("**playing now.**")
+            .setThumbnail(track.thumbnail),
+        cleared: (amount: number) => new EmbedBuilder()
+            .setColor("Green")
+            .setTitle(
+                `**♻️ ${amount} tracks have been cleared from the queue.**`
+            )
+            .setTimestamp(new Date()),
+        okConnected: (channel: string) => new EmbedBuilder()
+            .setColor("Green")
+            .setTitle(`**✅  Successfuly connected to:** _${channel}_.`),
+        notConnected: () => new EmbedBuilder()
+            .setColor("Red")
+            .setTitle(
+                "**🚫  Make yourself connected to a voice channel beforehand.**"
+            ),
+        wasConnected: () => new EmbedBuilder()
+            .setColor("Yellow")
+            .setTitle("**⚠️  Already connected to a voice channel.**"),
+        filtered: (filter?: string) => new EmbedBuilder()
+            .setColor("Green")
+            .setTitle(filter ? `**✅  ${filter} was applied to the player.**` : "**✅  All filters were declined.**"),
+        appended: (track?: track) => !track
+            ? new EmbedBuilder()
+                .setColor("Red")
+                .setTitle("**🚫  Could not add track to the queue.**")
+            : new EmbedBuilder()
+                .setColor("Green")
+                .setTitle(track.title)
+                .setURL(track.url)
+                .setThumbnail(track.thumbnail)
                 .setAuthor({
                     iconURL: track.requester.avatarURL() || undefined,
                     name: track.requester.tag,
                 })
-                .setTitle(track.title)
-                .setURL(track.url)
-                .setDescription("**playing now.**")
-                .setThumbnail(track.thumbnail);
-        },
-        cleared: (amount: number) => {
-            return new EmbedBuilder()
+                .setDescription("**has been added to the queue.**")
+                .setTimestamp(new Date()),
+        jumped: (state: boolean) => state
+            ? new EmbedBuilder()
                 .setColor("Green")
-                .setTitle(
-                    `**♻️ ${amount} tracks have been cleared from the queue.**`
-                )
-                .setTimestamp(new Date());
-        },
-        okConnected: (channel: string) => {
-            return new EmbedBuilder()
-                .setColor("Green")
-                .setTitle(`**✅  Successfuly connected to:** _${channel}_.`);
-        },
-        notConnected: () => {
-            return new EmbedBuilder()
+                .setTitle("_**Perfoming jump.**_")
+            : new EmbedBuilder()
                 .setColor("Red")
-                .setTitle(
-                    "**🚫  Make yourself connected to a voice channel beforehand.**"
-                );
-        },
-        wasConnected: () => {
-            return new EmbedBuilder()
-                .setColor("Yellow")
-                .setTitle("**⚠️  Already connected to a voice channel.**");
-        },
-        filtered: (filter?: string) => {
-            return new EmbedBuilder()
-                .setColor("Green")
-                .setTitle(filter ? `**✅  ${filter} was applied to the player.**` : "**✅  All filters were declined.**");
-        },
-        appended: (track?: track) => {
-            return !track
-                ? new EmbedBuilder()
-                    .setColor("Red")
-                    .setTitle("**🚫  Could not add track to the queue.**")
-                : new EmbedBuilder()
-                    .setColor("Green")
-                    .setTitle(track.title)
-                    .setURL(track.url)
-                    .setThumbnail(track.thumbnail)
-                    .setAuthor({
-                        iconURL: track.requester.avatarURL() || undefined,
-                        name: track.requester.tag,
-                    })
-                    .setDescription("**has been added to the queue.**")
-                    .setTimestamp(new Date());
-        },
-        jumped: (state: boolean) => {
-            return state
-                ? new EmbedBuilder()
-                    .setColor("Green")
-                    .setTitle("_**Perfoming jump.**_")
-                : new EmbedBuilder()
-                    .setColor("Red")
-                    .setTitle("**❗  Bad _jump_ request.**");
-        },
+                .setTitle("**❗  Bad _jump_ request.**"),
         looped: (query: loopOption) => {
             switch (query) {
             case "AUTO": {
@@ -101,57 +85,43 @@ export default class I18n {
             }
             }
         },
-        skipped: () => {
-            return new EmbedBuilder()
+        skipped: () => new EmbedBuilder()
+            .setColor("Green")
+            .setTitle("**⏭️  Skipping.**"),
+        paused: (state: boolean) => state
+            ? new EmbedBuilder()
                 .setColor("Green")
-                .setTitle("**⏭️  Skipping.**");
-        },
-        paused: (state: boolean) => {
-            return state
-                ? new EmbedBuilder()
-                    .setColor("Green")
-                    .setTitle("_**▶️  Resumed.**_")
-                : new EmbedBuilder()
-                    .setColor("Yellow")
-                    .setTitle("_**⏸️  Paused.**_");
-        },
-        removed: (track?: track) => {
-            return track
-                ? new EmbedBuilder()
-                    .setColor("Green")
-                    .setTitle(track.title)
-                    .setDescription("**was removed from the queue.**")
-                    .setTimestamp(new Date())
-                    .setURL(track.url)
-                    .setThumbnail(track.thumbnail)
-                : new EmbedBuilder()
-                    .setColor("Red")
-                    .setTitle("**❗  Bad _remove_ request.**");
-        },
-        fastForwarded: (amount: number) => {
-            return new EmbedBuilder()
-                .setColor("Blue")
-                .setTitle(
-                    `**⏩  Fast-forwarding to ${secToISO(
-                        amount
-                    )}**`
-                );
-        },
-        destroyed: () => {
-            return new EmbedBuilder()
-                .setColor("Red")
-                .setTitle("**💀  Destroying the player.**");
-        },
-        volumeSet: (amount: number) => {
-            return new EmbedBuilder()
-                .setColor("Green")
-                .setTitle(`**${volumeMoji(amount)} Volume has been set to ${amount}%**`);
-        },
-        queueEmpty: () => {
-            return new EmbedBuilder()
+                .setTitle("_**▶️  Resumed.**_")
+            : new EmbedBuilder()
                 .setColor("Yellow")
-                .setTitle("**❎  Queue is empty.**");
-        },
+                .setTitle("_**⏸️  Paused.**_"),
+        removed: (track?: track) => track
+            ? new EmbedBuilder()
+                .setColor("Green")
+                .setTitle(track.title)
+                .setDescription("**was removed from the queue.**")
+                .setTimestamp(new Date())
+                .setURL(track.url)
+                .setThumbnail(track.thumbnail)
+            : new EmbedBuilder()
+                .setColor("Red")
+                .setTitle("**❗  Bad _remove_ request.**"),
+        fastForwarded: (amount: number) => new EmbedBuilder()
+            .setColor("Blue")
+            .setTitle(
+                `**⏩  Fast-forwarding to ${secToISO(
+                    amount
+                )}**`
+            ),
+        destroyed: () => new EmbedBuilder()
+            .setColor("Red")
+            .setTitle("**💀  Destroying the player.**"),
+        volumeSet: (amount: number) => new EmbedBuilder()
+            .setColor("Green")
+            .setTitle(`**${volumeMoji(amount)} Volume has been set to ${amount}%**`),
+        queueEmpty: () => new EmbedBuilder()
+            .setColor("Yellow")
+            .setTitle("**❎  Queue is empty.**"),
         playerInfo: (player?: Player) => {
             if (!player)
                 return new EmbedBuilder()
@@ -207,7 +177,8 @@ export default class I18n {
                             inline: true,
                         },
                     ]);
-            } else {
+            }
+            else {
                 return new EmbedBuilder()
                     .setColor("Blue")
                     .setTitle("💿  Insert the disk...")
@@ -289,30 +260,24 @@ export default class I18n {
                 )
                 .setFields(
                     queue.Tracks.slice(page * 10, page * 10 + 10).map(
-                        (value, index) => {
-                            return {
-                                name: `${
-                                    page * 10 + index + 1
-                                }. ${value.title.padEnd(35)}`,
-                                value: `**[${secToISO(value.duration)}]**`,
-                            };
-                        }
+                        (value, index) => ({
+                            name: `${
+                                page * 10 + index + 1
+                            }. ${value.title.padEnd(35)}`,
+                            value: `**[${secToISO(value.duration)}]**`,
+                        })
                     )
                 );
         },
-        fullyAlone: () => {
-            return new EmbedBuilder()
-                .setColor("LuminousVividPink")
-                .setTitle("🥬  I have decided to leave to conserve my energy.")
-                .setDescription(
-                    "_**Since there was nobody in the voice channel.**_"
-                );
-        },
-        reshuffle: () => {
-            return new EmbedBuilder()
-                .setColor("Green")
-                .setTitle("**✅  Successfuly reshuffled queue.**");
-        },
+        fullyAlone: () => new EmbedBuilder()
+            .setColor("LuminousVividPink")
+            .setTitle("🥬  I have decided to leave to conserve my energy.")
+            .setDescription(
+                "_**Since there was nobody in the voice channel.**_"
+            ),
+        reshuffle: () => new EmbedBuilder()
+            .setColor("Green")
+            .setTitle("**✅  Successfuly reshuffled queue.**"),
         ping: (ping?: number) => {
             const title = ping ? `I have pinged ${ping} ms late.` : "There is no application.";
 

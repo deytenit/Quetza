@@ -34,10 +34,12 @@ export default class Queue {
         if (this.position + 1 < this.tracks.length) {
             this.position++;
             return this.current();
-        } else if (this.loop === "LOOP") {
+        }
+        else if (this.loop === "LOOP") {
             this.position = 0;
             return this.current();
-        } else if (this.loop === "NONE") {
+        }
+        else if (this.loop === "NONE") {
             this.position = 0;
             return undefined;
         }
@@ -62,7 +64,8 @@ export default class Queue {
     public push(tracks: track[], index?: number): track {
         if (!index || index >= this.tracks.length) {
             this.tracks = this.tracks.concat(tracks);
-        } else {
+        }
+        else {
             this.tracks.splice(Math.max(0, index), 0, ...tracks);
             if (this.position >= index) this.position += tracks.length;
         }

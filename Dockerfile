@@ -13,7 +13,7 @@ RUN chmod a+rx /usr/src/app/bin/youtube-dl
 
 
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 
 COPY . .
 run npm run build

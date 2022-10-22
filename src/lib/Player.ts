@@ -167,7 +167,8 @@ export default class Player {
                     requester: requester,
                 });
             }
-        } else {
+        } 
+        else {
             tracks.push({
                 url: `https://youtube.com/watch?v=${response.id}`,
                 title: response.title,
@@ -218,7 +219,8 @@ export default class Player {
                             10_000
                         ),
                     ]);
-                } catch (error) {
+                } 
+                catch (error) {
                     this.destroy();
                 }
             }
@@ -307,7 +309,8 @@ export default class Player {
         if (this.player.state.status === AudioPlayerStatus.Paused) {
             this.player.unpause();
             return false;
-        } else {
+        } 
+        else {
             this.player.pause();
             return true;
         }
