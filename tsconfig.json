@@ -2,7 +2,7 @@
   "compilerOptions": {
     "strict": true,
 
-    "module": "CommonJS",
+    "module": "ESNext",
     "moduleResolution": "node",
     "outDir": "dist",
     "removeComments": false,

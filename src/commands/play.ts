@@ -1,7 +1,7 @@
 import { CommandInteraction, SlashCommandBuilder } from "discord.js";
-import Client from "../lib/Client";
-import { run as connect } from "./connect";
-import I18n from "../lib/I18n";
+import Client from "../lib/Client.js";
+import { run as connect } from "./connect.js";
+import I18n from "../lib/I18n.js";
 
 export async function run(client: Client, ctx: CommandInteraction) {
     const query = ctx.options.get("query")?.value as string;

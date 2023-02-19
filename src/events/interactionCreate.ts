@@ -1,5 +1,5 @@
 import { Interaction } from "discord.js";
-import Client from "../lib/Client";
+import Client from "../lib/Client.js";
 
 export async function run(client: Client, args: Interaction[]): Promise<void> {
     const [interaction] = args;

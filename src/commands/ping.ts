@@ -1,6 +1,6 @@
 import { CommandInteraction, SlashCommandBuilder } from "discord.js";
-import Client from "../lib/Client";
-import I18n from "../lib/I18n";
+import Client from "../lib/Client.js";
+import I18n from "../lib/I18n.js";
 
 export async function run(client: Client, ctx: CommandInteraction) {
     const start = Date.now();

@@ -1,7 +1,7 @@
-import Client from "../lib/Client";
+import Client from "../lib/Client.js";
 
-import { CommandInteraction, GuildMember, SlashCommandBuilder } from "discord.js";
-import I18n from "../lib/I18n";
+import { CommandInteraction, GuildMember, SlashCommandBuilder, TextChannel } from "discord.js";
+import I18n from "../lib/I18n.js";
 
 export async function run(client: Client, ctx: CommandInteraction) {
     if (!ctx.guild || !ctx.channel || !ctx.member) return;
@@ -9,8 +9,8 @@ export async function run(client: Client, ctx: CommandInteraction) {
     await ctx.deferReply();
 
     const player =
-        client.modules.music.get(ctx.guild.id, ctx.channel) ||
-        client.modules.music.set(ctx.guild, ctx.channel);
+        client.modules.music.get(ctx.guild.id, ctx.channel as TextChannel) ||
+        client.modules.music.set(ctx.guild, ctx.channel as TextChannel);
 
     if (!player.Connection) {
         const channel = (ctx.member as GuildMember).voice.channel;

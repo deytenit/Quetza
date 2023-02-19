@@ -1,13 +1,13 @@
-import { CommandInteraction, SlashCommandBuilder } from "discord.js";
-import Client from "../lib/Client";
-import I18n from "../lib/I18n";
+import { CommandInteraction, SlashCommandBuilder, TextChannel } from "discord.js";
+import Client from "../lib/Client.js";
+import I18n from "../lib/I18n.js";
 
 export async function run(client: Client, ctx: CommandInteraction) {
     const filter = ctx.options.get("filter")?.value as string;
 
     if (!ctx.guild || !ctx.channel) return;
 
-    const player = client.modules.music.get(ctx.guild.id, ctx.channel);
+    const player = client.modules.music.get(ctx.guild.id, ctx.channel as TextChannel);
 
     if (!player) return;
 

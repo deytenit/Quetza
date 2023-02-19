@@ -1,11 +1,13 @@
 import {
-    Client as DiscordClient
+    Client as DiscordClient,
+    GatewayIntentBits
 } from "discord.js";
 import { existsSync, readdirSync } from "fs";
 import path from "path";
-import Music from "./Music";
-import { command, event } from "./Types";
-import config from "../config";
+import Music from "./Music.js";
+import { command, event } from "./Types.js";
+import config from "../config.js";
+import { pathToFileURL } from "url";
 
 export default class Client extends DiscordClient {
     private commands = new Map<string, command>();
@@ -21,9 +23,8 @@ export default class Client extends DiscordClient {
     public constructor() {
         super({
             intents: [
-                "Guilds",
-                "GuildMessages",
-                "GuildVoiceStates",
+                GatewayIntentBits.Guilds,
+                GatewayIntentBits.GuildVoiceStates
             ],
         });
 
@@ -33,7 +34,7 @@ export default class Client extends DiscordClient {
             );
 
             for (const file of files) {
-                import(path.join(config.commands, file)).then((cmd: command) =>
+                import(pathToFileURL(path.join(config.commands, file)).toString()).then((cmd: command) =>
                     this.commands.set(cmd.data.name, cmd)
                 );
             }
@@ -45,7 +46,7 @@ export default class Client extends DiscordClient {
             );
 
             for (const file of files) {
-                import(path.join(config.events, file)).then((evnt: event) => {
+                import(pathToFileURL(path.join(config.events, file)).toString()).then((evnt: event) => {
                     this.on(evnt.name, (...args: unknown[]) =>
                         evnt.run(this, args)
                     );

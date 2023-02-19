@@ -1,7 +1,7 @@
-import { ytdlArgs, ytdlResponse } from "./Types";
+import { ytdlArgs, ytdlResponse } from "./Types.js";
 import { execFile } from "child_process";
 import { promisify } from "util";
-import config from "../config";
+import config from "../config.js";
 import path from "path";
 
 const execFileAsync = promisify(execFile);

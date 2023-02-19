@@ -1,7 +1,7 @@
-import Player from "./Player";
-import { loopOption, track } from "./Types";
-import { loopMoji, secToISO, statusBarGenerator, volumeMoji } from "./Misc";
-import Queue from "./Queue";
+import Player from "./Player.js";
+import { loopOption, track } from "./Types.js";
+import { loopMoji, secToISO, statusBarGenerator, volumeMoji } from "./Misc.js";
+import Queue from "./Queue.js";
 import { AudioResource } from "@discordjs/voice";
 import { EmbedBuilder } from "discord.js";
 

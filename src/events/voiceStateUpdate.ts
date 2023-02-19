@@ -1,7 +1,7 @@
 import { VoiceState } from "discord.js";
-import I18n from "../lib/I18n";
-import Client from "../lib/Client";
-import { asleep } from "../lib/Misc";
+import I18n from "../lib/I18n.js";
+import Client from "../lib/Client.js";
+import { asleep } from "../lib/Misc.js";
 
 export async function run(client: Client, args: VoiceState[]): Promise<void> {
     const [oldState] = args;

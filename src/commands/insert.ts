@@ -1,6 +1,6 @@
-import { CommandInteraction, SlashCommandBuilder } from "discord.js";
-import Client from "../lib/Client";
-import I18n from "../lib/I18n";
+import { CommandInteraction, SlashCommandBuilder, TextChannel } from "discord.js";
+import Client from "../lib/Client.js";
+import I18n from "../lib/I18n.js";
 
 export async function run(client: Client, ctx: CommandInteraction) {
     const pos = ctx.options.get("position")?.value as number;
@@ -8,7 +8,7 @@ export async function run(client: Client, ctx: CommandInteraction) {
 
     if (!ctx.guild || !query || !pos || !ctx.channel) return;
 
-    const player = client.modules.music.get(ctx.guild.id, ctx.channel);
+    const player = client.modules.music.get(ctx.guild.id, ctx.channel as TextChannel);
 
     if (!player) return;
 

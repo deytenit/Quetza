@@ -1,14 +1,14 @@
-import Client from "../lib/Client";
+import Client from "../lib/Client.js";
 
-import { CommandInteraction, SlashCommandBuilder } from "discord.js";
-import I18n from "../lib/I18n";
+import { CommandInteraction, SlashCommandBuilder, TextChannel } from "discord.js";
+import I18n from "../lib/I18n.js";
 
 export async function run(client: Client, ctx: CommandInteraction) {
     if (!ctx.guild || !ctx.channel || !ctx.member) return;
 
     await ctx.deferReply();
 
-    const player = client.modules.music.get(ctx.guild.id, ctx.channel);
+    const player = client.modules.music.get(ctx.guild.id, ctx.channel as TextChannel);
 
     await ctx.editReply({ embeds: [I18n.en.playerInfo(player)] });
 }

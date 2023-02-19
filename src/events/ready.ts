@@ -1,4 +1,4 @@
-import Client from "../lib/Client";
+import Client from "../lib/Client.js";
 import { generateDependencyReport } from "@discordjs/voice";
 import { ActivityType } from "discord.js";
 

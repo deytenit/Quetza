@@ -1,4 +1,4 @@
-import { loopOption, track } from "./Types";
+import { loopOption, track } from "./Types.js";
 
 export default class Queue {
     private tracks: track[] = [];

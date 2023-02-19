@@ -1,4 +1,4 @@
-import { loopOption } from "./Types";
+import { loopOption } from "./Types.js";
 
 export function statusBarGenerator(duration: number, length: number): string {
     duration = Math.max(0, duration);

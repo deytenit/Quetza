@@ -14,30 +14,30 @@ import {
 import {
     Guild,
     Message,
-    TextBasedChannel,
+    TextChannel,
     User,
     VoiceBasedChannel,
 } from "discord.js";
 
-import Music from "./Music";
-import Filter from "./Filter";
-import Queue from "./Queue";
-import { fetchStream } from "./Fetch";
-import I18n from "./I18n";
+import Music from "./Music.js";
+import Filter from "./Filter.js";
+import Queue from "./Queue.js";
+import { fetchStream } from "./Fetch.js";
+import I18n from "./I18n.js";
 
 import ytdl from "discord-ytdl-core";
-import { track } from "./Types";
-import { largestCommonSequence } from "./Misc";
+import { track } from "./Types.js";
+import { largestCommonSequence } from "./Misc.js";
 
 export default class Player {
     private music: Music;
     private guild: Guild;
 
-    private channel: TextBasedChannel;
-    public get Channel(): TextBasedChannel {
+    private channel: TextChannel;
+    public get Channel(): TextChannel {
         return this.channel;
     }
-    public set Channel(x: TextBasedChannel) {
+    public set Channel(x: TextChannel) {
         this.channel = x;
     }
 
@@ -84,11 +84,11 @@ export default class Player {
     public constructor(
         guild: Guild,
         music: Music,
-        textBasedChannel: TextBasedChannel
+        textChannel: TextChannel
     ) {
         this.music = music;
         this.guild = guild;
-        this.channel = textBasedChannel;
+        this.channel = textChannel;
 
         this.player = createAudioPlayer();
 
