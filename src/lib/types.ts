@@ -1,5 +1,6 @@
-import { ApplicationCommandData, User, CommandInteraction } from "discord.js";
-import Client from "./Client.js";
+import { ApplicationCommandData, CommandInteraction, User } from "discord.js";
+
+import Client from "./client.js";
 
 export type track = {
     url: string;

@@ -1,7 +1,8 @@
 import { CommandInteraction, SlashCommandBuilder } from "discord.js";
-import Client from "../lib/Client.js";
+
+import Client from "../lib/client.js";
+import I18n from "../lib/i18n.js";
 import { run as connect } from "./connect.js";
-import I18n from "../lib/I18n.js";
 
 export async function run(client: Client, ctx: CommandInteraction) {
     const query = ctx.options.get("query")?.value as string;
@@ -24,9 +25,8 @@ export async function run(client: Client, ctx: CommandInteraction) {
 const data = new SlashCommandBuilder()
     .setName("play")
     .setDescription("Launch player and add songs to the queue.")
-    .addStringOption(option => option
-        .setName("query")
-        .setDescription("Title or URL of the song.")
+    .addStringOption((option) =>
+        option.setName("query").setDescription("Title or URL of the song.")
     );
 
 export { data };

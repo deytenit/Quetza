@@ -1,5 +1,6 @@
 import { Guild, TextChannel } from "discord.js";
-import Player from "./Player.js";
+
+import Player from "./player.js";
 
 export default class Music {
     private players = new Map<string, Player>();

@@ -1,7 +1,7 @@
-import Client from "../lib/Client.js";
-
 import { CommandInteraction, GuildMember, SlashCommandBuilder, TextChannel } from "discord.js";
-import I18n from "../lib/I18n.js";
+
+import Client from "../lib/client.js";
+import I18n from "../lib/i18n.js";
 
 export async function run(client: Client, ctx: CommandInteraction) {
     if (!ctx.guild || !ctx.channel || !ctx.member) return;
@@ -18,15 +18,13 @@ export async function run(client: Client, ctx: CommandInteraction) {
             player.connect(channel);
 
             await ctx.editReply({ embeds: [I18n.en.okConnected(channel.name)] });
-        }
-        else {
+        } else {
             client.modules.music.del(ctx.guild.id);
 
             await ctx.editReply({ embeds: [I18n.en.notConnected()] });
             return undefined;
         }
-    }
-    else {
+    } else {
         await ctx.editReply({ embeds: [I18n.en.wasConnected()] });
     }
 

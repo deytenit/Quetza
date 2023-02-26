@@ -1,6 +1,7 @@
 import { CommandInteraction, SlashCommandBuilder, TextChannel } from "discord.js";
-import Client from "../lib/Client.js";
-import I18n from "../lib/I18n.js";
+
+import Client from "../lib/client.js";
+import I18n from "../lib/i18n.js";
 
 export async function run(client: Client, ctx: CommandInteraction) {
     const pos = ctx.options.get("position")?.value as number;
@@ -22,15 +23,11 @@ export async function run(client: Client, ctx: CommandInteraction) {
 const data = new SlashCommandBuilder()
     .setName("insert")
     .setDescription("Insert a new track to specific position in the queue.")
-    .addStringOption(option => option
-        .setName("query")
-        .setDescription("Title or URL of the song.")
-        .setRequired(true)
+    .addStringOption((option) =>
+        option.setName("query").setDescription("Title or URL of the song.").setRequired(true)
     )
-    .addIntegerOption(option => option
-        .setName("position")
-        .setDescription("Position to insert.",)
-        .setRequired(true)
+    .addIntegerOption((option) =>
+        option.setName("position").setDescription("Position to insert.").setRequired(true)
     );
 
 export { data };

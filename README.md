@@ -1,4 +1,4 @@
-# Quetza - 2302.1 <soundrewrite>
+# Quetza - 2302.1
 
 _Neat typescript discord bot._
 

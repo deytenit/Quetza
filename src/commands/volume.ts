@@ -1,9 +1,10 @@
 import { CommandInteraction, SlashCommandBuilder, TextChannel } from "discord.js";
-import Client from "../lib/Client.js";
-import I18n from "../lib/I18n.js";
+
+import Client from "../lib/client.js";
+import I18n from "../lib/i18n.js";
 
 export async function run(client: Client, ctx: CommandInteraction) {
-    const volume = ctx.options.get("volume")?.value as number || 100;
+    const volume = (ctx.options.get("volume")?.value as number) || 100;
 
     if (!ctx.guild || !ctx.channel) return;
 
@@ -19,10 +20,8 @@ export async function run(client: Client, ctx: CommandInteraction) {
 const data = new SlashCommandBuilder()
     .setName("volume")
     .setDescription("Change player's volume amount.")
-    .addIntegerOption(option => option
-        .setName("volume")
-        .setDescription("Volume in percents.")
-        .setRequired(true)
+    .addIntegerOption((option) =>
+        option.setName("volume").setDescription("Volume in percents.").setRequired(true)
     );
 
 export { data };

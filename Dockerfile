@@ -16,6 +16,6 @@ COPY package*.json ./
 RUN npm ci
 
 COPY . .
-run npm run build
+RUN npm run build
 
 CMD [ "npm", "start" ]

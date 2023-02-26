@@ -1,7 +1,7 @@
-import Client from "../lib/Client.js";
-
 import { CommandInteraction, SlashCommandBuilder, TextChannel } from "discord.js";
-import I18n from "../lib/I18n.js";
+
+import Client from "../lib/client.js";
+import I18n from "../lib/i18n.js";
 
 export async function run(client: Client, ctx: CommandInteraction) {
     if (!ctx.guild || !ctx.channel || !ctx.member) return;

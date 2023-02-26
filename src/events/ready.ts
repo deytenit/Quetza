@@ -1,6 +1,7 @@
-import Client from "../lib/Client.js";
 import { generateDependencyReport } from "@discordjs/voice";
 import { ActivityType } from "discord.js";
+
+import Client from "../lib/client.js";
 
 export async function run(client: Client): Promise<void> {
     if (!client.user || !client.application) {
@@ -12,9 +13,7 @@ export async function run(client: Client): Promise<void> {
     console.log(generateDependencyReport());
     client.user.setActivity("over you", { type: ActivityType.Watching });
 
-    const restCommands = Array.from(client.Commands.values()).map(
-        value => value.data
-    );
+    const restCommands = Array.from(client.Commands.values()).map((value) => value.data);
 
     client.application.commands.set(restCommands);
 }

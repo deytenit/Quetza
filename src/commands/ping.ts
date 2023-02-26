@@ -1,6 +1,7 @@
 import { CommandInteraction, SlashCommandBuilder } from "discord.js";
-import Client from "../lib/Client.js";
-import I18n from "../lib/I18n.js";
+
+import Client from "../lib/client.js";
+import I18n from "../lib/i18n.js";
 
 export async function run(client: Client, ctx: CommandInteraction) {
     const start = Date.now();
@@ -15,8 +16,6 @@ export async function run(client: Client, ctx: CommandInteraction) {
     await ctx.reply({ embeds: [I18n.en.ping(Date.now() - start)] });
 }
 
-const data = new SlashCommandBuilder()
-    .setName("ping")
-    .setDescription("Try to ping me.");
+const data = new SlashCommandBuilder().setName("ping").setDescription("Try to ping me.");
 
 export { data };

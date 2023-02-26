@@ -1,6 +1,7 @@
 import { CommandInteraction, SlashCommandBuilder, TextChannel } from "discord.js";
-import Client from "../lib/Client.js";
-import I18n from "../lib/I18n.js";
+
+import Client from "../lib/client.js";
+import I18n from "../lib/i18n.js";
 
 export async function run(client: Client, ctx: CommandInteraction) {
     if (!ctx.guild || !ctx.channel) return;
@@ -14,8 +15,6 @@ export async function run(client: Client, ctx: CommandInteraction) {
     await ctx.reply({ embeds: [I18n.en.destroyed()] });
 }
 
-const data = new SlashCommandBuilder()
-    .setName("stop")
-    .setDescription("Destroy the player.");
+const data = new SlashCommandBuilder().setName("stop").setDescription("Destroy the player.");
 
 export { data };

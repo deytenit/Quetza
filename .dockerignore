@@ -1,2 +1,14 @@
-node_modules
-Procfile
+# Ignore everything by default
+*
+
+# Dockerfile
+!Dockerfile
+
+# Source
+!src/
+
+# Dependencies
+!package*.json
+
+# Typescript compiller config
+!tsconfig.json
