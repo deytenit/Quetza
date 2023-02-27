@@ -27,7 +27,7 @@
     "build": "npx tsc --build",
     "clean": "npx tsc --build --clean",
     "lint": "npx prettier --write . && npx eslint --fix .",
-    "prestart": "npm run build"
+    "postinstall": "npm run build"
   },
   "dependencies": {
     "discord.js": "^14.3.0",
