@@ -1,47 +1,68 @@
-import { Client as DiscordClient, GatewayIntentBits } from "discord.js";
-import { existsSync, readdirSync } from "fs";
+import { Client as DiscordClient, ClientOptions, Collection } from "discord.js";
+import { existsSync, lstatSync, readdirSync } from "fs";
 import path from "path";
 import { pathToFileURL } from "url";
 
 import config from "../config.js";
-import Music from "./music.js";
-import { command, event } from "./types.js";
+import { Command, Event, Module } from "./types.js";
+
+const MODULE_ENTRY = "module.js";
+const MODULE_COMMANDS = "commands";
+const MODULE_EVENTS = "events";
 
 export default class Client extends DiscordClient {
-    private commands = new Map<string, command>();
+    public readonly commands = new Collection<string, Command>();
 
-    get Commands(): Map<string, command> {
-        return this.commands;
+    public readonly modules = new Collection<string, Module>();
+
+    public constructor(options: ClientOptions) {
+        super(options);
+
+        for (const module of readdirSync(config.modulesDir)) {
+            const modulePath = path.join(config.modulesDir, module);
+
+            if (!lstatSync(modulePath).isDirectory()) {
+                continue;
+            }
+
+            import(pathToFileURL(path.join(modulePath, MODULE_ENTRY)).toString()).then(
+                (data: Module) => this.loadModule(data, modulePath)
+            );
+        }
     }
 
-    public readonly modules = {
-        music: new Music()
-    };
+    private loadModule(data: Module, moduleDir: string): void {
+        this.modules.set(data.name, data);
 
-    public constructor() {
-        super({
-            intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates]
-        });
+        const commandsDir = path.join(moduleDir, MODULE_COMMANDS);
 
-        if (existsSync(config.commands)) {
-            const files = readdirSync(config.commands).filter((file) => file.endsWith(".js"));
+        if (existsSync(commandsDir)) {
+            for (const source of readdirSync(commandsDir)) {
+                const commandFile = path.join(commandsDir, source);
 
-            for (const file of files) {
-                import(pathToFileURL(path.join(config.commands, file)).toString()).then(
-                    (cmd: command) => this.commands.set(cmd.data.name, cmd)
+                if (!lstatSync(commandFile).isFile() || !commandFile.endsWith(".js")) {
+                    continue;
+                }
+
+                import(pathToFileURL(commandFile).toString()).then((command: Command) =>
+                    this.commands.set(command.data.name, command)
                 );
             }
         }
 
-        if (existsSync(config.events)) {
-            const files = readdirSync(config.events).filter((file) => file.endsWith(".js"));
+        const eventsDir = path.join(moduleDir, MODULE_EVENTS);
 
-            for (const file of files) {
-                import(pathToFileURL(path.join(config.events, file)).toString()).then(
-                    (evnt: event) => {
-                        this.on(evnt.name, (...args: unknown[]) => evnt.run(this, args));
-                    }
-                );
+        if (existsSync(eventsDir)) {
+            for (const source of readdirSync(eventsDir)) {
+                const eventFile = path.join(eventsDir, source);
+
+                if (!lstatSync(eventFile).isFile() || !eventFile.endsWith(".js")) {
+                    continue;
+                }
+
+                import(pathToFileURL(eventFile).toString()).then((event: Event) => {
+                    this.on(event.name, (...eventee: unknown[]) => event.execute(this, eventee));
+                });
             }
         }
     }

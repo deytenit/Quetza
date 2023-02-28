@@ -4,12 +4,11 @@ import { fileURLToPath } from "url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const config = {
-    token:
+    discordToken:
         process.env.DISCORD_TOKEN ??
-        "NzgzNDQwMjU3NjE3MzYyOTQ1.GQ0lLK.VftrGanpOtqfoKUQRkoXDCcbQqwMqBsybmwjGE",
-    commands: path.join(__dirname, "/commands/"),
-    events: path.join(__dirname, "/events/"),
-    binaries: path.join(__dirname, "/../bin/")
+        "NzgzNDQwMjU3NjE3MzYyOTQ1.Ghtbbs.kCCj2thmuKu5MsThHGSV5O0UUAFO3bwPlnQ1PM",
+    modulesDir: path.join(__dirname, "/modules/"),
+    binariesDir: path.join(__dirname, "/../bin/")
 };
 
 export default config;
