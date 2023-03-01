@@ -13,9 +13,9 @@ async function execute(client: Client, ctx: CommandInteraction) {
 
     if (!player) return;
 
-    player.Volume = volume;
+    player.volume = volume;
 
-    await ctx.reply({ embeds: [I18n.en.volumeSet(player.Volume)] });
+    await ctx.reply({ embeds: [I18n.embeds.volumeSet(player.volume)] });
 }
 
 const data = new SlashCommandBuilder()

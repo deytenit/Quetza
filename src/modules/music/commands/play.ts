@@ -14,10 +14,10 @@ async function execute(client: Client, ctx: CommandInteraction) {
     if (query) {
         const track = await player.add(query, ctx.user);
 
-        await ctx.editReply({ embeds: [I18n.en.appended(track)] });
+        await ctx.editReply({ embeds: [I18n.embeds.appended(track)] });
     }
 
-    if (!player.Resource) {
+    if (!player.resource) {
         player.play();
     }
 }

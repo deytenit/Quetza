@@ -15,7 +15,7 @@ async function execute(client: Client, eventee: VoiceState[]): Promise<void> {
     if (oldState.channel.members.filter((value) => value.user !== client.user).size === 0) {
         await asleep(30000);
         if (oldState.channel.members.filter((value) => value.user !== client.user).size === 0) {
-            await player.Channel.send({ embeds: [I18n.en.fullyAlone()] });
+            await player.channel.send({ embeds: [I18n.embeds.fullyAlone()] });
             player.destroy();
         }
     }

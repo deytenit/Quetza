@@ -18,9 +18,9 @@ async function execute(client: Client, interaction: CommandInteraction) {
         return;
     }
 
-    player.Queue.Loop = query as LoopOption;
+    player.queue.loop = query as LoopOption;
 
-    await interaction.reply({ embeds: [I18n.en.looped(query as LoopOption)] });
+    await interaction.reply({ embeds: [I18n.embeds.looped(query as LoopOption)] });
 }
 
 const data = new SlashCommandBuilder()

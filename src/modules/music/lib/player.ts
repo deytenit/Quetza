@@ -25,63 +25,57 @@ export default class Player {
     private music: Music;
     private guild: Guild;
 
-    private channel: TextChannel;
-    public get Channel(): TextChannel {
-        return this.channel;
+    private msgChannel: TextChannel;
+    public get channel(): TextChannel {
+        return this.msgChannel;
     }
-    public set Channel(x: TextChannel) {
-        this.channel = x;
-    }
-
-    private connection: VoiceConnection | undefined;
-    public get Connection(): VoiceConnection | undefined {
-        return this.connection;
-    }
-
-    private player: AudioPlayer;
-    public get Player(): AudioPlayer {
-        return this.player;
-    }
-
-    private filter = new Filter();
-    public get Filter(): Filter {
-        return this.filter;
-    }
-    private queue = new Queue();
-    public get Queue(): Queue {
-        return this.queue;
-    }
-
-    private resource: AudioResource<Track> | undefined;
-    public get Resource(): AudioResource<Track> | undefined {
-        return this.resource;
+    public set channel(x: TextChannel) {
+        this.msgChannel = x;
     }
 
     private message: Message | undefined;
-    private created: Date = new Date();
-    public get Created(): Date {
-        return this.created;
+
+    public internalConnection: VoiceConnection | undefined;
+    public get connection(): VoiceConnection | undefined {
+        return this.internalConnection;
     }
 
-    private volume = 100;
-    public get Volume(): number {
-        return this.volume;
+    private internalPlayer: AudioPlayer;
+    public get player(): AudioPlayer {
+        return this.internalPlayer;
     }
-    public set Volume(x: number) {
-        this.volume = Math.max(0, Math.min(150, x));
 
-        if (this.resource && this.resource.volume)
-            this.resource.volume.setVolumeLogarithmic(this.volume / 100);
+    private playerResource: AudioResource<Track> | undefined;
+    public get resource(): AudioResource<Track> | undefined {
+        return this.playerResource;
     }
+
+    private resourceVolume = 100;
+    public get volume(): number {
+        return this.resourceVolume;
+    }
+    public set volume(x: number) {
+        this.resourceVolume = Math.max(0, Math.min(150, x));
+
+        if (this.playerResource && this.playerResource.volume) {
+            this.playerResource.volume.setVolumeLogarithmic(this.resourceVolume / 100);
+        }
+    }
+
+    public readonly queue = new Queue();
+
+    public readonly filter = new Filter();
+
+    public readonly created: Date = new Date();
 
     public constructor(guild: Guild, music: Music, textChannel: TextChannel) {
         this.music = music;
         this.guild = guild;
-        this.channel = textChannel;
+        this.msgChannel = textChannel;
 
-        this.player = createAudioPlayer();
+        this.internalPlayer = createAudioPlayer();
 
-        this.player.on(AudioPlayerStatus.Idle, async () => this.resourceEndResolvable());
+        this.internalPlayer.on(AudioPlayerStatus.Idle, async () => this.resourceEndResolvable());
     }
 
     private resourceGenerator(track: Track, seek?: number) {
@@ -94,33 +88,42 @@ export default class Player {
             encoderArgs: !this.filter.empty() ? ["-af", this.filter.toString()] : undefined
         });
 
-        this.resource = createAudioResource(stream, {
+        this.playerResource = createAudioResource(stream, {
             inlineVolume: true,
             metadata: track
         });
 
-        if (seek) this.resource.playbackDuration = seek;
-        if (this.resource.volume) this.resource.volume.setVolumeLogarithmic(this.volume / 100);
+        if (seek) {
+            this.playerResource.playbackDuration = seek;
+        }
 
-        return this.resource;
+        if (this.playerResource.volume) {
+            this.playerResource.volume.setVolumeLogarithmic(this.resourceVolume / 100);
+        }
+
+        return this.playerResource;
     }
 
     private resourceEndResolvable(): void {
-        if (this.resource) this.resource.encoder?.destroy();
+        if (this.playerResource) {
+            this.playerResource.encoder?.destroy();
+        }
 
         if (this.queue.next()) {
             this.play();
         } else {
-            this.resource = undefined;
-            this.player.stop();
+            this.playerResource = undefined;
+            this.internalPlayer.stop();
         }
     }
 
     private async messageResolvable(track: Track) {
-        if (this.message) await this.message.delete();
+        if (this.message) {
+            await this.message.delete();
+        }
 
-        this.message = await this.channel.send({
-            embeds: [I18n.en.nowPlaying(track)]
+        this.message = await this.msgChannel.send({
+            embeds: [I18n.embeds.nowPlaying(track)]
         });
     }
 
@@ -134,7 +137,9 @@ export default class Player {
             defaultSearch: "ytsearch"
         });
 
-        if (!response) return undefined;
+        if (!response) {
+            return undefined;
+        }
 
         const tracks: Track[] = [];
 
@@ -164,34 +169,38 @@ export default class Player {
     public play(seek?: number): void {
         const track = this.queue.current();
 
-        if (!this.connection || !track) return;
+        if (!this.internalConnection || !track) {
+            return;
+        }
 
-        this.player.play(this.resourceGenerator(track, seek));
+        this.internalPlayer.play(this.resourceGenerator(track, seek));
 
-        this.connection.subscribe(this.player);
+        this.internalConnection.subscribe(this.internalPlayer);
 
         this.messageResolvable(track);
     }
 
     public connect(channel: VoiceBasedChannel): void {
-        if (this.connection) this.connection.destroy();
+        if (this.internalConnection) {
+            this.internalConnection.destroy();
+        }
 
-        this.connection = joinVoiceChannel({
+        this.internalConnection = joinVoiceChannel({
             channelId: channel.id,
             guildId: channel.guildId,
             adapterCreator: channel.guild.voiceAdapterCreator as DiscordGatewayAdapterCreator
         });
 
-        this.connection.on(VoiceConnectionStatus.Disconnected, async () => {
+        this.internalConnection.on(VoiceConnectionStatus.Disconnected, async () => {
             try {
                 await Promise.race([
                     entersState(
-                        this.connection as VoiceConnection,
+                        this.internalConnection as VoiceConnection,
                         VoiceConnectionStatus.Signalling,
                         10_000
                     ),
                     entersState(
-                        this.connection as VoiceConnection,
+                        this.internalConnection as VoiceConnection,
                         VoiceConnectionStatus.Connecting,
                         10_000
                     )
@@ -205,7 +214,9 @@ export default class Player {
     public async add(query: string, requester: User, index?: number): Promise<Track | undefined> {
         const tracks = await this.search(query, requester);
 
-        if (!tracks) return;
+        if (!tracks) {
+            return;
+        }
 
         this.queue.push(tracks, index);
 
@@ -217,7 +228,7 @@ export default class Player {
         let diff = 0;
 
         if (typeof query === "string") {
-            this.queue.Tracks.forEach((track, index) => {
+            this.queue.tracks.forEach((track, index) => {
                 const tempDiff = largestCommonSequence(track.title, query);
                 if (diff < tempDiff) {
                     diff = tempDiff;
@@ -235,13 +246,13 @@ export default class Player {
     }
 
     public remove(query?: number | string): Track | undefined {
-        const oldPosition = this.queue.Position;
+        const oldPosition = this.queue.position;
 
-        let newPosition = typeof query === "number" ? query : this.queue.Position;
+        let newPosition = typeof query === "number" ? query : this.queue.position;
         let diff = 0;
 
         if (typeof query === "string") {
-            this.queue.Tracks.forEach((track, index) => {
+            this.queue.tracks.forEach((track, index) => {
                 const tempDiff = largestCommonSequence(track.title, query);
                 if (diff < tempDiff) {
                     diff = tempDiff;
@@ -266,40 +277,50 @@ export default class Player {
 
     public clear(): void {
         this.queue.clear();
-        this.resource = undefined;
-        if (this.player) this.player.stop();
+        this.playerResource = undefined;
+
+        if (this.internalPlayer) {
+            this.internalPlayer.stop();
+        }
     }
 
     public destroy(): void {
-        if (this.connection) this.connection.destroy();
-        this.player.stop();
-        this.music.del(this.guild.id);
+        if (this.internalConnection) {
+            this.internalConnection.destroy();
+        }
+
+        this.internalPlayer.stop();
+        this.music.delete(this.guild.id);
     }
 
     public pause(): boolean {
-        if (this.player.state.status === AudioPlayerStatus.Paused) {
-            this.player.unpause();
+        if (this.internalPlayer.state.status === AudioPlayerStatus.Paused) {
+            this.internalPlayer.unpause();
             return false;
         } else {
-            this.player.pause();
+            this.internalPlayer.pause();
             return true;
         }
     }
 
     public shuffle(): void {
         this.queue.shuffle();
-        if (this.resource) {
-            this.player.stop();
+
+        if (this.playerResource) {
+            this.internalPlayer.stop();
             this.play();
         }
     }
 
     public skip(): void {
-        this.player.stop();
+        this.internalPlayer.stop();
     }
 
     public setFilter(filter?: string): void {
         this.filter.toggle(filter);
-        if (this.resource) this.play(this.resource.playbackDuration);
+
+        if (this.playerResource) {
+            this.play(this.playerResource.playbackDuration);
+        }
     }
 }

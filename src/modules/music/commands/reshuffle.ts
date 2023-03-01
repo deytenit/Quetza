@@ -13,7 +13,7 @@ async function execute(client: Client, ctx: CommandInteraction) {
 
     player.shuffle();
 
-    await ctx.reply({ embeds: [I18n.en.reshuffle()] });
+    await ctx.reply({ embeds: [I18n.embeds.reshuffle()] });
 }
 
 const data = new SlashCommandBuilder().setName("reshuffle").setDescription("Shuffle the queue.");

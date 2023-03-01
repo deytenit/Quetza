@@ -15,7 +15,7 @@ async function execute(client: Client, interaction: CommandInteraction) {
 
     player.setFilter(filter || undefined);
 
-    await interaction.reply({ embeds: [I18n.en.filtered(filter || undefined)] });
+    await interaction.reply({ embeds: [I18n.embeds.filtered(filter || undefined)] });
 }
 
 const data = new SlashCommandBuilder()

@@ -26,15 +26,15 @@ export default class Client extends DiscordClient {
             }
 
             import(pathToFileURL(path.join(modulePath, MODULE_ENTRY)).toString()).then(
-                (data: Module) => this.loadModule(data, modulePath)
+                (data: Module) => this.loadModule(data)
             );
         }
     }
 
-    private loadModule(data: Module, moduleDir: string): void {
+    private loadModule(data: Module): void {
         this.modules.set(data.name, data);
 
-        const commandsDir = path.join(moduleDir, MODULE_COMMANDS);
+        const commandsDir = path.join(data.rootDir, MODULE_COMMANDS);
 
         if (existsSync(commandsDir)) {
             for (const source of readdirSync(commandsDir)) {
@@ -50,7 +50,7 @@ export default class Client extends DiscordClient {
             }
         }
 
-        const eventsDir = path.join(moduleDir, MODULE_EVENTS);
+        const eventsDir = path.join(data.rootDir, MODULE_EVENTS);
 
         if (existsSync(eventsDir)) {
             for (const source of readdirSync(eventsDir)) {

@@ -22,7 +22,7 @@ async function execute(client: Client, interaction: CommandInteraction) {
             ? player.jump(parseInt(query) - 1)
             : player.jump(query);
 
-    await interaction.reply({ embeds: [I18n.en.jumped(state)] });
+    await interaction.reply({ embeds: [I18n.embeds.jumped(state)] });
 }
 
 const data = new SlashCommandBuilder()

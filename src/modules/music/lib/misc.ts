@@ -1,17 +1,17 @@
 import { LoopOption } from "./types.js";
 
-export function statusBarGenerator(duration: number, length: number): string {
-    duration = Math.max(0, duration);
-    length = Math.max(0, length);
-    if (duration > length) duration = length;
-    const filled = Array<string>(Math.floor((15 * duration) / (length === 0 ? 1 : length))).fill(
-        ":small_blue_diamond:"
-    );
-    const empty = Array<string>(
-        15 - Math.floor((15 * duration) / (length === 0 ? 1 : length))
-    ).fill(":white_small_square:");
+const PLAYBACK_LENGTH = 15;
 
-    return `**[${filled.join("")}${empty.join("")}] ${secToISO(duration)}/${secToISO(length)}**`;
+export function statusBarGenerator(playback: number, duration: number): string {
+    const filled = Array<string>(
+        Math.floor((PLAYBACK_LENGTH * playback) / (duration === 0 ? 1 : duration))
+    ).fill("🔹");
+
+    const empty = Array<string>(
+        PLAYBACK_LENGTH - Math.floor((PLAYBACK_LENGTH * playback) / (duration === 0 ? 1 : duration))
+    ).fill("▫️");
+
+    return `**[${filled.join("")}${empty.join("")}] ${secToISO(playback)}/${secToISO(duration)}**`;
 }
 
 export function secToISO(amount: number): string {
@@ -22,6 +22,7 @@ export function secToISO(amount: number): string {
     const hDisplay = h > 0 ? `${h}:` : "";
     const mDisplay = `${Math.floor(m / 10)}${Math.floor(m % 10)}:`;
     const sDisplay = `${Math.floor(s / 10)}${Math.floor(s % 10)}`;
+
     return hDisplay + mDisplay + sDisplay;
 }
 
@@ -42,6 +43,7 @@ export function largestCommonSequence(s1: string, s2: string) {
     s2 = s2.toLowerCase().slice(0, 100);
 
     const buffer = Array.from(Array(s1.length + 1), () => new Array<number>(s2.length + 1).fill(0));
+
     for (let i = 1; i <= s1.length; i++) {
         for (let j = 1; j <= s2.length; j++) {
             if (s1[i - 1] === s2[j - 1]) buffer[i][j] = buffer[i - 1][j - 1] + 1;

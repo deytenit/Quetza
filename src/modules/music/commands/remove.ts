@@ -18,7 +18,7 @@ async function execute(client: Client, ctx: CommandInteraction) {
             ? player.remove(parseInt(query) - 1)
             : player.remove(query);
 
-    await ctx.reply({ embeds: [I18n.en.removed(track)] });
+    await ctx.reply({ embeds: [I18n.embeds.removed(track)] });
 }
 
 const data = new SlashCommandBuilder()

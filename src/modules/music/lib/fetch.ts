@@ -9,6 +9,7 @@ const execFileAsync = promisify(execFile);
 
 function argumentsResolver(args: YtdlArgs): string[] {
     const options = Object.entries(args);
+
     return options.map(([key, value]) => {
         if (typeof value === "boolean" && value) {
             return `--${key.split(/(?=[A-Z])/).join("-")}`.toLowerCase();
@@ -27,7 +28,7 @@ async function ytdlExec(query: string, args: YtdlArgs): Promise<YtdlResponse | u
         return JSON.parse(executable.stdout);
     } catch (error) {
         console.log(error);
-        return undefined;
+        return;
     }
 }
 

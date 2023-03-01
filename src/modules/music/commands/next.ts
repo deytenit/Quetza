@@ -15,7 +15,7 @@ async function execute(client: Client, ctx: CommandInteraction) {
 
     player.skip();
 
-    await ctx.reply({ embeds: [I18n.en.skipped()] });
+    await ctx.reply({ embeds: [I18n.embeds.skipped()] });
 }
 
 const data = new SlashCommandBuilder().setName("next").setDescription("Skip current song.");

@@ -13,7 +13,7 @@ async function execute(client: Client, interaction: CommandInteraction) {
 
     const player = controller.get(interaction.guild.id, interaction.channel as TextChannel);
 
-    await interaction.editReply({ embeds: [I18n.en.playerInfo(player)] });
+    await interaction.editReply({ embeds: [I18n.embeds.playerInfo(player)] });
 }
 
 const data = new SlashCommandBuilder()

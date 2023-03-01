@@ -1,3 +1,6 @@
+import path from "path";
+import { fileURLToPath } from "url";
+
 import Music from "./lib/music.js";
 
 const name = "music";
@@ -7,4 +10,6 @@ const tag = "2302.1";
 
 const controller = new Music();
 
-export { author, controller, description, name, tag };
+const rootDir = path.dirname(fileURLToPath(import.meta.url));
+
+export { author, controller, description, name, rootDir, tag };

@@ -13,7 +13,7 @@ async function execute(client: Client, ctx: CommandInteraction) {
 
     player.destroy();
 
-    await ctx.reply({ embeds: [I18n.en.destroyed()] });
+    await ctx.reply({ embeds: [I18n.embeds.destroyed()] });
 }
 
 const data = new SlashCommandBuilder().setName("stop").setDescription("Destroy the player.");

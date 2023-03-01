@@ -8,6 +8,7 @@ export interface Module {
     author: string;
     tag: string;
     controller?: unknown;
+    rootDir: string;
 }
 
 export interface Command {

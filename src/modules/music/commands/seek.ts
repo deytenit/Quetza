@@ -20,7 +20,7 @@ async function execute(client: Client, ctx: CommandInteraction) {
     player.seek(time * 1000);
 
     await ctx.reply({
-        embeds: [I18n.en.fastForwarded(time)]
+        embeds: [I18n.embeds.fastForwarded(time)]
     });
 }
 

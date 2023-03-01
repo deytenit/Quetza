@@ -1,86 +1,89 @@
 import { LoopOption, Track } from "./types.js";
 
 export default class Queue {
-    private tracks: Track[] = [];
-    public get Tracks(): Track[] {
-        return this.tracks;
-    }
-    private position = 0;
-    public get Position(): number {
-        return this.position;
+    private entries: Track[] = [];
+    public get tracks(): Track[] {
+        return this.entries;
     }
 
-    private loop: LoopOption = "NONE";
-    public get Loop(): LoopOption {
-        return this.loop;
-    }
-    public set Loop(x: LoopOption) {
-        this.loop = x;
+    private currentIndex = 0;
+    public get position(): number {
+        return this.currentIndex;
     }
 
-    private duration = 0;
-    public get Duration(): number {
-        return this.duration;
+    private loopStatus: LoopOption = "NONE";
+    public get loop(): LoopOption {
+        return this.loopStatus;
+    }
+    public set loop(x: LoopOption) {
+        this.loopStatus = x;
+    }
+
+    private overallDuration = 0;
+    public get duration(): number {
+        return this.overallDuration;
     }
 
     public next(): Track | undefined {
-        if (this.loop === "SONG") return this.current();
-
-        if (this.loop === "AUTO") {
-            this.position = Math.floor(Math.random() * this.tracks.length);
+        if (this.loopStatus === "SONG") {
             return this.current();
         }
 
-        if (this.position + 1 < this.tracks.length) {
-            this.position++;
+        if (this.loopStatus === "AUTO") {
+            this.currentIndex = Math.floor(Math.random() * this.entries.length);
             return this.current();
-        } else if (this.loop === "LOOP") {
-            this.position = 0;
+        }
+
+        if (this.currentIndex + 1 < this.entries.length) {
+            this.currentIndex++;
             return this.current();
-        } else if (this.loop === "NONE") {
-            this.position = 0;
+        } else if (this.loopStatus === "LOOP") {
+            this.currentIndex = 0;
+            return this.current();
+        } else if (this.loopStatus === "NONE") {
+            this.currentIndex = 0;
             return undefined;
         }
     }
 
     public shuffle(): void {
-        let currentIndex = this.tracks.length;
+        let currentIndex = this.entries.length;
 
         while (currentIndex != 0) {
             const randomIndex = Math.floor(Math.random() * currentIndex);
             currentIndex--;
 
-            [this.tracks[currentIndex], this.tracks[randomIndex]] = [
-                this.tracks[randomIndex],
-                this.tracks[currentIndex]
+            [this.entries[currentIndex], this.entries[randomIndex]] = [
+                this.entries[randomIndex],
+                this.entries[currentIndex]
             ];
         }
 
-        this.position = 0;
+        this.currentIndex = 0;
     }
 
     public push(tracks: Track[], index?: number): Track {
-        if (!index || index >= this.tracks.length) {
-            this.tracks = this.tracks.concat(tracks);
+        if (!index || index >= this.entries.length) {
+            this.entries = this.entries.concat(tracks);
         } else {
-            this.tracks.splice(Math.max(0, index), 0, ...tracks);
-            if (this.position >= index) this.position += tracks.length;
+            this.entries.splice(Math.max(0, index), 0, ...tracks);
+            if (this.currentIndex >= index) this.currentIndex += tracks.length;
         }
 
         for (const track of tracks) {
-            this.duration += track.duration;
+            this.overallDuration += track.duration;
         }
 
-        return this.tracks[index || this.tracks.length - 1];
+        return this.entries[index || this.entries.length - 1];
     }
 
     public pop(query: number): Track | undefined {
-        if (query >= 0 && query < this.tracks.length) {
-            const track = this.tracks[query];
+        if (query >= 0 && query < this.entries.length) {
+            const track = this.entries[query];
 
-            this.tracks.splice(query, 1);
-            this.position = Math.max(0, this.position - 1);
-            this.duration -= track.duration;
+            this.entries.splice(query, 1);
+            this.currentIndex = Math.max(0, this.currentIndex - 1);
+            this.overallDuration -= track.duration;
             return track;
         }
 
@@ -88,9 +91,9 @@ export default class Queue {
     }
 
     public jump(query: number): Track | undefined {
-        if (query >= 0 && query < this.tracks.length) {
-            const track = this.tracks[query];
-            this.position = query;
+        if (query >= 0 && query < this.entries.length) {
+            const track = this.entries[query];
+            this.currentIndex = query;
             return track;
         }
 
@@ -98,15 +101,15 @@ export default class Queue {
     }
 
     public current(): Track {
-        return this.tracks[this.position];
+        return this.entries[this.currentIndex];
     }
 
     public empty(): boolean {
-        return this.tracks.length === 0;
+        return this.entries.length === 0;
     }
 
     public clear(): void {
-        this.tracks = [];
-        this.position = 0;
+        this.entries = [];
+        this.currentIndex = 0;
     }
 }

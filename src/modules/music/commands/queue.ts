@@ -23,8 +23,8 @@ async function execute(client: Client, ctx: CommandInteraction) {
 
     await ctx.deferReply();
 
-    if (player.Queue.empty()) {
-        await ctx.editReply({ embeds: [I18n.en.queueEmpty()] });
+    if (player.queue.empty()) {
+        await ctx.editReply({ embeds: [I18n.embeds.queueEmpty()] });
         return;
     }
 
@@ -38,7 +38,7 @@ async function execute(client: Client, ctx: CommandInteraction) {
     );
 
     const message = (await ctx.editReply({
-        embeds: [I18n.en.queueDesigner(player.Queue, 0, player.Resource)],
+        embeds: [I18n.embeds.queueDesigner(player.queue, 0, player.resource)],
         components: [row]
     })) as Message;
 
@@ -55,15 +55,15 @@ async function execute(client: Client, ctx: CommandInteraction) {
                 break;
             }
             case "QueueDown": {
-                page = Math.min(page + 1, Math.floor(player.Queue.Tracks.length / 11));
+                page = Math.min(page + 1, Math.floor(player.queue.tracks.length / 11));
                 break;
             }
             case "QueueEnd":
-                page = Math.floor(player.Queue.Tracks.length / 11);
+                page = Math.floor(player.queue.tracks.length / 11);
         }
 
         await btn.update({
-            embeds: [I18n.en.queueDesigner(player.Queue, page, player.Resource)]
+            embeds: [I18n.embeds.queueDesigner(player.queue, page, player.resource)]
         });
     });
 }

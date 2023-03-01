@@ -15,7 +15,7 @@ async function execute(client: Client, ctx: CommandInteraction) {
 
     const state = player.pause();
 
-    await ctx.reply({ embeds: [I18n.en.paused(state)] });
+    await ctx.reply({ embeds: [I18n.embeds.paused(state)] });
 }
 
 const data = new SlashCommandBuilder().setName("pause").setDescription("Toggle pause on player.");

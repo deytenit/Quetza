@@ -7,7 +7,7 @@ import Queue from "./queue.js";
 import { LoopOption, Track } from "./types.js";
 
 export default class I18n {
-    public static en = {
+    public static readonly embeds = {
         nowPlaying: (track: Track) =>
             new EmbedBuilder()
                 .setColor("LuminousVividPink")
@@ -120,49 +120,51 @@ export default class I18n {
                     .setColor("Red")
                     .setTitle("**🚫  Player does not exist.**");
 
-            if (player.Resource) {
+            if (player.resource) {
                 return new EmbedBuilder()
                     .setColor("LuminousVividPink")
-                    .setTitle(`${player.Queue.Position + 1}. ${player.Resource.metadata.title}`)
+                    .setTitle(`${player.queue.position + 1}. ${player.resource.metadata.title}`)
                     .setDescription(
                         statusBarGenerator(
-                            player.Resource.playbackDuration / 1000,
-                            player.Resource.metadata.duration
+                            player.resource.playbackDuration / 1000,
+                            player.resource.metadata.duration
                         )
                     )
-                    .setThumbnail(player.Resource.metadata.thumbnail)
-                    .setURL(player.Resource.metadata.url)
+                    .setThumbnail(player.resource.metadata.thumbnail)
+                    .setURL(player.resource.metadata.url)
                     .addFields([
                         {
                             name: "Applied Filters",
                             value:
-                                player.Filter.Filters.map((value) => value[0]).join("\n") +
-                                "\ndefault",
+                                player.filter
+                                    .toggled()
+                                    .map((value) => value[0])
+                                    .join("\n") + "\ndefault",
                             inline: true
                         },
                         {
                             name: "Queue Length",
-                            value: `🔢 ${player.Queue.Tracks.length}`,
+                            value: `🔢 ${player.queue.tracks.length}`,
                             inline: true
                         },
                         {
                             name: "Queue Duration",
-                            value: `💿 ${secToISO(player.Queue.Duration)}`,
+                            value: `💿 ${secToISO(player.queue.duration)}`,
                             inline: true
                         },
                         {
                             name: "Queue Looping",
-                            value: `${loopMoji(player.Queue.Loop)} ${player.Queue.Loop}`,
+                            value: `${loopMoji(player.queue.loop)} ${player.queue.loop}`,
                             inline: true
                         },
                         {
                             name: "Volume amount",
-                            value: `${volumeMoji(player.Volume)} ${player.Volume}/150`,
+                            value: `${volumeMoji(player.volume)} ${player.volume}/150`,
                             inline: true
                         },
                         {
                             name: "Player lifetime",
-                            value: `🕓 ${secToISO((Date.now() - player.Created.getTime()) / 1000)}`,
+                            value: `🕓 ${secToISO((Date.now() - player.created.getTime()) / 1000)}`,
                             inline: true
                         }
                     ]);
@@ -176,46 +178,48 @@ export default class I18n {
                         {
                             name: "Applied Filters",
                             value:
-                                player.Filter.Filters.map((value) => value[0]).join("\n") +
-                                "\ndefault",
+                                player.filter
+                                    .toggled()
+                                    .map((value) => value[0])
+                                    .join("\n") + "\ndefault",
                             inline: true
                         },
                         {
                             name: "Queue Length",
-                            value: `🔢 ${player.Queue.Tracks.length}`,
+                            value: `🔢 ${player.queue.tracks.length}`,
                             inline: true
                         },
                         {
                             name: "Queue Duration",
-                            value: `💿 ${secToISO(player.Queue.Duration)}`,
+                            value: `💿 ${secToISO(player.queue.duration)}`,
                             inline: true
                         },
                         {
                             name: "Queue Looping",
-                            value: `${loopMoji(player.Queue.Loop)} ${player.Queue.Loop}`,
+                            value: `${loopMoji(player.queue.loop)} ${player.queue.loop}`,
                             inline: true
                         },
                         {
                             name: "Volume amount",
-                            value: `${volumeMoji(player.Volume)} ${player.Volume}/150`,
+                            value: `${volumeMoji(player.volume)} ${player.volume}/150`,
                             inline: true
                         },
                         {
                             name: "Player lifetime",
-                            value: `🕓 ${secToISO((Date.now() - player.Created.getTime()) / 1000)}`,
+                            value: `🕓 ${secToISO((Date.now() - player.created.getTime()) / 1000)}`,
                             inline: true
                         }
                     ]);
             }
         },
         queueDesigner: (queue: Queue, page: number, resource: AudioResource<Track> | undefined) => {
-            page = Math.max(0, Math.min(Math.floor(queue.Tracks.length / 11), page));
+            page = Math.max(0, Math.min(Math.floor(queue.tracks.length / 11), page));
 
             return new EmbedBuilder()
                 .setColor("LuminousVividPink")
                 .setTitle(
                     resource
-                        ? `${queue.Position + 1}. ${resource.metadata.title}`
+                        ? `${queue.position + 1}. ${resource.metadata.title}`
                         : "💿  Insert the disk..."
                 )
                 .setURL(
@@ -237,7 +241,7 @@ export default class I18n {
                         : statusBarGenerator(0, 0)
                 )
                 .setFields(
-                    queue.Tracks.slice(page * 10, page * 10 + 10).map((value, index) => ({
+                    queue.tracks.slice(page * 10, page * 10 + 10).map((value, index) => ({
                         name: `${page * 10 + index + 1}. ${value.title.padEnd(35)}`,
                         value: `**[${secToISO(value.duration)}]**`
                     }))

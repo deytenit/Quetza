@@ -22,7 +22,7 @@ async function execute(client: Client, interaction: CommandInteraction) {
 
     const track = await player.add(query, interaction.user, pos - 1);
 
-    await interaction.editReply({ embeds: [I18n.en.appended(track)] });
+    await interaction.editReply({ embeds: [I18n.embeds.appended(track)] });
 }
 
 const data = new SlashCommandBuilder()

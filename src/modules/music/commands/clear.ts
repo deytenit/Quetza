@@ -13,11 +13,11 @@ async function execute(client: Client, interaction: CommandInteraction): Promise
 
     if (!player) return;
 
-    const amount = player.Queue.Tracks.length;
+    const amount = player.queue.tracks.length;
 
     player.clear();
 
-    await interaction.reply({ embeds: [I18n.en.cleared(amount)] });
+    await interaction.reply({ embeds: [I18n.embeds.cleared(amount)] });
 }
 
 const data = new SlashCommandBuilder().setName("clear").setDescription("Clear the player's queue.");
