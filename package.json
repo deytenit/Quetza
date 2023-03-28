@@ -5,7 +5,7 @@
     "npm": "*"
   },
   "type": "module",
-  "version": "2302.1",
+  "version": "2303.1",
   "description": "Discord multifunctional bot",
   "author": {
     "name": "unknowableshade",
@@ -27,24 +27,24 @@
     "build": "npx tsc --build",
     "clean": "npx tsc --build --clean",
     "lint": "npx eslint --fix . && npx prettier --write .",
-    "prestart": "npm run build"
+    "postinstall": "npm run build"
   },
   "dependencies": {
-    "discord.js": "^14.3.0",
     "@discordjs/opus": "^0.8.0",
     "@discordjs/voice": "^0.11.0",
-    "ytdl-core": "^4.11.1",
     "discord-ytdl-core": "^5.0.4",
-    "tweetnacl": "^1.0.3"
+    "discord.js": "^14.3.0",
+    "tweetnacl": "^1.0.3",
+    "ytdl-core": "^4.11.1"
   },
   "devDependencies": {
-    "typescript": "^4.8.2",
     "@types/node": "^18.7.13",
-    "eslint": "^8.22.0",
-    "eslint-config-prettier": "^8.6.0",
     "@typescript-eslint/eslint-plugin": "^5.35.1",
     "@typescript-eslint/parser": "^5.35.1",
+    "eslint": "^8.22.0",
+    "eslint-config-prettier": "^8.6.0",
     "eslint-plugin-import": "^2.27.5",
-    "eslint-plugin-simple-import-sort": "^10.0.0"
+    "eslint-plugin-simple-import-sort": "^10.0.0",
+    "typescript": "^4.8.2"
   }
 }

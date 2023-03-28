@@ -12,10 +12,7 @@ RUN mkdir bin
 RUN curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/src/app/bin/youtube-dl
 RUN chmod a+rx /usr/src/app/bin/youtube-dl
 
-COPY package*.json ./
-RUN npm ci
-
 COPY . .
-RUN npm run build
+RUN npm ci
 
 CMD [ "npm", "start" ]

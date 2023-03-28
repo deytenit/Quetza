@@ -14,6 +14,7 @@
   "plugins": ["@typescript-eslint", "import", "simple-import-sort"],
   "ignorePatterns": ["**/node_modules/**", "/dist/**", "/tests/**"],
   "rules": {
+    "curly": ["error", "all"],
     "simple-import-sort/imports": "error",
     "simple-import-sort/exports": "error"
   }
