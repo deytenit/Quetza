@@ -1,48 +1,85 @@
-import { Client as DiscordClient, GatewayIntentBits } from "discord.js";
-import { existsSync, readdirSync } from "fs";
+import { Client as DiscordClient, ClientOptions, Collection } from "discord.js";
+import { existsSync, lstatSync, readdirSync } from "fs";
 import path from "path";
 import { pathToFileURL } from "url";
 
 import config from "../config.js";
-import Music from "./music.js";
-import { command, event } from "./types.js";
+import { Command, Event, Module, ModuleMetadata } from "./types.js";
+
+const MODULE_ENTRY = "module.js";
+const MODULE_COMMANDS = "commands";
+const MODULE_EVENTS = "events";
 
 export default class Client extends DiscordClient {
-    private commands = new Map<string, command>();
+    public readonly commands = new Collection<string, Command>();
 
-    get Commands(): Map<string, command> {
-        return this.commands;
+    public readonly modules = new Collection<string, ModuleMetadata>();
+
+    public constructor(options: ClientOptions) {
+        super(options);
+
+        for (const module of readdirSync(config.modulesDir)) {
+            const modulePath = path.join(config.modulesDir, module);
+
+            if (!lstatSync(modulePath).isDirectory()) {
+                continue;
+            }
+
+            import(pathToFileURL(path.join(modulePath, MODULE_ENTRY)).toString()).then(
+                (data: Module) => this.loadModule(data)
+            );
+        }
     }
 
-    public readonly modules = {
-        music: new Music()
-    };
+    private loadModule(data: Module): void {
+        const commands: string[] = [];
+        const events: string[] = [];
 
-    public constructor() {
-        super({
-            intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates]
+        function importModule(dir: string, importThen: (data: Command & Event) => void) {
+            if (existsSync(dir)) {
+                for (const source of readdirSync(dir)) {
+                    const file = path.join(dir, source);
+
+                    if (!lstatSync(file).isFile() || !file.endsWith(".js")) {
+                        continue;
+                    }
+
+                    import(pathToFileURL(file).toString()).then(importThen);
+                }
+            }
+        }
+
+        importModule(path.join(data.rootDir, MODULE_COMMANDS), (command: Command) => {
+            this.commands.set(command.data.name, command)
+            commands.push(command.data.name);
         });
 
-        if (existsSync(config.commands)) {
-            const files = readdirSync(config.commands).filter((file) => file.endsWith(".js"));
+        importModule(path.join(data.rootDir, MODULE_EVENTS), (event: Event) => {
+            this.on(event.name, (...eventee: unknown[]) => event.execute(this, eventee));
+            events.push(event.name);
+        });
 
-            for (const file of files) {
-                import(pathToFileURL(path.join(config.commands, file)).toString()).then(
-                    (cmd: command) => this.commands.set(cmd.data.name, cmd)
-                );
-            }
-        }
+        this.modules.set(data.name, {
+            ...data,
+            commands,
+            events
+        })
+    }
 
-        if (existsSync(config.events)) {
-            const files = readdirSync(config.events).filter((file) => file.endsWith(".js"));
+    public generateApplicationStatus(): string {
+        const modulesStatus = this.modules.map((module) => {
+            const tag = `✓ ${module.name}@${module.tag} module is loaded.`
+            const commands = module.commands.map((name) => " - " + name).join("\n");
+            const events = module.events.map((name) => " - " + name).join("\n");
 
-            for (const file of files) {
-                import(pathToFileURL(path.join(config.events, file)).toString()).then(
-                    (evnt: event) => {
-                        this.on(evnt.name, (...args: unknown[]) => evnt.run(this, args));
-                    }
-                );
-            }
-        }
+            return [`${tag}\n`, "commands:", `${commands}`, "events:", `${events}`].join("\n");
+        }).join("\n" + "-".repeat(50) + "\n");
+
+        const clientStatus =
+            this.user && this.application
+                ? `✓ ${this.application.id} successfully logged in as ${this.user.tag}.`
+                : "✖ Application is not availiable.";
+
+        return ["-".repeat(50), modulesStatus, "-".repeat(50), clientStatus].join("\n");
     }
 }
