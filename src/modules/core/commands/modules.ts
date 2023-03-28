@@ -4,7 +4,7 @@ import Client from "../../../lib/client.js";
 import I18n from "../lib/i18n.js";
 
 async function execute(client: Client, interaction: CommandInteraction): Promise<void> {
-    await interaction.reply(I18n.replies.modules(Array.from(client.modules.values())));
+    await interaction.reply(I18n.replies.modules(client.modules));
 }
 
 const data = new SlashCommandBuilder()

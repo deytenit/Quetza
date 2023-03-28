@@ -14,17 +14,21 @@ import Client from "../../../lib/client.js";
 import I18n from "../lib/i18n.js";
 import { controller } from "../module.js";
 
-async function execute(client: Client, ctx: CommandInteraction) {
-    if (!ctx.guild || !ctx.channel) return;
+async function execute(client: Client, interaction: CommandInteraction) {
+    if (!interaction.guild || !interaction.channel) {
+        return;
+    }
 
-    const player = controller.get(ctx.guild.id, ctx.channel as TextChannel);
+    const player = controller.get(interaction.guild.id, interaction.channel as TextChannel);
 
-    if (!player) return;
+    if (!player) {
+        return;
+    }
 
-    await ctx.deferReply();
+    await interaction.deferReply();
 
     if (player.queue.empty()) {
-        await ctx.editReply({ embeds: [I18n.embeds.queueEmpty()] });
+        await interaction.editReply({ embeds: [I18n.embeds.queueEmpty()] });
         return;
     }
 
@@ -37,7 +41,7 @@ async function execute(client: Client, ctx: CommandInteraction) {
         new ButtonBuilder().setCustomId("QueueEnd").setLabel("🔽").setStyle(ButtonStyle.Primary)
     );
 
-    const message = (await ctx.editReply({
+    const message = (await interaction.editReply({
         embeds: [I18n.embeds.queueDesigner(player.queue, 0, player.resource)],
         components: [row]
     })) as Message;

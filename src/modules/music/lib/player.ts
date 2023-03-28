@@ -264,7 +264,9 @@ export default class Player {
         const track = this.queue.pop(newPosition);
 
         if (track) {
-            if (oldPosition === newPosition) this.play();
+            if (oldPosition === newPosition) {
+                this.play();
+            }
             return track;
         }
 

@@ -7,11 +7,15 @@ import { controller } from "../module.js";
 async function execute(client: Client, interaction: CommandInteraction) {
     const filter = interaction.options.get("filter")?.value as string;
 
-    if (!interaction.guild || !interaction.channel) return;
+    if (!interaction.guild || !interaction.channel) {
+        return;
+    }
 
     const player = controller.get(interaction.guild.id, interaction.channel as TextChannel);
 
-    if (!player) return;
+    if (!player) {
+        return;
+    }
 
     player.setFilter(filter || undefined);
 
@@ -27,15 +31,15 @@ const data = new SlashCommandBuilder()
             .setDescription("Filter to apply.")
             .setChoices(
                 {
-                    name: "bassboost_low",
+                    name: "Bassboost low",
                     value: "bassboost_low"
                 },
                 {
-                    name: "bassboost",
+                    name: "Bassboost",
                     value: "bassboost"
                 },
                 {
-                    name: "bassboost_high",
+                    name: "Bassboost high",
                     value: "bassboost_high"
                 },
                 {
@@ -43,79 +47,79 @@ const data = new SlashCommandBuilder()
                     value: "8D"
                 },
                 {
-                    name: "vaporwave",
+                    name: "Vaporwave",
                     value: "vaporwave"
                 },
                 {
-                    name: "nightcore",
+                    name: "Nightcore",
                     value: "nightcore"
                 },
                 {
-                    name: "phaser",
+                    name: "Phaser",
                     value: "phaser"
                 },
                 {
-                    name: "tremolo",
+                    name: "Tremolo",
                     value: "tremolo"
                 },
                 {
-                    name: "vibrato",
+                    name: "Vibrato",
                     value: "vibrato"
                 },
                 {
-                    name: "reverse",
+                    name: "Reverse",
                     value: "reverse"
                 },
                 {
-                    name: "treble",
+                    name: "Treble",
                     value: "treble"
                 },
                 {
-                    name: "normalizer",
+                    name: "Normalizer",
                     value: "normalizer"
                 },
                 {
-                    name: "surrounding",
+                    name: "Surround Sound",
                     value: "surrounding"
                 },
                 {
-                    name: "pulsator",
+                    name: "Pulsator",
                     value: "pulsator"
                 },
                 {
-                    name: "subboost",
+                    name: "Subboost",
                     value: "subboost"
                 },
                 {
-                    name: "mono",
+                    name: "Mono Audio",
                     value: "mono"
                 },
                 {
-                    name: "compressor",
+                    name: "Compressor",
                     value: "compressor"
                 },
                 {
-                    name: "expander",
+                    name: "Expander",
                     value: "expander"
                 },
                 {
-                    name: "softlimiter",
+                    name: "Softlimiter",
                     value: "softlimiter"
                 },
                 {
-                    name: "chorus",
+                    name: "Chorus",
                     value: "chorus"
                 },
                 {
-                    name: "fadein",
+                    name: "Fadein",
                     value: "fadein"
                 },
                 {
-                    name: "dim",
+                    name: "Dimming",
                     value: "dim"
                 },
                 {
-                    name: "earrape",
+                    name: "Earrape",
                     value: "earrape"
                 }
             )

@@ -4,18 +4,22 @@ import Client from "../../../lib/client.js";
 import I18n from "../lib/i18n.js";
 import { controller } from "../module.js";
 
-async function execute(client: Client, ctx: CommandInteraction) {
-    const volume = (ctx.options.get("volume")?.value as number) || 100;
+async function execute(client: Client, interaction: CommandInteraction) {
+    const volume = (interaction.options.get("volume")?.value as number) || 100;
 
-    if (!ctx.guild || !ctx.channel) return;
+    if (!interaction.guild || !interaction.channel) {
+        return;
+    }
 
-    const player = controller.get(ctx.guild.id, ctx.channel as TextChannel);
+    const player = controller.get(interaction.guild.id, interaction.channel as TextChannel);
 
-    if (!player) return;
+    if (!player) {
+        return;
+    }
 
     player.volume = volume;
 
-    await ctx.reply({ embeds: [I18n.embeds.volumeSet(player.volume)] });
+    await interaction.reply({ embeds: [I18n.embeds.volumeSet(player.volume)] });
 }
 
 const data = new SlashCommandBuilder()

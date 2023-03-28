@@ -11,6 +11,11 @@ export interface Module {
     rootDir: string;
 }
 
+export interface ModuleMetadata extends Module {
+    commands: string[];
+    events: string[];
+}
+
 export interface Command {
     data: ApplicationCommandData;
     execute: (client: Client, interaction: CommandInteraction) => Promise<void>;

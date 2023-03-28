@@ -4,17 +4,19 @@ import Client from "../../../lib/client.js";
 import I18n from "../lib/i18n.js";
 import { execute as connect } from "./connect.js";
 
-async function execute(client: Client, ctx: CommandInteraction) {
-    const query = ctx.options.get("query")?.value as string;
+async function execute(client: Client, interaction: CommandInteraction) {
+    const query = interaction.options.get("query")?.value as string;
 
-    const player = await connect(client, ctx);
+    const player = await connect(client, interaction);
 
-    if (!player) return;
+    if (!player) {
+        return;
+    }
 
     if (query) {
-        const track = await player.add(query, ctx.user);
+        const track = await player.add(query, interaction.user);
 
-        await ctx.editReply({ embeds: [I18n.embeds.appended(track)] });
+        await interaction.editReply({ embeds: [I18n.embeds.appended(track)] });
     }
 
     if (!player.resource) {

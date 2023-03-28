@@ -1,9 +1,9 @@
-import { EmbedBuilder, InteractionReplyOptions } from "discord.js";
+import { bold, Collection, EmbedBuilder, InteractionReplyOptions, italic } from "discord.js";
 
-import { Module } from "../../../lib/types.js";
+import { ModuleMetadata } from "../../../lib/types.js";
 export default class I18n {
     public static readonly replies = {
-        modules: (modules: Module[]): InteractionReplyOptions => {
+        modules: (modules: Collection<string, ModuleMetadata>): InteractionReplyOptions => {
             const embed = new EmbedBuilder()
                 .setColor("Random")
                 .setTitle("Modules")
@@ -32,8 +32,8 @@ export default class I18n {
 
             const embed = new EmbedBuilder()
                 .setColor("Random")
-                .setTitle(`**${title}**`)
-                .setDescription(`_**${comment}**_`);
+                .setTitle(bold(title))
+                .setDescription(italic(bold(comment)));
 
             return { embeds: [embed] };
         }

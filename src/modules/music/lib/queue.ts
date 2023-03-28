@@ -67,7 +67,9 @@ export default class Queue {
             this.entries = this.entries.concat(tracks);
         } else {
             this.entries.splice(Math.max(0, index), 0, ...tracks);
-            if (this.currentIndex >= index) this.currentIndex += tracks.length;
+            if (this.currentIndex >= index) {
+                this.currentIndex += tracks.length;
+            }
         }
 
         for (const track of tracks) {

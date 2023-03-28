@@ -11,7 +11,9 @@ async function execute(client: Client, interaction: CommandInteraction): Promise
 
     const player = controller.get(interaction.guild.id, interaction.channel as TextChannel);
 
-    if (!player) return;
+    if (!player) {
+        return;
+    }
 
     const amount = player.queue.tracks.length;
 

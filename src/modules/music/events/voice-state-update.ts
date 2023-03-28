@@ -10,7 +10,9 @@ async function execute(client: Client, eventee: VoiceState[]): Promise<void> {
 
     const player = controller.get(oldState.guild.id);
 
-    if (!player || !oldState.channel || !client.user) return;
+    if (!player || !oldState.channel || !client.user) {
+        return;
+    }
 
     if (oldState.channel.members.filter((value) => value.user !== client.user).size === 0) {
         await asleep(30000);

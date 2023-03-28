@@ -115,10 +115,11 @@ export default class I18n {
                 .setTitle(`**${volumeMoji(amount)} Volume has been set to ${amount}%**`),
         queueEmpty: () => new EmbedBuilder().setColor("Yellow").setTitle("**❎  Queue is empty.**"),
         playerInfo: (player?: Player) => {
-            if (!player)
+            if (!player) {
                 return new EmbedBuilder()
                     .setColor("Red")
                     .setTitle("**🚫  Player does not exist.**");
+            }
 
             if (player.resource) {
                 return new EmbedBuilder()

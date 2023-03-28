@@ -4,21 +4,25 @@ import Client from "../../../lib/client.js";
 import I18n from "../lib/i18n.js";
 import { controller } from "../module.js";
 
-async function execute(client: Client, ctx: CommandInteraction) {
-    const query = ctx.options.get("query")?.value as string;
+async function execute(client: Client, interaction: CommandInteraction) {
+    const query = interaction.options.get("query")?.value as string;
 
-    if (!ctx.guild || !query || !ctx.channel) return;
+    if (!interaction.guild || !query || !interaction.channel) {
+        return;
+    }
 
-    const player = controller.get(ctx.guild.id, ctx.channel as TextChannel);
+    const player = controller.get(interaction.guild.id, interaction.channel as TextChannel);
 
-    if (!player) return;
+    if (!player) {
+        return;
+    }
 
     const track =
         !isNaN(+query) && isFinite(+query) && !/e/i.test(query)
             ? player.remove(parseInt(query) - 1)
             : player.remove(query);
 
-    await ctx.reply({ embeds: [I18n.embeds.removed(track)] });
+    await interaction.reply({ embeds: [I18n.embeds.removed(track)] });
 }
 
 const data = new SlashCommandBuilder()

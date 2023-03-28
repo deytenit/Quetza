@@ -4,7 +4,7 @@ import path from "path";
 import { pathToFileURL } from "url";
 
 import config from "../config.js";
-import { Command, Event, Module } from "./types.js";
+import { Command, Event, Module, ModuleMetadata } from "./types.js";
 
 const MODULE_ENTRY = "module.js";
 const MODULE_COMMANDS = "commands";
@@ -13,7 +13,7 @@ const MODULE_EVENTS = "events";
 export default class Client extends DiscordClient {
     public readonly commands = new Collection<string, Command>();
 
-    public readonly modules = new Collection<string, Module>();
+    public readonly modules = new Collection<string, ModuleMetadata>();
 
     public constructor(options: ClientOptions) {
         super(options);
@@ -32,38 +32,54 @@ export default class Client extends DiscordClient {
     }
 
     private loadModule(data: Module): void {
-        this.modules.set(data.name, data);
+        const commands: string[] = [];
+        const events: string[] = [];
 
-        const commandsDir = path.join(data.rootDir, MODULE_COMMANDS);
+        function importModule(dir: string, importThen: (data: Command & Event) => void) {
+            if (existsSync(dir)) {
+                for (const source of readdirSync(dir)) {
+                    const file = path.join(dir, source);
 
-        if (existsSync(commandsDir)) {
-            for (const source of readdirSync(commandsDir)) {
-                const commandFile = path.join(commandsDir, source);
+                    if (!lstatSync(file).isFile() || !file.endsWith(".js")) {
+                        continue;
+                    }
 
-                if (!lstatSync(commandFile).isFile() || !commandFile.endsWith(".js")) {
-                    continue;
+                    import(pathToFileURL(file).toString()).then(importThen);
                 }
-
-                import(pathToFileURL(commandFile).toString()).then((command: Command) =>
-                    this.commands.set(command.data.name, command)
-                );
             }
         }
 
-        const eventsDir = path.join(data.rootDir, MODULE_EVENTS);
+        importModule(path.join(data.rootDir, MODULE_COMMANDS), (command: Command) => {
+            this.commands.set(command.data.name, command)
+            commands.push(command.data.name);
+        });
 
-        if (existsSync(eventsDir)) {
-            for (const source of readdirSync(eventsDir)) {
-                const eventFile = path.join(eventsDir, source);
+        importModule(path.join(data.rootDir, MODULE_EVENTS), (event: Event) => {
+            this.on(event.name, (...eventee: unknown[]) => event.execute(this, eventee));
+            events.push(event.name);
+        });
 
-                if (!lstatSync(eventFile).isFile() || !eventFile.endsWith(".js")) {
-                    continue;
-                }
+        this.modules.set(data.name, {
+            ...data,
+            commands,
+            events
+        })
+    }
 
-                import(pathToFileURL(eventFile).toString()).then((event: Event) => {
-                    this.on(event.name, (...eventee: unknown[]) => event.execute(this, eventee));
-                });
-            }
-        }
+    public generateApplicationStatus(): string {
+        const modulesStatus = this.modules.map((module) => {
+            const tag = `✓ ${module.name}@${module.tag} module is loaded.`
+            const commands = module.commands.map((name) => " - " + name).join("\n");
+            const events = module.events.map((name) => " - " + name).join("\n");
+
+            return [`${tag}\n`, "commands:", `${commands}`, "events:", `${events}`].join("\n");
+        }).join("\n" + "-".repeat(50) + "\n");
+
+        const clientStatus =
+            this.user && this.application
+                ? `✓ ${this.application.id} successfully logged in as ${this.user.tag}.`
+                : "✖ Application is not availiable.";
+
+        return ["-".repeat(50), modulesStatus, "-".repeat(50), clientStatus].join("\n");
     }
 }

@@ -46,8 +46,11 @@ export function largestCommonSequence(s1: string, s2: string) {
 
     for (let i = 1; i <= s1.length; i++) {
         for (let j = 1; j <= s2.length; j++) {
-            if (s1[i - 1] === s2[j - 1]) buffer[i][j] = buffer[i - 1][j - 1] + 1;
-            else buffer[i][j] = Math.max(buffer[i - 1][j], buffer[i][j - 1]);
+            if (s1[i - 1] === s2[j - 1]) {
+                buffer[i][j] = buffer[i - 1][j - 1] + 1;
+            } else {
+                buffer[i][j] = Math.max(buffer[i - 1][j], buffer[i][j - 1]);
+            }
         }
     }
 
