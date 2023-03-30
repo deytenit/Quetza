@@ -12,10 +12,15 @@ jobs:
     strategy:
       matrix:
         node-version: [18.x]
+        pnpm-version: [8]
 
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: ${{ matrix.pnpm-version }}
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3

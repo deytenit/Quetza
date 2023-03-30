@@ -6,6 +6,8 @@ RUN apk add --no-cache curl
 RUN apk add --no-cache ffmpeg
 RUN apk add --no-cache python3
 
+RUN npm install -g pnpm
+
 WORKDIR /usr/src/app
 
 RUN mkdir bin
@@ -13,6 +15,6 @@ RUN curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/src/app/bin/yo
 RUN chmod a+rx /usr/src/app/bin/youtube-dl
 
 COPY . .
-RUN npm ci
+RUN pnpm install
 
-CMD [ "npm", "start" ]
+CMD [ "pnpm", "start" ]
