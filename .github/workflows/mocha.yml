@@ -28,13 +28,13 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: ESLint && Prettier
-        run: npm run lint --if-present
+        run: pnpm run lint --if-present
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm ci
 
       - name: Build
-        run: npm run build --if-present
+        run: pnpm run build --if-present
 
       - name: Test
-        run: npm test
+        run: pnpm test --if-present
