@@ -18,6 +18,7 @@ async function execute(client: Client, interaction: CommandInteraction) {
 
 const data = new SlashCommandBuilder()
     .setName("info")
-    .setDescription("Information about the playback.");
+    .setDescription("Information about the playback.")
+    .setDMPermission(false);
 
 export { data, execute };

@@ -1,3 +1,4 @@
+import { PrismaClient } from "@prisma/client";
 import { Client as DiscordClient, ClientOptions, Collection } from "discord.js";
 import { existsSync, lstatSync, readdirSync } from "fs";
 import path from "path";
@@ -14,6 +15,8 @@ export default class Client extends DiscordClient {
     public readonly commands = new Collection<string, Command>();
 
     public readonly modules = new Collection<string, ModuleMetadata>();
+
+    public readonly db = new PrismaClient();
 
     public constructor(options: ClientOptions) {
         super(options);
@@ -50,7 +53,7 @@ export default class Client extends DiscordClient {
         }
 
         importModule(path.join(data.rootDir, MODULE_COMMANDS), (command: Command) => {
-            this.commands.set(command.data.name, command)
+            this.commands.set(command.data.name, command);
             commands.push(command.data.name);
         });
 
@@ -63,17 +66,19 @@ export default class Client extends DiscordClient {
             ...data,
             commands,
             events
-        })
+        });
     }
 
     public generateApplicationStatus(): string {
-        const modulesStatus = this.modules.map((module) => {
-            const tag = `✓ ${module.name}@${module.tag} module is loaded.`
-            const commands = module.commands.map((name) => " - " + name).join("\n");
-            const events = module.events.map((name) => " - " + name).join("\n");
+        const modulesStatus = this.modules
+            .map((module) => {
+                const tag = `✓ ${module.name}@${module.tag} module is loaded.`;
+                const commands = module.commands.map((name) => " - " + name).join("\n");
+                const events = module.events.map((name) => " - " + name).join("\n");
 
-            return [`${tag}\n`, "commands:", `${commands}`, "events:", `${events}`].join("\n");
-        }).join("\n" + "-".repeat(50) + "\n");
+                return [`${tag}\n`, "commands:", `${commands}`, "events:", `${events}`].join("\n");
+            })
+            .join("\n" + "-".repeat(50) + "\n");
 
         const clientStatus =
             this.user && this.application

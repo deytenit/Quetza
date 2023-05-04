@@ -27,6 +27,7 @@ const data = new SlashCommandBuilder()
     .setDescription("Change player's volume amount.")
     .addIntegerOption((option) =>
         option.setName("volume").setDescription("Volume in percents.").setRequired(true)
-    );
+    )
+    .setDMPermission(false);
 
 export { data, execute };

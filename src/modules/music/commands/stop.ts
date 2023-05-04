@@ -20,6 +20,9 @@ async function execute(client: Client, interaction: CommandInteraction) {
     await interaction.reply({ embeds: [I18n.embeds.destroyed()] });
 }
 
-const data = new SlashCommandBuilder().setName("stop").setDescription("Destroy the player.");
+const data = new SlashCommandBuilder()
+    .setName("stop")
+    .setDescription("Destroy the player.")
+    .setDMPermission(false);
 
 export { data, execute };

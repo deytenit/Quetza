@@ -36,6 +36,7 @@ async function execute(client: Client, interaction: CommandInteraction) {
 
 const data = new SlashCommandBuilder()
     .setName("connect")
-    .setDescription("Connect me to a voice channel.");
+    .setDescription("Connect me to a voice channel.")
+    .setDMPermission(false);
 
 export { data, execute };

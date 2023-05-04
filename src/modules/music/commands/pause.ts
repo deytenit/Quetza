@@ -20,6 +20,9 @@ async function execute(client: Client, interaction: CommandInteraction) {
     await interaction.reply({ embeds: [I18n.embeds.paused(state)] });
 }
 
-const data = new SlashCommandBuilder().setName("pause").setDescription("Toggle pause on player.");
+const data = new SlashCommandBuilder()
+    .setName("pause")
+    .setDescription("Toggle pause on player.")
+    .setDMPermission(false);
 
 export { data, execute };

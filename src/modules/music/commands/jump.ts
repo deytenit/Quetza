@@ -30,6 +30,7 @@ const data = new SlashCommandBuilder()
     .setDescription("Jump to specific track in the queue.")
     .addStringOption((option) =>
         option.setName("query").setDescription("Position or title to jump to.").setRequired(true)
-    );
+    )
+    .setDMPermission(false);
 
 export { data, execute };

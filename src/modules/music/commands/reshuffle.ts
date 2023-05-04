@@ -20,6 +20,9 @@ async function execute(client: Client, interaction: CommandInteraction) {
     await interaction.reply({ embeds: [I18n.embeds.reshuffle()] });
 }
 
-const data = new SlashCommandBuilder().setName("reshuffle").setDescription("Shuffle the queue.");
+const data = new SlashCommandBuilder()
+    .setName("reshuffle")
+    .setDescription("Shuffle the queue.")
+    .setDMPermission(false);
 
 export { data, execute };

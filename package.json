@@ -28,13 +28,15 @@
     "clean": "pnpm exec tsc --build --clean",
     "lint": "pnpm exec eslint --fix . && pnpm exec prettier --write .",
     "preinstall": "pnpx only-allow pnpm",
-    "postinstall": "pnpm run build"
+    "prebuild": "pnpm exec prisma migrate deploy"
   },
   "dependencies": {
     "@discordjs/opus": "^0.8.0",
     "@discordjs/voice": "^0.11.0",
+    "@prisma/client": "4.13.0",
     "discord-ytdl-core": "^5.0.4",
     "discord.js": "^14.8.0",
+    "mongodb": "5.3",
     "tweetnacl": "^1.0.3",
     "ytdl-core": "^4.11.3"
   },
@@ -47,7 +49,7 @@
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-simple-import-sort": "^10.0.0",
     "prettier": "^2.8.7",
+    "prisma": "^4.13.0",
     "typescript": "^4.9.5"
   }
 }
-

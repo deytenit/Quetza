@@ -1,4 +1,4 @@
-import { Interaction } from "discord.js";
+import { Events, Interaction } from "discord.js";
 
 import Client from "../../../lib/client.js";
 
@@ -14,6 +14,6 @@ async function execute(client: Client, eventee: Interaction[]): Promise<void> {
     }
 }
 
-const name = "interactionCreate";
+const name = Events.InteractionCreate;
 
 export { execute, name };

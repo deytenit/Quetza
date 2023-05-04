@@ -37,6 +37,7 @@ const data = new SlashCommandBuilder()
                 { name: "Random order", value: "AUTO" }
             )
             .setRequired(true)
-    );
+    )
+    .setDMPermission(false);
 
 export { data, execute };

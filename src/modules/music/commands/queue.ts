@@ -72,6 +72,9 @@ async function execute(client: Client, interaction: CommandInteraction) {
     });
 }
 
-const data = new SlashCommandBuilder().setName("queue").setDescription("Print out the queue.");
+const data = new SlashCommandBuilder()
+    .setName("queue")
+    .setDescription("Print out the queue.")
+    .setDMPermission(false);
 
 export { data, execute };

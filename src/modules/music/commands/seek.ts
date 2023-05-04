@@ -33,6 +33,7 @@ const data = new SlashCommandBuilder()
     .setDescription("Fast-forward by the time.")
     .addIntegerOption((option) => option.setName("hrs").setDescription("Hours to seek."))
     .addIntegerOption((option) => option.setName("mins").setDescription("Minutes to seek."))
-    .addIntegerOption((option) => option.setName("secs").setDescription("Seconds to seek."));
+    .addIntegerOption((option) => option.setName("secs").setDescription("Seconds to seek."))
+    .setDMPermission(false);
 
 export { data, execute };

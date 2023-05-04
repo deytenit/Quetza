@@ -33,6 +33,7 @@ const data = new SlashCommandBuilder()
     )
     .addIntegerOption((option) =>
         option.setName("position").setDescription("Position to insert.").setRequired(true)
-    );
+    )
+    .setDMPermission(false);
 
 export { data, execute };

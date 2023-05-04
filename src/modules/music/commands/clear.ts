@@ -22,6 +22,9 @@ async function execute(client: Client, interaction: CommandInteraction): Promise
     await interaction.reply({ embeds: [I18n.embeds.cleared(amount)] });
 }
 
-const data = new SlashCommandBuilder().setName("clear").setDescription("Clear the player's queue.");
+const data = new SlashCommandBuilder()
+    .setName("clear")
+    .setDescription("Clear the player's queue.")
+    .setDMPermission(false);
 
 export { data, execute };

@@ -1,5 +1,5 @@
 import { generateDependencyReport } from "@discordjs/voice";
-import { ActivityType } from "discord.js";
+import { ActivityType, Events } from "discord.js";
 
 import Client from "../../../lib/client.js";
 
@@ -15,9 +15,9 @@ async function execute(client: Client): Promise<void> {
 
     const restCommands = Array.from(client.commands.values()).map((value) => value.data);
 
-    client.application.commands.set(restCommands);
+    await client.application.commands.set(restCommands);
 }
 
-const name = "ready";
+const name = Events.ClientReady;
 
 export { execute, name };

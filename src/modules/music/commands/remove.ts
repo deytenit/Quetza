@@ -30,6 +30,7 @@ const data = new SlashCommandBuilder()
     .setDescription("Remove specific track in the queue.")
     .addStringOption((option) =>
         option.setName("query").setDescription("Position or title to remove.").setRequired(true)
-    );
+    )
+    .setDMPermission(false);
 
 export { data, execute };

@@ -29,6 +29,7 @@ const data = new SlashCommandBuilder()
     .setDescription("Launch player and add songs to the queue.")
     .addStringOption((option) =>
         option.setName("query").setDescription("Title or URL of the song.")
-    );
+    )
+    .setDMPermission(false);
 
 export { data, execute };

@@ -20,6 +20,9 @@ async function execute(client: Client, interaction: CommandInteraction) {
     await interaction.reply({ embeds: [I18n.embeds.skipped()] });
 }
 
-const data = new SlashCommandBuilder().setName("next").setDescription("Skip current song.");
+const data = new SlashCommandBuilder()
+    .setName("next")
+    .setDescription("Skip current song.")
+    .setDMPermission(false);
 
 export { data, execute };
