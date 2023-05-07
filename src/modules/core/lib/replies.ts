@@ -1,33 +1,32 @@
-import { bold, Collection, EmbedBuilder, InteractionReplyOptions, italic } from "discord.js";
+import { BaseMessageOptions, Collection, EmbedBuilder, italic } from "discord.js";
 
 import { ModuleMetadata } from "../../../lib/types.js";
 
 const replies = {
-    modules: (modules: Collection<string, ModuleMetadata>): InteractionReplyOptions => {
+    modules: (modules: Collection<string, ModuleMetadata>): BaseMessageOptions => {
         const embed = new EmbedBuilder()
             .setColor("Random")
-            .setTitle("Modules")
+            .setTitle("Applied modules")
             .addFields(
                 modules.map((value) => {
                     return {
                         name: value.name + "@" + value.tag,
-                        value: italic((value.description ?? "") + " | " + value.author),
-                        inline: true
+                        value: italic(value.description ?? "")
                     };
                 })
             );
 
         return { embeds: [embed] };
     },
-    ping: (websocket: number, roundtrip?: number): InteractionReplyOptions => {
+    ping: (websocket: number, roundtrip?: number): BaseMessageOptions => {
         const title = roundtrip ? `I've pinged ${roundtrip} ms. late` : "Pinging...";
 
         const comment = `Websocket ping is ${websocket} ms.`;
 
         const embed = new EmbedBuilder()
             .setColor("Random")
-            .setTitle(bold(title))
-            .setDescription(italic(bold(comment)));
+            .setTitle(title)
+            .setDescription(italic(comment));
 
         return { embeds: [embed] };
     }
