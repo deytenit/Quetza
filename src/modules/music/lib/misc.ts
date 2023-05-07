@@ -1,3 +1,5 @@
+import { time } from "discord.js";
+
 import { LoopOption } from "./types.js";
 
 const PLAYBACK_LENGTH = 15;
@@ -11,19 +13,10 @@ export function statusBarGenerator(playback: number, duration: number): string {
         PLAYBACK_LENGTH - Math.floor((PLAYBACK_LENGTH * playback) / (duration === 0 ? 1 : duration))
     ).fill("▫️");
 
-    return `**[${filled.join("")}${empty.join("")}] ${secToISO(playback)}/${secToISO(duration)}**`;
-}
-
-export function secToISO(amount: number): string {
-    const h = Math.floor(amount / 3600);
-    const m = Math.floor((amount % 3600) / 60);
-    const s = Math.floor((amount % 3600) % 60);
-
-    const hDisplay = h > 0 ? `${h}:` : "";
-    const mDisplay = `${Math.floor(m / 10)}${Math.floor(m % 10)}:`;
-    const sDisplay = `${Math.floor(s / 10)}${Math.floor(s % 10)}`;
-
-    return hDisplay + mDisplay + sDisplay;
+    return `**[${filled.join("")}${empty.join("")}] ${time(playback, "T")}/${time(
+        duration,
+        "T"
+    )}**`;
 }
 
 export async function asleep(amount: number): Promise<unknown> {

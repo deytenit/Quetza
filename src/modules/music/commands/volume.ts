@@ -1,25 +1,27 @@
-import { CommandInteraction, SlashCommandBuilder, TextChannel } from "discord.js";
+import { Interaction, SlashCommandBuilder, TextChannel } from "discord.js";
 
 import Client from "../../../lib/client.js";
-import I18n from "../lib/i18n.js";
+import replies from "../lib/replies.js";
 import { controller } from "../module.js";
 
-async function execute(client: Client, interaction: CommandInteraction) {
-    const volume = (interaction.options.get("volume")?.value as number) || 100;
-
-    if (!interaction.guild || !interaction.channel) {
+async function execute(client: Client, interaction: Interaction) {
+    if (!interaction.isChatInputCommand() || !interaction.inCachedGuild()) {
         return;
     }
+
+    const volume = interaction.options.getInteger("volume") ?? 100;
 
     const player = controller.get(interaction.guild.id, interaction.channel as TextChannel);
 
     if (!player) {
+        await interaction.reply(replies.notExists());
+
         return;
     }
 
     player.volume = volume;
 
-    await interaction.reply({ embeds: [I18n.embeds.volumeSet(player.volume)] });
+    await interaction.reply(replies.volumeSet(volume));
 }
 
 const data = new SlashCommandBuilder()

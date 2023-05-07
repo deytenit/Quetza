@@ -1,128 +1,38 @@
-import { CommandInteraction, SlashCommandBuilder, TextChannel } from "discord.js";
+import { Interaction, SlashCommandBuilder, TextChannel } from "discord.js";
 
 import Client from "../../../lib/client.js";
-import I18n from "../lib/i18n.js";
+import config from "../config.js";
+import replies from "../lib/replies.js";
 import { controller } from "../module.js";
 
-async function execute(client: Client, interaction: CommandInteraction) {
-    const filter = interaction.options.get("filter")?.value as string;
-
-    if (!interaction.guild || !interaction.channel) {
+async function execute(client: Client, interaction: Interaction) {
+    if (!interaction.isChatInputCommand() || !interaction.inCachedGuild()) {
         return;
     }
+
+    const filter = interaction.options.getString("filter") ?? undefined;
 
     const player = controller.get(interaction.guild.id, interaction.channel as TextChannel);
 
     if (!player) {
+        await interaction.reply(replies.notExists());
+
         return;
     }
 
-    player.setFilter(filter || undefined);
+    player.setFilter(filter);
 
-    await interaction.reply({ embeds: [I18n.embeds.filtered(filter || undefined)] });
+    await interaction.reply(replies.filtered(filter));
 }
 
 const data = new SlashCommandBuilder()
     .setName("filter")
-    .setDescription("Apply unique filters to the tracks.")
+    .setDescription("Apply unique filters to the playback.")
     .addStringOption((option) =>
         option
             .setName("filter")
             .setDescription("Filter to apply.")
-            .setChoices(
-                {
-                    name: "Bassboost low",
-                    value: "bassboost_low"
-                },
-                {
-                    name: "Bassboost",
-                    value: "bassboost"
-                },
-                {
-                    name: "Bassboost high",
-                    value: "bassboost_high"
-                },
-                {
-                    name: "8D",
-                    value: "8D"
-                },
-                {
-                    name: "Vaporwave",
-                    value: "vaporwave"
-                },
-                {
-                    name: "Nightcore",
-                    value: "nightcore"
-                },
-                {
-                    name: "Phaser",
-                    value: "phaser"
-                },
-                {
-                    name: "Tremolo",
-                    value: "tremolo"
-                },
-                {
-                    name: "Vibrato",
-                    value: "vibrato"
-                },
-                {
-                    name: "Reverse",
-                    value: "reverse"
-                },
-                {
-                    name: "Treble",
-                    value: "treble"
-                },
-                {
-                    name: "Normalizer",
-                    value: "normalizer"
-                },
-                {
-                    name: "Surround Sound",
-                    value: "surrounding"
-                },
-                {
-                    name: "Pulsator",
-                    value: "pulsator"
-                },
-                {
-                    name: "Subboost",
-                    value: "subboost"
-                },
-                {
-                    name: "Mono Audio",
-                    value: "mono"
-                },
-                {
-                    name: "Compressor",
-                    value: "compressor"
-                },
-                {
-                    name: "Expander",
-                    value: "expander"
-                },
-                {
-                    name: "Softlimiter",
-                    value: "softlimiter"
-                },
-                {
-                    name: "Chorus",
-                    value: "chorus"
-                },
-                {
-                    name: "Fadein",
-                    value: "fadein"
-                },
-                {
-                    name: "Dimming",
-                    value: "dim"
-                },
-                {
-                    name: "Earrape",
-                    value: "earrape"
-                }
-            )
+            .setChoices(...config.playerFilterChoices)
             .setRequired(true)
     )
     .setDMPermission(false);

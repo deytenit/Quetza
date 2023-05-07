@@ -3,78 +3,82 @@ import {
     ButtonBuilder,
     ButtonInteraction,
     ButtonStyle,
-    CommandInteraction,
-    Message,
+    Interaction,
     MessageActionRowComponentBuilder,
     SlashCommandBuilder,
     TextChannel
 } from "discord.js";
 
 import Client from "../../../lib/client.js";
-import I18n from "../lib/i18n.js";
+import replies from "../lib/replies.js";
 import { controller } from "../module.js";
 
-async function execute(client: Client, interaction: CommandInteraction) {
-    if (!interaction.guild || !interaction.channel) {
-        return;
-    }
-
-    const player = controller.get(interaction.guild.id, interaction.channel as TextChannel);
-
-    if (!player) {
+async function execute(client: Client, interaction: Interaction) {
+    if (!interaction.isChatInputCommand() || !interaction.inCachedGuild()) {
         return;
     }
 
     await interaction.deferReply();
 
-    if (player.queue.empty()) {
-        await interaction.editReply({ embeds: [I18n.embeds.queueEmpty()] });
+    const player = controller.get(interaction.guild.id, interaction.channel as TextChannel);
+
+    if (!player) {
+        await interaction.editReply(replies.notExists());
+
         return;
     }
 
-    let page = 0;
+    if (player.queue.empty()) {
+        await interaction.editReply(replies.queue(player.queue));
+
+        return;
+    }
+
+    let position = 1;
 
     const row = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
-        new ButtonBuilder().setCustomId("QueueTop").setLabel("🔼").setStyle(ButtonStyle.Primary),
-        new ButtonBuilder().setCustomId("QueueUp").setLabel("🔺").setStyle(ButtonStyle.Secondary),
-        new ButtonBuilder().setCustomId("QueueDown").setLabel("🔻").setStyle(ButtonStyle.Secondary),
-        new ButtonBuilder().setCustomId("QueueEnd").setLabel("🔽").setStyle(ButtonStyle.Primary)
+        new ButtonBuilder().setCustomId("Top").setLabel("🔼").setStyle(ButtonStyle.Primary),
+        new ButtonBuilder().setCustomId("Up").setLabel("🔺").setStyle(ButtonStyle.Secondary),
+        new ButtonBuilder().setCustomId("Down").setLabel("🔻").setStyle(ButtonStyle.Secondary),
+        new ButtonBuilder().setCustomId("End").setLabel("🔽").setStyle(ButtonStyle.Primary)
     );
 
-    const message = (await interaction.editReply({
-        embeds: [I18n.embeds.queueDesigner(player.queue, 0, player.resource)],
+    const message = await interaction.editReply({
+        ...replies.queue(player.queue, 0, player.resource),
         components: [row]
-    })) as Message;
+    });
 
     const collector = message.createMessageComponentCollector({ time: 30000 });
 
     collector.on("collect", async (btn: ButtonInteraction) => {
         switch (btn.customId) {
-            case "QueueTop": {
-                page = 0;
+            case "Top": {
+                position = 1;
                 break;
             }
-            case "QueueUp": {
-                page = Math.max(page - 1, 0);
+            case "Up": {
+                position = Math.max(position - 10, 1);
                 break;
             }
-            case "QueueDown": {
-                page = Math.min(page + 1, Math.floor(player.queue.tracks.length / 11));
+            case "Down": {
+                position = Math.min(
+                    position + 10,
+                    Math.floor(player.queue.tracks.length / 10) * 10
+                );
                 break;
             }
-            case "QueueEnd":
-                page = Math.floor(player.queue.tracks.length / 11);
+            case "End": {
+                position = Math.floor(player.queue.tracks.length / 10) * 10;
+            }
         }
 
-        await btn.update({
-            embeds: [I18n.embeds.queueDesigner(player.queue, page, player.resource)]
-        });
+        await btn.update(replies.queue(player.queue, position - 1, player.resource));
     });
 }
 
 const data = new SlashCommandBuilder()
     .setName("queue")
-    .setDescription("Print out the queue.")
+    .setDescription("Print interactive queue pointing to current track.")
     .setDMPermission(false);
 
 export { data, execute };

@@ -1,22 +1,28 @@
-import { CommandInteraction, SlashCommandBuilder } from "discord.js";
+import { Interaction, SlashCommandBuilder } from "discord.js";
 
 import Client from "../../../lib/client.js";
-import I18n from "../lib/i18n.js";
+import replies from "../lib/replies.js";
 import { execute as connect } from "./connect.js";
 
-async function execute(client: Client, interaction: CommandInteraction) {
-    const query = interaction.options.get("query")?.value as string;
+async function execute(client: Client, interaction: Interaction) {
+    if (!interaction.isChatInputCommand() || !interaction.inCachedGuild()) {
+        return;
+    }
+
+    const query = interaction.options.getString("query");
 
     const player = await connect(client, interaction);
 
     if (!player) {
+        await interaction.editReply(replies.notExists());
+
         return;
     }
 
     if (query) {
         const track = await player.add(query, interaction.user);
 
-        await interaction.editReply({ embeds: [I18n.embeds.appended(track)] });
+        await interaction.editReply(replies.appended(track));
     }
 
     if (!player.resource) {

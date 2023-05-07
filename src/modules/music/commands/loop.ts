@@ -1,26 +1,28 @@
-import { CommandInteraction, SlashCommandBuilder, TextChannel } from "discord.js";
+import { Interaction, SlashCommandBuilder, TextChannel } from "discord.js";
 
 import Client from "../../../lib/client.js";
-import I18n from "../lib/i18n.js";
+import replies from "../lib/replies.js";
 import { LoopOption } from "../lib/types.js";
 import { controller } from "../module.js";
 
-async function execute(client: Client, interaction: CommandInteraction) {
-    const query = interaction.options.get("option")?.value as string;
-
-    if (!interaction.guild || !query || !interaction.channel) {
+async function execute(client: Client, interaction: Interaction) {
+    if (!interaction.isChatInputCommand() || !interaction.inCachedGuild()) {
         return;
     }
+
+    const option = interaction.options.getString("option", true) as LoopOption;
 
     const player = controller.get(interaction.guild.id, interaction.channel as TextChannel);
 
     if (!player) {
+        await interaction.reply(replies.notExists());
+
         return;
     }
 
-    player.queue.loop = query as LoopOption;
+    player.queue.loop = option;
 
-    await interaction.reply({ embeds: [I18n.embeds.looped(query as LoopOption)] });
+    await interaction.reply(replies.looped(option));
 }
 
 const data = new SlashCommandBuilder()
@@ -29,12 +31,12 @@ const data = new SlashCommandBuilder()
     .addStringOption((option) =>
         option
             .setName("option")
-            .setDescription("Select loop option.")
+            .setDescription("Loop option.")
             .setChoices(
-                { name: "loop queue", value: "LOOP" },
-                { name: "loop single track", value: "SONG" },
-                { name: "Till end", value: "NONE" },
-                { name: "Random order", value: "AUTO" }
+                { name: "Loop queue", value: "LOOP" },
+                { name: "Loop single track", value: "SONG" },
+                { name: "Drop on final", value: "NONE" },
+                { name: "Random", value: "AUTO" }
             )
             .setRequired(true)
     )

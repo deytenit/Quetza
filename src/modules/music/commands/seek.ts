@@ -1,36 +1,44 @@
-import { CommandInteraction, SlashCommandBuilder, TextChannel } from "discord.js";
+import { Interaction, SlashCommandBuilder, TextChannel } from "discord.js";
 
 import Client from "../../../lib/client.js";
-import I18n from "../lib/i18n.js";
+import replies from "../lib/replies.js";
 import { controller } from "../module.js";
 
-async function execute(client: Client, interaction: CommandInteraction) {
-    const hours = (interaction.options.get("hrs")?.value as number) || 0;
-    const minutes = (interaction.options.get("mins")?.value as number) || 0;
-    const seconds = (interaction.options.get("secs")?.value as number) || 0;
-
-    if (!interaction.guild || !interaction.channel) {
+async function execute(client: Client, interaction: Interaction) {
+    if (!interaction.isChatInputCommand() || !interaction.inCachedGuild()) {
         return;
     }
+
+    const hours = interaction.options.getInteger("hrs") ?? 0;
+    const minutes = interaction.options.getInteger("mins") ?? 0;
+    const seconds = interaction.options.getInteger("secs") ?? 0;
 
     const player = controller.get(interaction.guild.id, interaction.channel as TextChannel);
 
     if (!player) {
+        await interaction.reply(replies.notExists());
+
         return;
     }
 
-    const time = hours * 3600 + minutes * 60 + seconds;
+    if (!player.resource) {
+        await interaction.reply(replies.notPlaying());
 
-    player.seek(time * 1000);
+        return;
+    }
 
-    await interaction.reply({
-        embeds: [I18n.embeds.fastForwarded(time)]
-    });
+    const prevTime = player.resource.playbackDuration * 1000;
+
+    const nextTime = hours * 3600 + minutes * 60 + seconds;
+
+    player.seek(nextTime * 1000);
+
+    await interaction.reply(replies.seeked(prevTime, nextTime));
 }
 
 const data = new SlashCommandBuilder()
     .setName("seek")
-    .setDescription("Fast-forward by the time.")
+    .setDescription("Fast-forward/Fast-reverse by the given time.")
     .addIntegerOption((option) => option.setName("hrs").setDescription("Hours to seek."))
     .addIntegerOption((option) => option.setName("mins").setDescription("Minutes to seek."))
     .addIntegerOption((option) => option.setName("secs").setDescription("Seconds to seek."))

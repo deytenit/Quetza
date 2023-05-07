@@ -6,7 +6,7 @@ import Music from "./lib/music.js";
 const name = "music";
 const description = "Music module";
 const author = "unknowableshade";
-const tag = "1.0.0";
+const tag = "2.0.0";
 
 const controller = new Music();
 
