@@ -1,8 +1,10 @@
+import { generateDependencyReport } from "@discordjs/voice";
 import { PrismaClient } from "@prisma/client";
 import { Client as DiscordClient, ClientOptions, Collection } from "discord.js";
 import { existsSync, lstatSync, readdirSync } from "fs";
 import path from "path";
 import { pathToFileURL } from "url";
+import winston from "winston";
 
 import config from "../config.js";
 import { Command, Event, Module, ModuleMetadata } from "./types.js";
@@ -18,8 +20,25 @@ export default class Client extends DiscordClient {
 
     public readonly db = new PrismaClient();
 
+    public readonly log = winston.createLogger({
+        level: 'info',
+        format: winston.format.json(),
+        transports: [
+            new winston.transports.File({ filename: 'error.log', level: 'error' }),
+            new winston.transports.File({ filename: 'combined.log' }),
+        ],
+    });
+
     public constructor(options: ClientOptions) {
         super(options);
+
+        if (process.env.NODE_ENV !== 'production') {
+            this.log.add(new winston.transports.Console({
+                format: winston.format.simple(),
+            }));
+
+            this.log.info(generateDependencyReport());
+        }
 
         for (const module of readdirSync(config.modulesDir)) {
             const modulePath = path.join(config.modulesDir, module);
@@ -69,7 +88,7 @@ export default class Client extends DiscordClient {
         });
     }
 
-    public generateApplicationStatus(): string {
+    public generateApplicationStatus(): string[] {
         const modulesStatus = this.modules
             .map((module) => {
                 const tag = `✓ ${module.name}@${module.tag} module is loaded.`;
@@ -78,13 +97,12 @@ export default class Client extends DiscordClient {
 
                 return [`${tag}\n`, "commands:", `${commands}`, "events:", `${events}`].join("\n");
             })
-            .join("\n" + "-".repeat(50) + "\n");
 
         const clientStatus =
             this.user && this.application
                 ? `✓ ${this.application.id} successfully logged in as ${this.user.tag}.`
                 : "✖ Application is not availiable.";
 
-        return ["-".repeat(50), modulesStatus, "-".repeat(50), clientStatus].join("\n");
+        return modulesStatus.concat(clientStatus);
     }
 }
