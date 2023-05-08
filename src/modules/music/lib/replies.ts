@@ -1,5 +1,5 @@
 import { AudioResource } from "@discordjs/voice";
-import { BaseMessageOptions, EmbedBuilder, italic, underscore } from "discord.js";
+import { BaseMessageOptions, EmbedBuilder, italic } from "discord.js";
 
 import config from "../../../config.js";
 import { loopMoji, statusBarGenerator, toISOTime, volumeMoji } from "./misc.js";
@@ -243,7 +243,7 @@ const replies = {
             .setColor(config.colors.success)
             .setTitle(`♻️  Queue has been cleared`)
             .setDescription(
-                `${underscore(amount.toString())} track${amount > 1 ? "s were" : " was"} deleted.`
+                `${italic(amount.toString())} track${amount > 1 ? "s were" : " was"} deleted.`
             );
 
         return { embeds: [embed] };

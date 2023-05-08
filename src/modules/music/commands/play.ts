@@ -1,26 +1,33 @@
-import { Interaction, SlashCommandBuilder, TextChannel } from "discord.js";
+import { Interaction, SlashCommandBuilder } from "discord.js";
 
 import Client from "../../../lib/client.js";
+import logger from "../../../lib/logger.js";
 import replies from "../lib/replies.js";
 import { controller } from "../module.js";
 
 async function execute(client: Client, interaction: Interaction) {
-    if (!interaction.isChatInputCommand() || !interaction.inCachedGuild()) {
+    if (!interaction.isChatInputCommand() || !interaction.inCachedGuild() || !interaction.channel) {
+        logger.warn("Interaction rejected.", { interaction });
+
         return;
     }
 
     const query = interaction.options.getString("query");
 
-    await interaction.reply(replies.searching());
+    if (query) {
+        await interaction.reply(replies.searching());
+    } else {
+        await interaction.deferReply();
+    }
 
     const player =
-        controller.get(interaction.guild.id, interaction.channel as TextChannel) ??
-        controller.set(interaction.guild, interaction.channel as TextChannel);
+        controller.get(interaction.guild, interaction.channel) ??
+        controller.set(interaction.guild, interaction.channel);
 
     const channel = interaction.member.voice.channel;
 
     if (!channel) {
-        controller.delete(interaction.guild.id);
+        controller.delete(interaction.guildId);
 
         await interaction.editReply(replies.notConnected());
 

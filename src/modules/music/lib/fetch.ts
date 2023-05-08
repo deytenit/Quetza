@@ -3,6 +3,7 @@ import path from "path";
 import { promisify } from "util";
 
 import config from "../../../config.js";
+import logger from "../../../lib/logger.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -33,6 +34,8 @@ interface YtdlResult {
 
 async function fetchInfoRecursive(query: string, depth = 0): Promise<YtdlResult[]> {
     if (depth === SEARCH_DEPTH) {
+        logger.warn("yt-dlp failed to find anything.", { query });
+
         return [];
     }
 
@@ -54,6 +57,10 @@ async function fetchInfoRecursive(query: string, depth = 0): Promise<YtdlResult[
                 title: entry.title,
                 thumbnail: entry.thumbnail,
                 duration: entry.duration
+            });
+
+            logger.info("yt-dlp has found corresponding youtube video.", {
+                result: result[result.length - 1]
             });
 
             continue;
@@ -79,9 +86,17 @@ async function fetchInfoRecursive(query: string, depth = 0): Promise<YtdlResult[
 }
 
 export async function fetchInfo(query: string): Promise<YtdlResult[]> {
-    if (!isURL(query)) {
-        return await fetchInfoRecursive("ytsearch1:" + query);
-    } else {
+    logger.info("yt-dlp was invoked.", { query });
+
+    try {
+        if (!isURL(query)) {
+            return await fetchInfoRecursive("ytsearch1:" + query);
+        }
+
         return await fetchInfoRecursive(query);
+    } catch (error) {
+        logger.error("yt-dlp execution invoked error.", { error });
+
+        return [];
     }
 }

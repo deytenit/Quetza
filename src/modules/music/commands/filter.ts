@@ -1,19 +1,21 @@
-import { Interaction, SlashCommandBuilder, TextChannel } from "discord.js";
+import { Interaction, SlashCommandBuilder } from "discord.js";
 
 import Client from "../../../lib/client.js";
-import config from "../config.js";
+import logger from "../../../lib/logger.js";
+import Filter from "../lib/filter.js";
 import replies from "../lib/replies.js";
 import { controller } from "../module.js";
 
 async function execute(client: Client, interaction: Interaction) {
-    if (!interaction.isChatInputCommand() || !interaction.inCachedGuild()) {
+    if (!interaction.isChatInputCommand() || !interaction.inCachedGuild() || !interaction.channel) {
+        logger.warn("Interaction rejected.", { interaction });
+
         return;
     }
 
     const filter = interaction.options.getString("filter") ?? undefined;
-    const name = interaction.options.get("filter")?.name;
 
-    const player = controller.get(interaction.guild.id, interaction.channel as TextChannel);
+    const player = controller.get(interaction.guild, interaction.channel);
 
     if (!player) {
         await interaction.reply(replies.notExists());
@@ -23,7 +25,7 @@ async function execute(client: Client, interaction: Interaction) {
 
     const status = player.setFilter(filter);
 
-    await interaction.reply(replies.filtered(name, status));
+    await interaction.reply(replies.filtered(filter, status));
 }
 
 const data = new SlashCommandBuilder()
@@ -33,8 +35,11 @@ const data = new SlashCommandBuilder()
         option
             .setName("filter")
             .setDescription("Filter to apply.")
-            .setChoices(...config.playerFilterChoices)
-            .setRequired(true)
+            .setChoices(
+                ...Object.keys(Filter.filters).map((key) => {
+                    return { name: key, value: key };
+                })
+            )
     )
     .setDMPermission(false);
 

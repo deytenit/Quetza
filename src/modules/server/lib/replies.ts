@@ -10,21 +10,23 @@ import {
     User
 } from "discord.js";
 
+import config from "../../../config.js";
+
 const replies = {
-    action: (action: string, user: User, reason?: string): BaseMessageOptions => {
+    error: (): InteractionReplyOptions => {
         const embed = new EmbedBuilder()
-            .setColor("DarkRed")
-            .setTitle(bold(`${user.tag} was ${action}`))
-            .setDescription(italic(reason ?? "No reason provided."))
+            .setColor(config.colors.error)
+            .setTitle("Internal error occured while resolving interaction.")
+            .setDescription("Submit an issue (bio). Logs were saved.")
             .setTimestamp();
 
-        return { embeds: [embed] };
+        return { embeds: [embed], ephemeral: true };
     },
     notMember: (action: string, user: User): InteractionReplyOptions => {
         const embed = new EmbedBuilder()
             .setColor("Blue")
-            .setTitle(bold(`${user.tag} cannot be ${action}`))
-            .setDescription(italic("They're not a guild member."))
+            .setTitle(`${user.tag} cannot be ${action}`)
+            .setDescription("They're not a guild member.")
             .setTimestamp();
 
         return { embeds: [embed], ephemeral: true };
@@ -36,17 +38,17 @@ const replies = {
         reason?: string
     ): InteractionReplyOptions => {
         const embed = new EmbedBuilder()
-            .setColor("Green")
-            .setTitle(bold(`Role ${roleName} was ${action} user ${user.tag}`))
-            .setDescription(italic(reason ?? "No reason provided."))
+            .setColor(config.colors.success)
+            .setTitle(`Role ${roleName} was ${action} user ${user.tag}`)
+            .setDescription(reason ?? "No reason provided.")
             .setTimestamp();
 
         return { embeds: [embed], ephemeral: true };
     },
     roleList: (observed: string, roles: Collection<string, Role>): InteractionReplyOptions => {
         const embed = new EmbedBuilder()
-            .setColor("Green")
-            .setTitle(bold(`${observed} roles:`))
+            .setColor(config.colors.success)
+            .setTitle(`${observed} roles:`)
             .addFields(
                 roles.map((role) => {
                     return {
@@ -61,7 +63,7 @@ const replies = {
     },
     auto: (action: string, event: string): BaseMessageOptions => {
         const embed = new EmbedBuilder()
-            .setColor("Green")
+            .setColor(config.colors.success)
             .setTitle(
                 bold(
                     `From now I will ${underscore(italic(action))} when ${underscore(

@@ -6,11 +6,13 @@ async function execute(client: Client, eventee: [GuildMember]): Promise<void> {
     const [member] = eventee;
 
     try {
-        const event = await client.db.event.findFirstOrThrow({
+        const event = await client.db.event.findFirst({
             where: { guildId: member.guild.id, title: name }
         });
 
-        await member.roles.add(event.metadata as string[]);
+        if (event) {
+            await member.roles.add(event.metadata as string[]);
+        }
     } finally {
         await client.db.$disconnect();
     }

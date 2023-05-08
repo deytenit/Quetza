@@ -31,7 +31,7 @@ export default class Player {
         this.channel_ = x;
     }
 
-    private message?: Message;
+    private message_?: Message;
 
     private connection_?: VoiceConnection;
     public get connection(): VoiceConnection | undefined {
@@ -115,11 +115,11 @@ export default class Player {
     }
 
     private async messageResolvable(track: Track) {
-        if (this.message) {
-            await this.message.delete();
+        if (this.message_?.deletable) {
+            await this.message_.delete().catch();
         }
 
-        this.message = await this.channel_.send(replies.nowPlaying(track));
+        this.message_ = await this.channel_.send(replies.nowPlaying(track));
     }
 
     private async search(query: string, requester: User): Promise<Track[] | undefined> {
@@ -129,16 +129,9 @@ export default class Player {
             return undefined;
         }
 
-        const tracks: Track[] = [];
-
-        for (const entry of info) {
-            tracks.push({
-                ...entry,
-                requester: requester
-            });
-        }
-
-        return tracks;
+        return info.map((value) => {
+            return { ...value, requester: requester };
+        });
     }
 
     public play(seek?: number): void {
@@ -172,6 +165,8 @@ export default class Player {
             guildId: channel.guildId,
             adapterCreator: channel.guild.voiceAdapterCreator as DiscordGatewayAdapterCreator
         });
+
+        this.connection_.subscribe(this.player_);
     }
 
     public async add(query: string, requester: User, index?: number): Promise<Track | undefined> {

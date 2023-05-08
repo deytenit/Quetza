@@ -5,8 +5,8 @@ import { LoopOption, Track } from "./types.js";
 const STATUSBAR_LENGTH = 15;
 
 export function statusBarGenerator(resource?: AudioResource<Track>): string {
-    const playback = resource ? resource.playbackDuration / 1000 : 0;
-    const duration = resource ? resource.metadata.duration || 1 : 0;
+    const duration = resource?.metadata.duration || 1;
+    const playback = Math.min(resource?.playbackDuration || 0 / 1000, duration);
 
     const filled = Array<string>(Math.floor((STATUSBAR_LENGTH * playback) / duration)).fill("🔹");
 

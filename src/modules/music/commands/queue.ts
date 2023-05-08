@@ -5,22 +5,24 @@ import {
     ButtonStyle,
     Interaction,
     MessageActionRowComponentBuilder,
-    SlashCommandBuilder,
-    TextChannel
+    SlashCommandBuilder
 } from "discord.js";
 
 import Client from "../../../lib/client.js";
+import logger from "../../../lib/logger.js";
 import replies from "../lib/replies.js";
 import { controller } from "../module.js";
 
 async function execute(client: Client, interaction: Interaction) {
-    if (!interaction.isChatInputCommand() || !interaction.inCachedGuild()) {
+    if (!interaction.isChatInputCommand() || !interaction.inCachedGuild() || !interaction.channel) {
+        logger.warn("Interaction rejected.", { interaction });
+
         return;
     }
 
     await interaction.deferReply();
 
-    const player = controller.get(interaction.guild.id, interaction.channel as TextChannel);
+    const player = controller.get(interaction.guild, interaction.channel);
 
     if (!player) {
         await interaction.editReply(replies.notExists());
