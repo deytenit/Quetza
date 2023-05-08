@@ -1,11 +1,12 @@
 import { BaseMessageOptions, Collection, EmbedBuilder, italic } from "discord.js";
 
+import config from "../../../config.js";
 import { ModuleMetadata } from "../../../lib/types.js";
 
 const replies = {
     modules: (modules: Collection<string, ModuleMetadata>): BaseMessageOptions => {
         const embed = new EmbedBuilder()
-            .setColor("Random")
+            .setColor(config.colors.default)
             .setTitle("Applied modules")
             .addFields(
                 modules.map((value) => {
@@ -24,7 +25,7 @@ const replies = {
         const comment = `Websocket ping is ${websocket} ms.`;
 
         const embed = new EmbedBuilder()
-            .setColor("Random")
+            .setColor(config.colors.default)
             .setTitle(title)
             .setDescription(italic(comment));
 
