@@ -14,8 +14,3 @@ _Neat typescript discord bot._
 - **[Dependencies](https://github.com/unknowableshade/quetza-bot/blob/master/package.json)**
 - **[Docker](https://hub.docker.com/repository/docker/unknowableshade/quetza-bot)**
 - **[Licence](https://github.com/unknowableshade/5a0b-bot/blob/master/LICENSE)**
-
-## Notes
-
-- resolve toISOTime() issue.
-- resolve absurd in voice connection (working)...
