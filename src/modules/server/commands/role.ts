@@ -14,7 +14,7 @@ async function execute(client: Client, interaction: Interaction): Promise<void> 
         const member = await interaction.guild.members.fetch(user).catch(() => undefined);
 
         if (member) {
-            await interaction.reply(replies.roleList(user, member.roles.cache));
+            await interaction.reply(replies.roleList(user.tag, member.roles.cache));
         } else {
             await interaction.reply(replies.notMember("edited", user));
         }
@@ -47,6 +47,14 @@ async function execute(client: Client, interaction: Interaction): Promise<void> 
 
         return;
     }
+
+    if (interaction.options.getSubcommand() === "list") {
+        const roles = await interaction.guild.roles.fetch();
+
+        await interaction.reply(replies.roleList(interaction.guild.name, roles));
+
+        return;
+    }
 }
 
 const data = new SlashCommandBuilder()
@@ -54,8 +62,13 @@ const data = new SlashCommandBuilder()
     .setDescription("Server's role manager.")
     .addSubcommand((subcommand) =>
         subcommand
+            .setName("list")
+            .setDescription("Role: list guild's roles.")
+    )
+    .addSubcommand((subcommand) =>
+        subcommand
             .setName("check")
-            .setDescription("Role: check.")
+            .setDescription("Role: check user roles.")
             .addUserOption((option) =>
                 option
                     .setName("member")
@@ -66,7 +79,7 @@ const data = new SlashCommandBuilder()
     .addSubcommand((subcommand) =>
         subcommand
             .setName("edit")
-            .setDescription("Role: edit.")
+            .setDescription("Role: edit role for a specific user.")
             .addUserOption((option) =>
                 option
                     .setName("member")

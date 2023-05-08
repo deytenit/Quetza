@@ -2,17 +2,15 @@ import { Events, GuildMember } from "discord.js";
 
 import Client from "../../../lib/client.js";
 
-async function execute(client: Client, eventee: GuildMember[]): Promise<void> {
+async function execute(client: Client, eventee: [GuildMember]): Promise<void> {
     const [member] = eventee;
 
     try {
-        await client.db.$connect();
-
         const event = await client.db.event.findFirstOrThrow({
             where: { guildId: member.guild.id, title: name }
         });
 
-        await member.roles.add(event.Roles);
+        await member.roles.add(event.metadata as string[]);
     } finally {
         await client.db.$disconnect();
     }
