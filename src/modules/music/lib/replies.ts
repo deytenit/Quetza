@@ -1,7 +1,8 @@
 import { AudioResource } from "@discordjs/voice";
-import { BaseMessageOptions, EmbedBuilder, italic, time, underscore } from "discord.js";
+import { BaseMessageOptions, EmbedBuilder, italic, underscore } from "discord.js";
 
-import { loopMoji, statusBarGenerator, volumeMoji } from "./misc.js";
+import config from "../../../config.js";
+import { loopMoji, statusBarGenerator, toISOTime, volumeMoji } from "./misc.js";
 import Player from "./player.js";
 import Queue from "./queue.js";
 import { LoopOption, Track } from "./types.js";
@@ -9,15 +10,23 @@ import { LoopOption, Track } from "./types.js";
 const replies = {
     notExists: (): BaseMessageOptions => {
         const embed = new EmbedBuilder()
-            .setColor("Yellow")
+            .setColor(config.colors.warning)
             .setTitle("⚠️  Command ignored - player does not exist")
             .setDescription("Use '/play' to create a new one.");
 
         return { embeds: [embed] };
     },
-    notPlaying: () => {
+    searching: (): BaseMessageOptions => {
         const embed = new EmbedBuilder()
-            .setColor("LuminousVividPink")
+            .setColor(config.colors.default)
+            .setTitle("🔍  Searching...")
+            .setDescription("It will take longer if playlist or non-youtube URL was queried.");
+
+        return { embeds: [embed] };
+    },
+    notPlaying: (): BaseMessageOptions => {
+        const embed = new EmbedBuilder()
+            .setColor(config.colors.default)
             .setTitle("💿  Insert the disk...")
             .setURL("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
             .setDescription("Use '/play' to start the playback.");
@@ -26,7 +35,7 @@ const replies = {
     },
     nowPlaying: (track: Track): BaseMessageOptions => {
         const embed = new EmbedBuilder()
-            .setColor("LuminousVividPink")
+            .setColor(config.colors.default)
             .setAuthor({
                 iconURL: track.requester.avatarURL() ?? undefined,
                 name: track.requester.tag
@@ -40,7 +49,7 @@ const replies = {
     },
     okConnected: (channel: string): BaseMessageOptions => {
         const embed = new EmbedBuilder()
-            .setColor("Green")
+            .setColor(config.colors.success)
             .setTitle(`✅  Successfuly connected to: ${italic(channel)}`)
             .setDescription("Will leave after some time, if left alone.");
 
@@ -48,23 +57,15 @@ const replies = {
     },
     notConnected: (): BaseMessageOptions => {
         const embed = new EmbedBuilder()
-            .setColor("Red")
+            .setColor(config.colors.error)
             .setTitle("❗  Cannot create new player.")
             .setDescription("Make yourself connected to a voice channel beforehand.");
 
         return { embeds: [embed] };
     },
-    isConnected: (): BaseMessageOptions => {
-        const embed = new EmbedBuilder()
-            .setColor("Yellow")
-            .setTitle("⚠️  Player already exists")
-            .setDescription("No need in creating a new one.");
-
-        return { embeds: [embed] };
-    },
     destroyed: (): BaseMessageOptions => {
         const embed = new EmbedBuilder()
-            .setColor("Red")
+            .setColor(config.colors.error)
             .setTitle("💀  Destroying the player")
             .setDescription("Everything is lost now. Use '/play' to create a new one.");
 
@@ -72,7 +73,7 @@ const replies = {
     },
     alone: (): BaseMessageOptions => {
         const embed = new EmbedBuilder()
-            .setColor("LuminousVividPink")
+            .setColor(config.colors.default)
             .setTitle("🥬  I have decided to leave to conserve my energy")
             .setDescription("Since there was nobody in the voice channel.");
 
@@ -82,10 +83,12 @@ const replies = {
         let embed: EmbedBuilder;
 
         if (state) {
-            embed = new EmbedBuilder().setColor("Green").setTitle("▶️  The playback was resumed");
+            embed = new EmbedBuilder()
+                .setColor(config.colors.success)
+                .setTitle("▶️  The playback was resumed");
         } else {
             embed = new EmbedBuilder()
-                .setColor("Yellow")
+                .setColor(config.colors.warning)
                 .setTitle("⏸️  The playback was paused")
                 .setDescription("Invoke this command again to resume.");
         }
@@ -97,16 +100,16 @@ const replies = {
 
         if (from < to) {
             embed = new EmbedBuilder()
-                .setColor("Blue")
-                .setTitle(`⏩  Fast-forwarding by ${time(to - from, "T")}`);
+                .setColor(config.colors.info)
+                .setTitle(`⏩  Fast-forwarding by ${toISOTime(to - from)}`);
         } else {
             embed = new EmbedBuilder()
-                .setColor("Blue")
-                .setTitle(`⏪  Fast-reversing by ${time(from - to, "T")}`);
+                .setColor(config.colors.info)
+                .setTitle(`⏪  Fast-reversing by ${toISOTime(from - to)}`);
         }
 
         embed.setDescription(
-            `Moving playback from ${italic(time(from, "T"))} to ${italic(time(to, "T"))}.`
+            `Moving playback from ${italic(toISOTime(from))} to ${italic(toISOTime(to))}.`
         );
 
         return { embeds: [embed] };
@@ -117,7 +120,7 @@ const replies = {
         switch (option) {
             case "AUTO": {
                 embed = new EmbedBuilder()
-                    .setColor("LuminousVividPink")
+                    .setColor(config.colors.default)
                     .setTitle(`${loopMoji(option)}  Shuffle mode.`)
                     .setDescription("Does not affect the queue order. Endless playback.");
 
@@ -125,7 +128,7 @@ const replies = {
             }
             case "LOOP": {
                 embed = new EmbedBuilder()
-                    .setColor("Blue")
+                    .setColor(config.colors.info)
                     .setTitle(`${loopMoji(option)}  Looping over the queue.`)
                     .setDescription("Will start over after final track. Endless playback.");
 
@@ -133,7 +136,7 @@ const replies = {
             }
             case "SONG": {
                 embed = new EmbedBuilder()
-                    .setColor("Yellow")
+                    .setColor(config.colors.warning)
                     .setTitle(`${loopMoji(option)}  Looping a single track.`)
                     .setDescription("Endless playback of a single track. Over and over again...");
 
@@ -141,7 +144,7 @@ const replies = {
             }
             case "NONE": {
                 embed = new EmbedBuilder()
-                    .setColor("Red")
+                    .setColor(config.colors.error)
                     .setTitle(`${loopMoji(option)}  Drop on final.`)
                     .setDescription(
                         "Will end playback after final track. Action will be needed to continue."
@@ -155,7 +158,7 @@ const replies = {
     },
     reshuffle: (): BaseMessageOptions => {
         const embed = new EmbedBuilder()
-            .setColor("Green")
+            .setColor(config.colors.success)
             .setTitle("✅  Successfuly reshuffled queue")
             .setDescription("Use 'random' mode, if you want shuffle without reshuffle.");
 
@@ -163,27 +166,30 @@ const replies = {
     },
     skipped: (): BaseMessageOptions => {
         const embed = new EmbedBuilder()
-            .setColor("Green")
+            .setColor(config.colors.info)
             .setTitle("⏭️  Skipping current track")
             .setDescription("Behavior depends on the loop option.");
 
         return { embeds: [embed] };
     },
-    jumped: (from: number, to?: number): BaseMessageOptions => {
-        let embed: EmbedBuilder;
-
+    jumped: (previous?: Track, to?: number): BaseMessageOptions => {
         if (!to) {
-            embed = new EmbedBuilder()
-                .setColor("Red")
+            const embed = new EmbedBuilder()
+                .setColor(config.colors.error)
                 .setTitle("❗  Cannot perfome jump over the queue")
                 .setDescription("Either not found by query, or index is not in range.");
+
+            return { embeds: [embed] };
+        }
+
+        const embed = new EmbedBuilder()
+            .setColor(config.colors.success)
+            .setTitle(`✅  Jumping over the queue`);
+
+        if (previous) {
+            embed.setDescription(`Switching from ${italic(previous.title)}.`);
         } else {
-            embed = new EmbedBuilder()
-                .setColor("Green")
-                .setTitle(`✅  Jumping over the queue`)
-                .setDescription(
-                    `Switching from #${italic(from.toString())} to #${italic(to.toString())}.`
-                );
+            embed.setDescription("Playback will start again.");
         }
 
         return { embeds: [embed] };
@@ -191,14 +197,9 @@ const replies = {
     appended: (track?: Track): BaseMessageOptions => {
         let embed: EmbedBuilder;
 
-        if (!track) {
+        if (track) {
             embed = new EmbedBuilder()
-                .setColor("Red")
-                .setTitle("❗  Cannot add track to the queue")
-                .setDescription("Either not found by query, or URL is broken.");
-        } else {
-            embed = new EmbedBuilder()
-                .setColor("Green")
+                .setColor(config.colors.success)
                 .setAuthor({
                     iconURL: track.requester.avatarURL() ?? undefined,
                     name: track.requester.tag
@@ -208,6 +209,11 @@ const replies = {
                 .setDescription("has been added to the queue.")
                 .setThumbnail(track.thumbnail)
                 .setTimestamp();
+        } else {
+            embed = new EmbedBuilder()
+                .setColor(config.colors.error)
+                .setTitle("❗  Cannot add track to the queue")
+                .setDescription("Either not found by query, or URL is broken.");
         }
 
         return { embeds: [embed] };
@@ -215,26 +221,26 @@ const replies = {
     removed: (track?: Track): BaseMessageOptions => {
         let embed: EmbedBuilder;
 
-        if (!track) {
+        if (track) {
             embed = new EmbedBuilder()
-                .setColor("Red")
-                .setTitle("**❗  Cannot delete track from queue")
-                .setDescription("Either not found by query, or index is not in range.");
-        } else {
-            embed = new EmbedBuilder()
-                .setColor("Green")
+                .setColor(config.colors.success)
                 .setTitle(track.title)
                 .setURL(track.url)
                 .setDescription("was removed from the queue.")
                 .setThumbnail(track.thumbnail)
                 .setTimestamp();
+        } else {
+            embed = new EmbedBuilder()
+                .setColor(config.colors.error)
+                .setTitle("❗  Cannot delete track from queue")
+                .setDescription("Either not found by query, or index is not in range.");
         }
 
         return { embeds: [embed] };
     },
     cleared: (amount: number): BaseMessageOptions => {
         const embed = new EmbedBuilder()
-            .setColor("Green")
+            .setColor(config.colors.success)
             .setTitle(`♻️  Queue has been cleared`)
             .setDescription(
                 `${underscore(amount.toString())} track${amount > 1 ? "s were" : " was"} deleted.`
@@ -242,25 +248,27 @@ const replies = {
 
         return { embeds: [embed] };
     },
-    filtered: (filter?: string): BaseMessageOptions => {
+    filtered: (filter?: string, status = true): BaseMessageOptions => {
         let embed: EmbedBuilder;
 
         if (filter) {
             embed = new EmbedBuilder().setTitle(
-                `✅  ${italic(filter)} was applied to the playback`
+                `✅  ${italic(filter)} was ${status ? "applied to the playback" : "declined"}.`
             );
         } else {
             embed = new EmbedBuilder().setTitle("♻️  All filters were declined");
         }
 
-        embed.setColor("Green");
+        embed
+            .setColor(config.colors.success)
+            .setDescription("Playback can experience some lags during intial transformation.");
 
         return { embeds: [embed] };
     },
     volumeSet: (amount: number): BaseMessageOptions => {
         const embed = new EmbedBuilder()
-            .setColor("Green")
-            .setTitle(`${volumeMoji(amount)}  Volume has been set to ${amount}%**`)
+            .setColor(config.colors.success)
+            .setTitle(`${volumeMoji(amount)}  Volume has been set to ${amount}%`)
             .setDescription("This will affect everyone listening.");
 
         return { embeds: [embed] };
@@ -268,7 +276,7 @@ const replies = {
     queue: (queue: Queue, position = 0, resource?: AudioResource<Track>): BaseMessageOptions => {
         if (queue.empty()) {
             const embed = new EmbedBuilder()
-                .setColor("Yellow")
+                .setColor(config.colors.warning)
                 .setTitle("⚠️  Queue is empty")
                 .setDescription("Use '/play' to add some tracks.");
 
@@ -277,26 +285,28 @@ const replies = {
 
         let embed: EmbedBuilder;
 
-        if (!resource) {
+        if (resource) {
+            embed = new EmbedBuilder()
+                .setTitle(`${queue.position + 1}. ${resource.metadata.title}`)
+                .setAuthor({
+                    iconURL: resource.metadata.requester.avatarURL() ?? undefined,
+                    name: resource.metadata.requester.tag
+                })
+                .setURL(resource.metadata.url)
+                .setDescription(statusBarGenerator(resource))
+                .setThumbnail(resource.metadata.thumbnail);
+        } else {
             embed = new EmbedBuilder()
                 .setTitle("💿  Insert the disk...")
                 .setURL("https://www.youtube.com/watch?v=5mGuCdlCcNM&ab_channel=Ra%C3%BAlBlanco")
-                .setDescription(statusBarGenerator(0, 0))
+                .setDescription(statusBarGenerator())
                 .setThumbnail("https://img.youtube.com/vi/5mGuCdlCcNM/default.jpg");
-        } else {
-            embed = new EmbedBuilder()
-                .setTitle(`${queue.position + 1}. ${resource.metadata.title}`)
-                .setURL(resource.metadata.url)
-                .setDescription(
-                    statusBarGenerator(resource.playbackDuration / 1000, resource.metadata.duration)
-                )
-                .setThumbnail(resource.metadata.thumbnail);
         }
 
-        embed.setColor("LuminousVividPink").setFields(
+        embed.setColor(config.colors.info).setFields(
             queue.tracks.slice(position, position + 10).map((value, index) => ({
                 name: `${position + index + 1}. ${value.title.padEnd(35)}`,
-                value: `[${time(value.duration, "T")}]`
+                value: `[${toISOTime(value.duration)}] | ${value.requester.tag}`
             }))
         );
 
@@ -308,22 +318,21 @@ const replies = {
         if (player.resource) {
             embed = new EmbedBuilder()
                 .setTitle(`${player.queue.position + 1}. ${player.resource.metadata.title}`)
+                .setAuthor({
+                    iconURL: player.resource.metadata.requester.avatarURL() ?? undefined,
+                    name: player.resource.metadata.requester.tag
+                })
                 .setURL(player.resource.metadata.url)
-                .setDescription(
-                    statusBarGenerator(
-                        player.resource.playbackDuration / 1000,
-                        player.resource.metadata.duration
-                    )
-                )
+                .setDescription(statusBarGenerator(player.resource))
                 .setThumbnail(player.resource.metadata.thumbnail);
         } else {
             embed = new EmbedBuilder()
                 .setTitle("💿  Insert the disk...")
                 .setURL("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
-                .setDescription(statusBarGenerator(0, 0));
+                .setDescription(statusBarGenerator());
         }
 
-        embed.setColor("LuminousVividPink").addFields([
+        embed.setColor(config.colors.info).addFields([
             {
                 name: "Applied Filters",
                 value:
@@ -340,7 +349,7 @@ const replies = {
             },
             {
                 name: "Queue Duration",
-                value: `💿 ${time(player.queue.duration, "T")}`,
+                value: `💿 ${toISOTime(player.queue.duration)}`,
                 inline: true
             },
             {
@@ -349,13 +358,13 @@ const replies = {
                 inline: true
             },
             {
-                name: "Volume amount",
+                name: "Volume Amount",
                 value: `${volumeMoji(player.volume)} ${player.volume}/150`,
                 inline: true
             },
             {
-                name: "Player lifetime",
-                value: `🕓 ${time((Date.now() - player.createdAt.getTime()) / 1000, "T")}`,
+                name: "Player Lifetime",
+                value: `🕓 ${toISOTime((Date.now() - player.createdAt.getTime()) / 1000)}`,
                 inline: true
             }
         ]);

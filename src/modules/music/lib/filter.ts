@@ -44,15 +44,18 @@ export default class Filter {
             .map((value) => [value[0], value[1]]);
     }
 
-    public toggle(query?: string): void {
+    public toggle(query?: string): boolean {
         if (!query) {
             this.switches.clear();
-            return;
+            return false;
         }
 
         if (!this.switches.delete(query) && Object.hasOwn(Filter.filters, query)) {
             this.switches.add(query);
+            return true;
         }
+
+        return false;
     }
 
     public size(): number {

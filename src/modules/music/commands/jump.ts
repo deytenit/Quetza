@@ -19,14 +19,14 @@ async function execute(client: Client, interaction: Interaction) {
         return;
     }
 
-    const prevPosition = player.queue.position;
+    const previous = player.resource?.metadata;
 
-    const nextPosition =
+    const position =
         !isNaN(+query) && isFinite(+query) && !/e/i.test(query)
             ? player.jump(parseInt(query) - 1)
             : player.jump(query);
 
-    await interaction.reply(replies.jumped(prevPosition, nextPosition));
+    await interaction.reply(replies.jumped(previous, position));
 }
 
 const data = new SlashCommandBuilder()

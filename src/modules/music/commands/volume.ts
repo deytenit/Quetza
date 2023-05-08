@@ -21,7 +21,7 @@ async function execute(client: Client, interaction: Interaction) {
 
     player.volume = volume;
 
-    await interaction.reply(replies.volumeSet(volume));
+    await interaction.reply(replies.volumeSet(player.volume));
 }
 
 const data = new SlashCommandBuilder()

@@ -5,10 +5,8 @@ import {
     createAudioPlayer,
     createAudioResource,
     DiscordGatewayAdapterCreator,
-    entersState,
     joinVoiceChannel,
-    VoiceConnection,
-    VoiceConnectionStatus
+    VoiceConnection
 } from "@discordjs/voice";
 import { Guild, GuildTextBasedChannel, Message, User, VoiceBasedChannel } from "discord.js";
 import ytdl from "discord-ytdl-core";
@@ -158,6 +156,13 @@ export default class Player {
     }
 
     public connect(channel: VoiceBasedChannel): void {
+        if (
+            this.connection_?.joinConfig.channelId === channel.id &&
+            this.connection_.joinConfig.guildId === channel.guildId
+        ) {
+            return;
+        }
+
         if (this.connection_) {
             this.connection_.destroy();
         }
@@ -166,38 +171,6 @@ export default class Player {
             channelId: channel.id,
             guildId: channel.guildId,
             adapterCreator: channel.guild.voiceAdapterCreator as DiscordGatewayAdapterCreator
-        });
-
-        this.connection_.on(VoiceConnectionStatus.Disconnected, async () => {
-            try {
-                await Promise.race([
-                    entersState(
-                        this.connection_ as VoiceConnection,
-                        VoiceConnectionStatus.Signalling,
-                        10_000
-                    ),
-                    entersState(
-                        this.connection_ as VoiceConnection,
-                        VoiceConnectionStatus.Connecting,
-                        10_000
-                    )
-                ]);
-            } catch (error) {
-                this.destroy();
-            }
-        });
-
-        this.connection_.on("stateChange", (oldState, newState) => {
-            const oldNetworking = Reflect.get(oldState, "networking");
-            const newNetworking = Reflect.get(newState, "networking");
-
-            const networkStateChangeHandler = (oldNetworkState: any, newNetworkState: any) => {
-                const newUdp = Reflect.get(newNetworkState, "udp");
-                clearInterval(newUdp?.keepAliveInterval);
-            };
-
-            oldNetworking?.off("stateChange", networkStateChangeHandler);
-            newNetworking?.on("stateChange", networkStateChangeHandler);
         });
     }
 
@@ -308,11 +281,13 @@ export default class Player {
         this.player_.stop();
     }
 
-    public setFilter(filter?: string): void {
-        this.filter.toggle(filter);
+    public setFilter(filter?: string): boolean {
+        const status = this.filter.toggle(filter);
 
         if (this.resource_) {
             this.play(this.resource_.playbackDuration);
         }
+
+        return status;
     }
 }

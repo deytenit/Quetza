@@ -1,11 +1,10 @@
 import { Interaction, SlashCommandBuilder, TextChannel } from "discord.js";
 
 import Client from "../../../lib/client.js";
-import Player from "../lib/player.js";
 import replies from "../lib/replies.js";
 import { controller } from "../module.js";
 
-async function execute(client: Client, interaction: Interaction): Promise<Player | undefined> {
+async function execute(client: Client, interaction: Interaction): Promise<void> {
     if (!interaction.isChatInputCommand() || !interaction.inCachedGuild()) {
         return;
     }
@@ -15,12 +14,6 @@ async function execute(client: Client, interaction: Interaction): Promise<Player
     const player =
         controller.get(interaction.guild.id, interaction.channel as TextChannel) ??
         controller.set(interaction.guild, interaction.channel as TextChannel);
-
-    if (player.connection) {
-        await interaction.editReply(replies.isConnected());
-
-        return player;
-    }
 
     const channel = interaction.member.voice.channel;
 
@@ -36,7 +29,7 @@ async function execute(client: Client, interaction: Interaction): Promise<Player
 
     await interaction.editReply(replies.okConnected(channel.name));
 
-    return player;
+    return;
 }
 
 const data = new SlashCommandBuilder()

@@ -1,22 +1,30 @@
-import { time } from "discord.js";
+import { AudioResource } from "@discordjs/voice";
 
-import { LoopOption } from "./types.js";
+import { LoopOption, Track } from "./types.js";
 
-const PLAYBACK_LENGTH = 15;
+const STATUSBAR_LENGTH = 15;
 
-export function statusBarGenerator(playback: number, duration: number): string {
-    const filled = Array<string>(
-        Math.floor((PLAYBACK_LENGTH * playback) / (duration === 0 ? 1 : duration))
-    ).fill("🔹");
+export function statusBarGenerator(resource?: AudioResource<Track>): string {
+    const playback = resource ? resource.playbackDuration / 1000 : 0;
+    const duration = resource ? resource.metadata.duration || 1 : 0;
 
-    const empty = Array<string>(
-        PLAYBACK_LENGTH - Math.floor((PLAYBACK_LENGTH * playback) / (duration === 0 ? 1 : duration))
-    ).fill("▫️");
+    const filled = Array<string>(Math.floor((STATUSBAR_LENGTH * playback) / duration)).fill("🔹");
 
-    return `**[${filled.join("")}${empty.join("")}] ${time(playback, "T")}/${time(
-        duration,
-        "T"
-    )}**`;
+    const empty = Array<string>(STATUSBAR_LENGTH - filled.length).fill("▫️");
+
+    return `[${filled.join("")}${empty.join("")}] ${toISOTime(playback)}/${toISOTime(duration)}`;
+}
+
+export function toISOTime(amount: number): string {
+    const h = Math.floor(amount / 3600);
+    const m = Math.floor((amount % 3600) / 60);
+    const s = Math.floor((amount % 3600) % 60);
+
+    const hDisplay = h > 0 ? `${h}:` : "";
+    const mDisplay = `${Math.floor(m / 10)}${Math.floor(m % 10)}:`;
+    const sDisplay = `${Math.floor(s / 10)}${Math.floor(s % 10)}`;
+
+    return hDisplay + mDisplay + sDisplay;
 }
 
 export async function asleep(amount: number): Promise<unknown> {

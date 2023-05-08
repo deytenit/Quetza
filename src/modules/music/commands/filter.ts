@@ -11,6 +11,7 @@ async function execute(client: Client, interaction: Interaction) {
     }
 
     const filter = interaction.options.getString("filter") ?? undefined;
+    const name = interaction.options.get("filter")?.name;
 
     const player = controller.get(interaction.guild.id, interaction.channel as TextChannel);
 
@@ -20,9 +21,9 @@ async function execute(client: Client, interaction: Interaction) {
         return;
     }
 
-    player.setFilter(filter);
+    const status = player.setFilter(filter);
 
-    await interaction.reply(replies.filtered(filter));
+    await interaction.reply(replies.filtered(name, status));
 }
 
 const data = new SlashCommandBuilder()
