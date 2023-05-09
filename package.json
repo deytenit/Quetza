@@ -27,8 +27,7 @@
     "build": "pnpm exec tsc --build",
     "clean": "pnpm exec tsc --build --clean",
     "lint": "pnpm exec eslint --fix . && pnpm exec prettier --write .",
-    "preinstall": "pnpx only-allow pnpm",
-    "prebuild": "pnpm exec prisma migrate deploy"
+    "preinstall": "pnpx only-allow pnpm"
   },
   "dependencies": {
     "@discordjs/opus": "^0.9.0",

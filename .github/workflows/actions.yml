@@ -1,14 +1,47 @@
-name: Docker
+name: actions
 
 on:
-  workflow_run:
-    workflows: ["Mocha"]
-    types:
-      - completed
+  push:
+    tags:
+      - "*"
 
 jobs:
-  build:
+  mocha:
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+        pnpm-version: [8]
+
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: ${{ matrix.pnpm-version }}
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: ESLint & Prettier
+        run: pnpm run lint
+
+      - name: Build
+        run: pnpm run build
+
+      - name: Test
+        run: pnpm run --if-present test
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: mocha
 
     steps:
       - name: Check out the repo
