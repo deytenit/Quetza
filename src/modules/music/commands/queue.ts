@@ -3,7 +3,7 @@ import {
     ButtonBuilder,
     ButtonInteraction,
     ButtonStyle,
-    Interaction,
+    ChatInputCommandInteraction,
     MessageActionRowComponentBuilder,
     SlashCommandBuilder
 } from "discord.js";
@@ -13,7 +13,7 @@ import logger from "../../../lib/logger.js";
 import replies from "../lib/replies.js";
 import { controller } from "../module.js";
 
-async function execute(client: Client, interaction: Interaction) {
+async function execute(client: Client, interaction: ChatInputCommandInteraction) {
     if (!interaction.isChatInputCommand() || !interaction.inCachedGuild() || !interaction.channel) {
         logger.warn("Interaction rejected.", { interaction });
 

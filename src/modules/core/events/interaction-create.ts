@@ -6,13 +6,23 @@ import logger from "../../../lib/logger.js";
 async function execute(client: Client, eventee: [Interaction]): Promise<void> {
     const [interaction] = eventee;
 
-    logger.info("Interaction created.", interaction);
-
-    if (interaction.isCommand()) {
+    if (interaction.isChatInputCommand()) {
         const command = client.commands.get(interaction.commandName);
 
-        if (command) {
-            command.execute(client, interaction);
+        if (!command) {
+            logger.error(`No command matching ${interaction.commandName} was found.`, {
+                interaction
+            });
+
+            return;
+        }
+
+        try {
+            logger.info(`Interaction ${interaction.commandName} was created.`, interaction);
+
+            await command.execute(client, interaction);
+        } catch (error) {
+            logger.error("Interaction error occured. ", { error, interaction });
         }
     }
 }

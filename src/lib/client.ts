@@ -58,7 +58,10 @@ export default class Client extends DiscordClient {
         });
 
         importModule(path.join(data.rootDir, MODULE_EVENTS), (event: Event) => {
-            this.on(event.name, (...eventee: unknown[]) => event.execute(this, eventee));
+            this.on(
+                event.name,
+                async (...eventee: unknown[]) => await event.execute(this, eventee)
+            );
             events.push(event.name);
         });
 

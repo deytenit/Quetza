@@ -1,11 +1,16 @@
-import { Events, Interaction, PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
+import {
+    ChatInputCommandInteraction,
+    Events,
+    PermissionFlagsBits,
+    SlashCommandBuilder
+} from "discord.js";
 
 import Client from "../../../lib/client.js";
 import logger from "../../../lib/logger.js";
 import replies from "../lib/replies.js";
 
-async function execute(client: Client, interaction: Interaction): Promise<void> {
-    if (!interaction.isChatInputCommand() || !interaction.inCachedGuild()) {
+async function execute(client: Client, interaction: ChatInputCommandInteraction): Promise<void> {
+    if (!interaction.inCachedGuild()) {
         logger.warn("Interaction rejected.", { interaction });
 
         return;
