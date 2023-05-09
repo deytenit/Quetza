@@ -261,7 +261,7 @@ const replies = {
 
         embed
             .setColor(config.colors.success)
-            .setDescription("Playback can experience some lags during intial transformation.");
+            .setDescription("Playback can experience some lags during initial transformation.");
 
         return { embeds: [embed] };
     },

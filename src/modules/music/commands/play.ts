@@ -43,7 +43,7 @@ async function execute(client: Client, interaction: Interaction) {
     }
 
     if (!player.resource) {
-        player.play();
+        await player.play();
     }
 }
 

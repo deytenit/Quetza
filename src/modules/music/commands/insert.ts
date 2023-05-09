@@ -12,8 +12,8 @@ async function execute(client: Client, interaction: Interaction) {
         return;
     }
 
-    const pos = interaction.options.getNumber("position", true);
     const query = interaction.options.getString("query", true);
+    const pos = interaction.options.getInteger("position", true);
 
     await interaction.deferReply();
 

@@ -63,20 +63,22 @@ export default class Queue {
     }
 
     public push(tracks: Track[], index?: number): Track {
-        if (!index || index >= this.tracks_.length) {
-            this.tracks_ = this.tracks_.concat(tracks);
-        } else {
-            this.tracks_.splice(Math.max(0, index), 0, ...tracks);
-            if (this.position_ >= index) {
-                this.position_ += tracks.length;
-            }
-        }
-
         for (const track of tracks) {
             this.duration_ += track.duration;
         }
 
-        return this.tracks_[index || this.tracks_.length - 1];
+        if (index === undefined || index >= this.tracks_.length) {
+            this.tracks_ = this.tracks_.concat(tracks);
+
+            return this.tracks_[this.tracks_.length - 1];
+        }
+
+        this.tracks_.splice(Math.max(0, index), 0, ...tracks);
+        if (this.position_ >= index) {
+            this.position_ += tracks.length;
+        }
+
+        return this.tracks_[Math.max(0, index)];
     }
 
     public pop(query: number): Track | undefined {

@@ -6,7 +6,7 @@ const STATUSBAR_LENGTH = 15;
 
 export function statusBarGenerator(resource?: AudioResource<Track>): string {
     const duration = resource?.metadata.duration || 1;
-    const playback = Math.min(resource?.playbackDuration || 0 / 1000, duration);
+    const playback = Math.min((resource?.playbackDuration || 0) / 1000, duration);
 
     const filled = Array<string>(Math.floor((STATUSBAR_LENGTH * playback) / duration)).fill("🔹");
 

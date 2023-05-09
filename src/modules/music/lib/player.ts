@@ -9,9 +9,8 @@ import {
     VoiceConnection
 } from "@discordjs/voice";
 import { Guild, GuildTextBasedChannel, Message, User, VoiceBasedChannel } from "discord.js";
-import ytdl from "discord-ytdl-core";
 
-import { fetchInfo } from "./fetch.js";
+import { arbitraryStream, fetchInfo, ytdlStream } from "./fetch.js";
 import Filter from "./filter.js";
 import { largestCommonSequence } from "./misc.js";
 import Music from "./music.js";
@@ -77,7 +76,7 @@ export default class Player {
     }
 
     private resourceGenerator(track: Track, seek?: number) {
-        const stream = ytdl(track.url, {
+        const stream = ytdlStream(track.url, {
             opusEncoded: true,
             filter: "audioonly",
             highWaterMark: 1 << 25,
@@ -134,7 +133,7 @@ export default class Player {
         });
     }
 
-    public play(seek?: number): void {
+    public async play(seek?: number): Promise<void> {
         const track = this.queue.current();
 
         if (!this.connection_ || !track) {
@@ -145,7 +144,7 @@ export default class Player {
 
         this.connection_.subscribe(this.player_);
 
-        this.messageResolvable(track);
+        await this.messageResolvable(track);
     }
 
     public connect(channel: VoiceBasedChannel): void {
