@@ -10,7 +10,7 @@ import {
 } from "@discordjs/voice";
 import { Guild, GuildTextBasedChannel, Message, User, VoiceBasedChannel } from "discord.js";
 
-import { arbitraryStream, fetchInfo, ytdlStream } from "./fetch.js";
+import { fetchInfo, ytdlStream } from "./fetch.js";
 import Filter from "./filter.js";
 import { largestCommonSequence } from "./misc.js";
 import Music from "./music.js";
