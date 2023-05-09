@@ -1,28 +1,35 @@
-import { CommandInteraction, SlashCommandBuilder, TextChannel } from "discord.js";
+import { Interaction, SlashCommandBuilder } from "discord.js";
 
 import Client from "../../../lib/client.js";
-import I18n from "../lib/i18n.js";
+import logger from "../../../lib/logger.js";
+import replies from "../lib/replies.js";
 import { controller } from "../module.js";
 
-async function execute(client: Client, interaction: CommandInteraction) {
-    const query = interaction.options.get("query")?.value as string;
+async function execute(client: Client, interaction: Interaction) {
+    if (!interaction.isChatInputCommand() || !interaction.inCachedGuild() || !interaction.channel) {
+        logger.warn("Interaction rejected.", { interaction });
 
-    if (!interaction.guild || !query || !interaction.channel) {
         return;
     }
 
-    const player = controller.get(interaction.guild.id, interaction.channel as TextChannel);
+    const query = interaction.options.getString("query", true);
+
+    const player = controller.get(interaction.guild, interaction.channel);
 
     if (!player) {
+        await interaction.reply(replies.notExists());
+
         return;
     }
 
-    const state =
+    const previous = player.resource?.metadata;
+
+    const position =
         !isNaN(+query) && isFinite(+query) && !/e/i.test(query)
             ? player.jump(parseInt(query) - 1)
             : player.jump(query);
 
-    await interaction.reply({ embeds: [I18n.embeds.jumped(state)] });
+    await interaction.reply(replies.jumped(previous, position));
 }
 
 const data = new SlashCommandBuilder()
@@ -30,6 +37,7 @@ const data = new SlashCommandBuilder()
     .setDescription("Jump to specific track in the queue.")
     .addStringOption((option) =>
         option.setName("query").setDescription("Position or title to jump to.").setRequired(true)
-    );
+    )
+    .setDMPermission(false);
 
 export { data, execute };

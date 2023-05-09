@@ -1,10 +1,10 @@
 import path from "path";
 import { fileURLToPath } from "url";
 
-const name = "core";
-const description = "Quetza core functionality";
+const name = "server";
+const description = "Server utilities module";
 const author = "unknowableshade";
-const tag = "4.2.0";
+const tag = "0.0.1";
 
 const rootDir = path.dirname(fileURLToPath(import.meta.url));
 

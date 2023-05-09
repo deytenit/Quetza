@@ -5,60 +5,58 @@ import {
     createAudioPlayer,
     createAudioResource,
     DiscordGatewayAdapterCreator,
-    entersState,
     joinVoiceChannel,
-    VoiceConnection,
-    VoiceConnectionStatus
+    VoiceConnection
 } from "@discordjs/voice";
-import { Guild, Message, TextChannel, User, VoiceBasedChannel } from "discord.js";
+import { Guild, GuildTextBasedChannel, Message, User, VoiceBasedChannel } from "discord.js";
 import ytdl from "discord-ytdl-core";
 
-import { fetchStream } from "./fetch.js";
+import { fetchInfo } from "./fetch.js";
 import Filter from "./filter.js";
-import I18n from "./i18n.js";
 import { largestCommonSequence } from "./misc.js";
 import Music from "./music.js";
 import Queue from "./queue.js";
+import replies from "./replies.js";
 import { Track } from "./types.js";
 
 export default class Player {
     private music: Music;
     private guild: Guild;
 
-    private msgChannel: TextChannel;
-    public get channel(): TextChannel {
-        return this.msgChannel;
+    private channel_: GuildTextBasedChannel;
+    public get channel(): GuildTextBasedChannel {
+        return this.channel_;
     }
-    public set channel(x: TextChannel) {
-        this.msgChannel = x;
+    public set channel(x: GuildTextBasedChannel) {
+        this.channel_ = x;
     }
 
-    private message: Message | undefined;
+    private message_?: Message;
 
-    public internalConnection: VoiceConnection | undefined;
+    private connection_?: VoiceConnection;
     public get connection(): VoiceConnection | undefined {
-        return this.internalConnection;
+        return this.connection_;
     }
 
-    private internalPlayer: AudioPlayer;
+    private player_: AudioPlayer;
     public get player(): AudioPlayer {
-        return this.internalPlayer;
+        return this.player_;
     }
 
-    private playerResource: AudioResource<Track> | undefined;
+    private resource_: AudioResource<Track> | undefined;
     public get resource(): AudioResource<Track> | undefined {
-        return this.playerResource;
+        return this.resource_;
     }
 
-    private resourceVolume = 100;
+    private volume_ = 100;
     public get volume(): number {
-        return this.resourceVolume;
+        return this.volume_;
     }
     public set volume(x: number) {
-        this.resourceVolume = Math.max(0, Math.min(150, x));
+        this.volume_ = Math.max(0, Math.min(150, x));
 
-        if (this.playerResource && this.playerResource.volume) {
-            this.playerResource.volume.setVolumeLogarithmic(this.resourceVolume / 100);
+        if (this.resource_ && this.resource_.volume) {
+            this.resource_.volume.setVolumeLogarithmic(this.volume_ / 100);
         }
     }
 
@@ -66,149 +64,109 @@ export default class Player {
 
     public readonly filter = new Filter();
 
-    public readonly created: Date = new Date();
+    public readonly createdAt: Date = new Date();
 
-    public constructor(guild: Guild, music: Music, textChannel: TextChannel) {
+    public constructor(guild: Guild, music: Music, channel: GuildTextBasedChannel) {
         this.music = music;
         this.guild = guild;
-        this.msgChannel = textChannel;
+        this.channel_ = channel;
 
-        this.internalPlayer = createAudioPlayer();
+        this.player_ = createAudioPlayer();
 
-        this.internalPlayer.on(AudioPlayerStatus.Idle, async () => this.resourceEndResolvable());
+        this.player_.on(AudioPlayerStatus.Idle, async () => this.resourceEndResolvable());
     }
 
     private resourceGenerator(track: Track, seek?: number) {
         const stream = ytdl(track.url, {
-            opusEncoded: false,
-            fmt: "mp3",
+            opusEncoded: true,
             filter: "audioonly",
             highWaterMark: 1 << 25,
             seek: seek ? seek / 1000 : undefined,
             encoderArgs: !this.filter.empty() ? ["-af", this.filter.toString()] : undefined
         });
 
-        this.playerResource = createAudioResource(stream, {
+        this.resource_ = createAudioResource(stream, {
             inlineVolume: true,
             metadata: track
         });
 
         if (seek) {
-            this.playerResource.playbackDuration = seek;
+            this.resource_.playbackDuration = seek;
         }
 
-        if (this.playerResource.volume) {
-            this.playerResource.volume.setVolumeLogarithmic(this.resourceVolume / 100);
+        if (this.resource_.volume) {
+            this.resource_.volume.setVolumeLogarithmic(this.volume_ / 100);
         }
 
-        return this.playerResource;
+        return this.resource_;
     }
 
     private resourceEndResolvable(): void {
-        if (this.playerResource) {
-            this.playerResource.encoder?.destroy();
+        if (this.resource_) {
+            this.resource_.encoder?.destroy();
         }
 
         if (this.queue.next()) {
             this.play();
         } else {
-            this.playerResource = undefined;
-            this.internalPlayer.stop();
+            this.player_.stop(true);
+            this.resource_ = undefined;
         }
     }
 
     private async messageResolvable(track: Track) {
-        if (this.message) {
-            await this.message.delete();
+        if (this.message_?.deletable) {
+            await this.message_.delete().catch();
         }
 
-        this.message = await this.msgChannel.send({
-            embeds: [I18n.embeds.nowPlaying(track)]
-        });
+        this.message_ = await this.channel_.send(replies.nowPlaying(track));
     }
 
     private async search(query: string, requester: User): Promise<Track[] | undefined> {
-        const response = await fetchStream(query, {
-            dumpSingleJson: true,
-            noWarnings: true,
-            noCheckCertificate: true,
-            flatPlaylist: true,
-            skipDownload: true,
-            defaultSearch: "ytsearch"
-        });
+        const info = await fetchInfo(query);
 
-        if (!response) {
+        if (info.length === 0) {
             return undefined;
         }
 
-        const tracks: Track[] = [];
-
-        if (response.entries) {
-            for (const entry of response.entries) {
-                tracks.push({
-                    url: `https://youtube.com/watch?v=${entry.id}`,
-                    title: entry.title,
-                    thumbnail: `https://img.youtube.com/vi/${entry.id}/default.jpg`,
-                    duration: entry.duration,
-                    requester: requester
-                });
-            }
-        } else {
-            tracks.push({
-                url: `https://youtube.com/watch?v=${response.id}`,
-                title: response.title,
-                thumbnail: `https://img.youtube.com/vi/${response.id}/default.jpg`,
-                duration: response.duration,
-                requester: requester
-            });
-        }
-
-        return tracks;
+        return info.map((value) => {
+            return { ...value, requester: requester };
+        });
     }
 
     public play(seek?: number): void {
         const track = this.queue.current();
 
-        if (!this.internalConnection || !track) {
+        if (!this.connection_ || !track) {
             return;
         }
 
-        this.internalPlayer.play(this.resourceGenerator(track, seek));
+        this.player_.play(this.resourceGenerator(track, seek));
 
-        this.internalConnection.subscribe(this.internalPlayer);
+        this.connection_.subscribe(this.player_);
 
         this.messageResolvable(track);
     }
 
     public connect(channel: VoiceBasedChannel): void {
-        if (this.internalConnection) {
-            this.internalConnection.destroy();
+        if (
+            this.connection_?.joinConfig.channelId === channel.id &&
+            this.connection_.joinConfig.guildId === channel.guildId
+        ) {
+            return;
         }
 
-        this.internalConnection = joinVoiceChannel({
+        if (this.connection_) {
+            this.connection_.destroy();
+        }
+
+        this.connection_ = joinVoiceChannel({
             channelId: channel.id,
             guildId: channel.guildId,
             adapterCreator: channel.guild.voiceAdapterCreator as DiscordGatewayAdapterCreator
         });
 
-        this.internalConnection.on(VoiceConnectionStatus.Disconnected, async () => {
-            try {
-                await Promise.race([
-                    entersState(
-                        this.internalConnection as VoiceConnection,
-                        VoiceConnectionStatus.Signalling,
-                        10_000
-                    ),
-                    entersState(
-                        this.internalConnection as VoiceConnection,
-                        VoiceConnectionStatus.Connecting,
-                        10_000
-                    )
-                ]);
-            } catch (error) {
-                this.destroy();
-            }
-        });
+        this.connection_.subscribe(this.player_);
     }
 
     public async add(query: string, requester: User, index?: number): Promise<Track | undefined> {
@@ -223,7 +181,7 @@ export default class Player {
         return tracks[0];
     }
 
-    public jump(query: number | string): boolean {
+    public jump(query: number | string): number | undefined {
         let position = typeof query === "number" ? query : -1;
         let diff = 0;
 
@@ -239,10 +197,10 @@ export default class Player {
 
         if (position !== -1 && this.queue.jump(position)) {
             this.play();
-            return true;
+            return position;
         }
 
-        return false;
+        return undefined;
     }
 
     public remove(query?: number | string): Track | undefined {
@@ -279,28 +237,28 @@ export default class Player {
 
     public clear(): void {
         this.queue.clear();
-        this.playerResource = undefined;
+        this.resource_ = undefined;
 
-        if (this.internalPlayer) {
-            this.internalPlayer.stop();
+        if (this.player_) {
+            this.player_.stop();
         }
     }
 
     public destroy(): void {
-        if (this.internalConnection) {
-            this.internalConnection.destroy();
+        if (this.connection_) {
+            this.connection_.destroy();
         }
 
-        this.internalPlayer.stop();
+        this.player_.stop();
         this.music.delete(this.guild.id);
     }
 
     public pause(): boolean {
-        if (this.internalPlayer.state.status === AudioPlayerStatus.Paused) {
-            this.internalPlayer.unpause();
+        if (this.player_.state.status === AudioPlayerStatus.Paused) {
+            this.player_.unpause();
             return false;
         } else {
-            this.internalPlayer.pause();
+            this.player_.pause();
             return true;
         }
     }
@@ -308,21 +266,23 @@ export default class Player {
     public shuffle(): void {
         this.queue.shuffle();
 
-        if (this.playerResource) {
-            this.internalPlayer.stop();
+        if (this.resource_) {
+            this.player_.stop();
             this.play();
         }
     }
 
     public skip(): void {
-        this.internalPlayer.stop();
+        this.player_.stop();
     }
 
-    public setFilter(filter?: string): void {
-        this.filter.toggle(filter);
+    public setFilter(filter?: string): boolean {
+        const status = this.filter.toggle(filter);
 
-        if (this.playerResource) {
-            this.play(this.playerResource.playbackDuration);
+        if (this.resource_) {
+            this.play(this.resource_.playbackDuration);
         }
+
+        return status;
     }
 }

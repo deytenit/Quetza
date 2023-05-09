@@ -1,10 +1,17 @@
-import { CommandInteraction, SlashCommandBuilder } from "discord.js";
+import { Interaction, SlashCommandBuilder } from "discord.js";
 
 import Client from "../../../lib/client.js";
-import I18n from "../lib/i18n.js";
+import logger from "../../../lib/logger.js";
+import replies from "../lib/replies.js";
 
-async function execute(client: Client, interaction: CommandInteraction): Promise<void> {
-    await interaction.reply(I18n.replies.modules(client.modules));
+async function execute(client: Client, interaction: Interaction): Promise<void> {
+    if (!interaction.isChatInputCommand()) {
+        logger.warn("Interaction rejected.", { interaction });
+
+        return;
+    }
+
+    await interaction.reply(replies.modules(client.modules));
 }
 
 const data = new SlashCommandBuilder()

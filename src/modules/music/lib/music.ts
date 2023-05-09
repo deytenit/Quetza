@@ -1,12 +1,13 @@
-import { Collection, Guild, TextChannel } from "discord.js";
+import { Collection, Guild, GuildTextBasedChannel } from "discord.js";
 
+import logger from "../../../lib/logger.js";
 import Player from "./player.js";
 
 export default class Music {
-    private players = new Collection<string, Player>();
+    private players_ = new Collection<string, Player>();
 
-    public get(guildId: string, channel?: TextChannel): Player | undefined {
-        const player = this.players.get(guildId);
+    public get(guild: Guild, channel?: GuildTextBasedChannel): Player | undefined {
+        const player = this.players_.get(guild.id);
 
         if (player) {
             if (channel) {
@@ -17,15 +18,19 @@ export default class Music {
         }
     }
 
-    public set(guild: Guild, channel: TextChannel): Player {
+    public set(guild: Guild, channel: GuildTextBasedChannel): Player {
         const player = new Player(guild, this, channel);
 
-        this.players.set(guild.id, player);
+        this.players_.set(guild.id, player);
+
+        logger.info("Player was created.", { player });
 
         return player;
     }
 
     public delete(guildId: string): void {
-        this.players.delete(guildId);
+        logger.info("Player was deleted.", { guildId });
+
+        this.players_.delete(guildId);
     }
 }

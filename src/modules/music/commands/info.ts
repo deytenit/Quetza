@@ -1,23 +1,31 @@
-import { CommandInteraction, SlashCommandBuilder, TextChannel } from "discord.js";
+import { Interaction, SlashCommandBuilder } from "discord.js";
 
 import Client from "../../../lib/client.js";
-import I18n from "../lib/i18n.js";
+import logger from "../../../lib/logger.js";
+import replies from "../lib/replies.js";
 import { controller } from "../module.js";
 
-async function execute(client: Client, interaction: CommandInteraction) {
-    if (!interaction.guild || !interaction.channel || !interaction.member) {
+async function execute(client: Client, interaction: Interaction) {
+    if (!interaction.isChatInputCommand() || !interaction.inCachedGuild() || !interaction.channel) {
+        logger.warn("Interaction rejected.", { interaction });
+
         return;
     }
 
-    await interaction.deferReply();
+    const player = controller.get(interaction.guild, interaction.channel);
 
-    const player = controller.get(interaction.guild.id, interaction.channel as TextChannel);
+    if (!player) {
+        await interaction.reply(replies.notExists());
 
-    await interaction.editReply({ embeds: [I18n.embeds.playerInfo(player)] });
+        return;
+    }
+
+    await interaction.reply(replies.info(player));
 }
 
 const data = new SlashCommandBuilder()
     .setName("info")
-    .setDescription("Information about the playback.");
+    .setDescription("Verbose information about player and stats.")
+    .setDMPermission(false);
 
 export { data, execute };

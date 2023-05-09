@@ -1,23 +1,37 @@
 import { generateDependencyReport } from "@discordjs/voice";
-import { ActivityType } from "discord.js";
+import { Events } from "discord.js";
 
+import config from "../../../config.js";
 import Client from "../../../lib/client.js";
+import logger from "../../../lib/logger.js";
 
 async function execute(client: Client): Promise<void> {
     if (!client.user || !client.application) {
         throw new Error("No application or user for it is provided.");
     }
 
-    console.log(generateDependencyReport());
-    console.log(client.generateApplicationStatus());
+    const commandData = Array.from(client.commands.values()).map((value) => value.data);
 
-    client.user.setActivity("over you", { type: ActivityType.Watching });
+    if (process.env.NODE_ENV === "development" && process.env.TEST_GUILD) {
+        logger.info("Development mode: Commands will be pushed to the test guild!");
 
-    const restCommands = Array.from(client.commands.values()).map((value) => value.data);
+        logger.info(generateDependencyReport());
 
-    client.application.commands.set(restCommands);
+        const guild = await client.guilds.fetch(process.env.TEST_GUILD);
+        guild.commands.set(commandData);
+    }
+
+    if (process.env.NODE_ENV === "production") {
+        logger.info("Production mode: Commands will be pushed to the application!");
+
+        await client.application.commands.set(commandData);
+    }
+
+    client.generateApplicationStatus().forEach((report) => logger.info(report));
+
+    client.user.setActivity(config.activityStatus);
 }
 
-const name = "ready";
+const name = Events.ClientReady;
 
 export { execute, name };

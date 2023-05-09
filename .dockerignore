@@ -6,9 +6,11 @@
 
 # Source
 !src/
+!prisma/
 
 # Dependencies
-!package*.json
+!package.json
+!pnpm-lock.yaml
 
 # Typescript compiller config
 !tsconfig.json
