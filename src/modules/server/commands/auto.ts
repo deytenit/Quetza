@@ -54,7 +54,7 @@ async function execute(client: Client, interaction: ChatInputCommandInteraction)
 
                 await interaction.editReply(replies.auto("add role to a member", event));
             } catch (error) {
-                logger.error("Error occured while quering db.", { interaction });
+                logger.error("Error occured while quering db.", { error });
             } finally {
                 await client.db.$disconnect();
             }
