@@ -5,7 +5,7 @@
   "printWidth": 100,
   "arrowParens": "always",
   "bracketSpacing": true,
-  "endOfLine": "crlf",
+  "endOfLine": "lf",
   "overrides": [
     {
       "files": ["**/*.json, **/*.yml"],

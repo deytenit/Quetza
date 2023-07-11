@@ -36,7 +36,7 @@ COPY package.json pnpm-lock.yaml ./
 
 RUN pnpm install --prod
 
-RUN pnpx prisma generate
+RUN pnpx prisma migrate deploy
 
 COPY --from=builder /usr/src/app/dist ./dist
 
