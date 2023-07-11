@@ -38,7 +38,7 @@ const replies = {
             .setColor(config.colors.default)
             .setAuthor({
                 iconURL: track.requester.avatarURL() ?? undefined,
-                name: track.requester.tag
+                name: track.requester.username
             })
             .setTitle(track.title)
             .setURL(track.url)
@@ -202,7 +202,7 @@ const replies = {
                 .setColor(config.colors.success)
                 .setAuthor({
                     iconURL: track.requester.avatarURL() ?? undefined,
-                    name: track.requester.tag
+                    name: track.requester.username
                 })
                 .setTitle(track.title)
                 .setURL(track.url)
@@ -290,7 +290,7 @@ const replies = {
                 .setTitle(`${queue.position + 1}. ${resource.metadata.title}`)
                 .setAuthor({
                     iconURL: resource.metadata.requester.avatarURL() ?? undefined,
-                    name: resource.metadata.requester.tag
+                    name: resource.metadata.requester.username
                 })
                 .setURL(resource.metadata.url)
                 .setDescription(statusBarGenerator(resource))
@@ -306,7 +306,7 @@ const replies = {
         embed.setColor(config.colors.info).setFields(
             queue.tracks.slice(position, position + 10).map((value, index) => ({
                 name: `${position + index + 1}. ${value.title.padEnd(35)}`,
-                value: `[${toISOTime(value.duration)}] | ${value.requester.tag}`
+                value: `[${toISOTime(value.duration)}] | ${value.requester.username}`
             }))
         );
 
@@ -320,7 +320,7 @@ const replies = {
                 .setTitle(`${player.queue.position + 1}. ${player.resource.metadata.title}`)
                 .setAuthor({
                     iconURL: player.resource.metadata.requester.avatarURL() ?? undefined,
-                    name: player.resource.metadata.requester.tag
+                    name: player.resource.metadata.requester.username
                 })
                 .setURL(player.resource.metadata.url)
                 .setDescription(statusBarGenerator(player.resource))

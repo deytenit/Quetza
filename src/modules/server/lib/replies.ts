@@ -25,7 +25,7 @@ const replies = {
     notMember: (action: string, user: User): InteractionReplyOptions => {
         const embed = new EmbedBuilder()
             .setColor("Blue")
-            .setTitle(`${user.tag} cannot be ${action}`)
+            .setTitle(`${user.username} cannot be ${action}`)
             .setDescription("They're not a guild member.")
             .setTimestamp();
 
@@ -39,7 +39,7 @@ const replies = {
     ): InteractionReplyOptions => {
         const embed = new EmbedBuilder()
             .setColor(config.colors.success)
-            .setTitle(`Role ${roleName} was ${action} user ${user.tag}`)
+            .setTitle(`Role ${roleName} was ${action} user ${user.username}`)
             .setDescription(reason ?? "No reason provided.")
             .setTimestamp();
 

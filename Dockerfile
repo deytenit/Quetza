@@ -1,5 +1,10 @@
 FROM node:18-alpine as builder
 
+RUN apk add --no-cache python3
+RUN apk add --no-cache make
+RUN apk add --no-cache gcc
+RUN apk add --no-cache build-base
+
 RUN npm install -g pnpm
 
 WORKDIR /usr/src/app
@@ -19,6 +24,9 @@ RUN apk add --no-cache bash
 RUN apk add --no-cache curl
 RUN apk add --no-cache ffmpeg
 RUN apk add --no-cache python3
+RUN apk add --no-cache make
+RUN apk add --no-cache gcc
+RUN apk add --no-cache build-base
 
 RUN npm install -g pnpm
 

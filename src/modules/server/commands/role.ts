@@ -20,7 +20,7 @@ async function execute(client: Client, interaction: ChatInputCommandInteraction)
             const member = await interaction.guild.members.fetch(user).catch(() => undefined);
 
             if (member) {
-                await interaction.reply(replies.roleList(user.tag, member.roles.cache));
+                await interaction.reply(replies.roleList(user.username, member.roles.cache));
             } else {
                 await interaction.reply(replies.notMember("edited", user));
             }
