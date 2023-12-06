@@ -4,7 +4,7 @@ import { fileURLToPath } from "url";
 const name = "core";
 const description = "Quetza core functionality";
 const author = "unknowableshade";
-const tag = "4.2.0";
+const tag = "4.2.2";
 
 const rootDir = path.dirname(fileURLToPath(import.meta.url));
 

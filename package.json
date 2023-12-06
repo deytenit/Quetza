@@ -1,6 +1,6 @@
 {
   "name": "quetza-bot",
-  "version": "4.2.1",
+  "version": "4.2.2",
   "description": "Discord multipurpose bot",
   "type": "module",
   "main": "./dist/index.js",
