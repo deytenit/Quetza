@@ -65,7 +65,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            unknowableshade/quetza-bot
+            unknowableshade/quetza
           # generate Docker tags based on the following events/attributes
           # on tag event: tag using git tag, and as latest if the tag doesn't contain hyphens (pre-releases)
           # on push event: tag using git sha, branch name and as latest-dev
