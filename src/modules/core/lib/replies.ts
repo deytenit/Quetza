@@ -1,20 +1,18 @@
 import { BaseMessageOptions, Collection, EmbedBuilder, italic } from "discord.js";
 
 import config from "../../../config.js";
-import { ModuleMetadata } from "../../../lib/types.js";
+import { Module } from "../../../lib/types.js";
 
 const replies = {
-    modules: (modules: Collection<string, ModuleMetadata>): BaseMessageOptions => {
+    modules: (modules: Collection<string, Module>): BaseMessageOptions => {
         const embed = new EmbedBuilder()
             .setColor(config.colors.default)
-            .setTitle("Applied modules")
+            .setTitle("Avaliable modules")
             .addFields(
-                modules.map((value) => {
-                    return {
-                        name: value.name + "@" + value.tag,
-                        value: italic(value.description ?? "")
-                    };
-                })
+                modules.map((value) => ({
+                    name: value.name,
+                    value: italic(value.description ?? "")
+                }))
             );
 
         return { embeds: [embed] };

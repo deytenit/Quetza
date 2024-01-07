@@ -1,11 +1,4 @@
-import path from "path";
-import { fileURLToPath } from "url";
-
 const name = "core";
-const description = "Quetza core functionality";
-const author = "unknowableshade";
-const tag = "4.2.2";
+const description = "Quetza's core functionality";
 
-const rootDir = path.dirname(fileURLToPath(import.meta.url));
-
-export { author, description, name, rootDir, tag };
+export { description, name };

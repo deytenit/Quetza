@@ -27,7 +27,7 @@ async function execute(client: Client): Promise<void> {
         await client.application.commands.set(commandData);
     }
 
-    client.generateApplicationStatus().forEach((report) => logger.info(report));
+    logger.info("Ready.", client.generateApplicationStatus());
 
     client.user.setActivity(config.activityStatus);
 }

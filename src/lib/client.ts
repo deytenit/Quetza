@@ -5,7 +5,7 @@ import path from "path";
 import { pathToFileURL } from "url";
 
 import config from "../config.js";
-import { Command, Event, Module, ModuleMetadata } from "./types.js";
+import { ApplicationStatus, Command, Event, Module } from "./types.js";
 
 const MODULE_ENTRY = "module.js";
 const MODULE_COMMANDS = "commands";
@@ -14,7 +14,9 @@ const MODULE_EVENTS = "events";
 export default class Client extends DiscordClient {
     public readonly commands = new Collection<string, Command>();
 
-    public readonly modules = new Collection<string, ModuleMetadata>();
+    public readonly events = new Collection<string, Event>();
+
+    public readonly modules = new Collection<string, Module>();
 
     public readonly db = new PrismaClient();
 
@@ -29,15 +31,12 @@ export default class Client extends DiscordClient {
             }
 
             import(pathToFileURL(path.join(modulePath, MODULE_ENTRY)).toString()).then(
-                (data: Module) => this.loadModule(data)
+                (data: Module) => this.loadModule(data, modulePath)
             );
         }
     }
 
-    private loadModule(data: Module): void {
-        const commands: string[] = [];
-        const events: string[] = [];
-
+    private loadModule(data: Module, rootDir: string): void {
         function importModule(dir: string, importThen: (data: Command & Event) => void) {
             if (existsSync(dir)) {
                 for (const source of readdirSync(dir)) {
@@ -52,40 +51,34 @@ export default class Client extends DiscordClient {
             }
         }
 
-        importModule(path.join(data.rootDir, MODULE_COMMANDS), (command: Command) => {
+        importModule(path.join(rootDir, MODULE_COMMANDS), (command: Command) => {
             this.commands.set(command.data.name, command);
-            commands.push(command.data.name);
         });
 
-        importModule(path.join(data.rootDir, MODULE_EVENTS), (event: Event) => {
+        importModule(path.join(rootDir, MODULE_EVENTS), (event: Event) => {
             this.on(
                 event.name,
                 async (...eventee: unknown[]) => await event.execute(this, eventee)
             );
-            events.push(event.name);
         });
 
-        this.modules.set(data.name, {
-            ...data,
-            commands,
-            events
-        });
+        this.modules.set(data.name, data);
     }
 
-    public generateApplicationStatus(): string[] {
-        const modulesStatus = this.modules.map((module) => {
-            const tag = `✓ ${module.name}@${module.tag} module is loaded.`;
-            const commands = module.commands.map((name) => " - " + name).join("\n");
-            const events = module.events.map((name) => " - " + name).join("\n");
+    public generateApplicationStatus(): ApplicationStatus<"OK" | "UNAUTHORIZED"> {
+        const modules = Array.from(this.modules.keys());
+        const commands = Array.from(this.commands.keys());
+        const events = Array.from(this.events.keys());
 
-            return [`${tag}\n`, "commands:", `${commands}`, "events:", `${events}`].join("\n");
-        });
+        const status: "OK" | "UNAUTHORIZED" = this.user && this.application ? "OK" : "UNAUTHORIZED";
 
-        const clientStatus =
-            this.user && this.application
-                ? `✓ ${this.application.id} successfully logged in as ${this.user.tag}.`
-                : "✖ Application is not availiable.";
-
-        return modulesStatus.concat(clientStatus);
+        return {
+            status,
+            applicationId: this.application?.id,
+            userTag: this.user?.tag,
+            modules,
+            commands,
+            events
+        };
     }
 }

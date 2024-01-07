@@ -35,10 +35,7 @@ modules/example/
 interface Module {
   name: string; // Name of the module.
   description?: string; // Description of the module.
-  author: string; // Module's author.
-  tag: string; // Similar to git tags. (could be version, 'latest' or something else)
   controller?: unknown; // The service orchestrating the module. (use it in commands or events)
-  rootDir: string; // Root of module containing 'commands' and 'events' folders.
 }
 ```
 

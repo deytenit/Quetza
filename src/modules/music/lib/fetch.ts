@@ -160,6 +160,10 @@ export function ytdlStream(url: string, options?: YtdlStreamOptions) {
         opus.destroy();
     });
 
+    transcoderStream.on("error", (err) => logger.error("ffmpeg", err));
+    inputStream.on("error", (err) => logger.error("ytdl", err));
+    outputStream.on("error", (err) => logger.error("opus", err));
+
     return outputStream;
 }
 
