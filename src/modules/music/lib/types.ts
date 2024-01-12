@@ -1,7 +1,20 @@
 import { User } from "discord.js";
-import { downloadOptions } from "ytdl-core";
 
-export interface Track {
+import { dlpExtractorsValues } from "./fetch/extractors";
+
+export interface LostTrack {
+    query: string;
+    reason: number;
+}
+
+export interface TrackBase {
+    url: string;
+    title: string;
+    thumbnail: string;
+    duration: number;
+}
+
+export interface Track extends TrackBase {
     url: string;
     title: string;
     thumbnail: string;
@@ -9,35 +22,23 @@ export interface Track {
     requester: User;
 }
 
+export type DlpInfo = [TrackBase[], LostTrack[]];
+
 export type LoopOption = "LOOP" | "SONG" | "NONE" | "AUTO";
 
-export interface YtdlDump {
+export type dlpExtractorKey = (typeof dlpExtractorsValues)[number];
+
+export interface DlpDump {
     id: string;
     original_url: string;
+    webpage_url?: string;
     title?: string;
-    uploader?: string;
     duration?: number;
-    extractor_key: string;
     thumbnail?: string;
+    extractor_key: dlpExtractorKey;
 }
 
-export interface YtdlResult {
-    url: string;
-    title: string;
-    thumbnail: string;
-    duration: number;
-}
-
-export interface YtdlStreamOptions extends downloadOptions {
+export interface dlpStreamOptions {
     seek?: number;
-    encoderArgs?: string[];
-    fmt?: string;
-    opusEncoded?: boolean;
-}
-
-export interface StreamOptions {
-    seek?: number;
-    encoderArgs?: string[];
-    fmt?: string;
-    opusEncoded?: boolean;
+    ffmpeg?: string[];
 }

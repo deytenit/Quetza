@@ -10,7 +10,7 @@ import {
 } from "@discordjs/voice";
 import { Guild, GuildTextBasedChannel, Message, User, VoiceBasedChannel } from "discord.js";
 
-import { fetchInfo, ytdlStream } from "./fetch.js";
+import { dlpInfo, dlpStream } from "./fetch/fetch.js";
 import Filter from "./filter.js";
 import { largestCommonSequence } from "./misc.js";
 import Music from "./music.js";
@@ -75,16 +75,13 @@ export default class Player {
         this.player_.on(AudioPlayerStatus.Idle, async () => this.resourceEndResolvable());
     }
 
-    private resourceGenerator(track: Track, seek?: number) {
-        const stream = ytdlStream(track.url, {
-            opusEncoded: true,
-            filter: "audioonly",
-            highWaterMark: 1 << 25,
+    private async resourceGenerator(track: Track, seek?: number) {
+        const probe = await dlpStream(track.url, {
             seek: seek ? seek / 1000 : undefined,
-            encoderArgs: !this.filter.empty() ? ["-af", this.filter.toString()] : undefined
+            ffmpeg: !this.filter.empty() ? ["-af", this.filter.toString()] : undefined
         });
 
-        this.resource_ = createAudioResource(stream, {
+        this.resource_ = createAudioResource(probe, {
             inlineVolume: true,
             metadata: track
         });
@@ -122,7 +119,7 @@ export default class Player {
     }
 
     private async search(query: string, requester: User): Promise<Track[] | undefined> {
-        const info = await fetchInfo(query);
+        const [info] = await dlpInfo(query);
 
         if (info.length === 0) {
             return undefined;
@@ -140,7 +137,7 @@ export default class Player {
             return;
         }
 
-        this.player_.play(this.resourceGenerator(track, seek));
+        this.player_.play(await this.resourceGenerator(track, seek));
 
         this.connection_.subscribe(this.player_);
 
