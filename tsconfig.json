@@ -2,18 +2,26 @@
   "compilerOptions": {
     "strict": true,
 
-    "module": "ESNext",
-    "moduleResolution": "node",
-    "outDir": "dist",
-    "removeComments": false,
-    "sourceMap": true,
-    "esModuleInterop": true,
-
-    "target": "ESNext",
-    "lib": ["ESNext"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "paths": {
+      "$config": ["config.js"],
+      "$lib/*": ["src/lib/*"],
+      "$modules/*": ["src/modules/*"]
+    },
+    "resolveJsonModule": true,
     "types": ["node"],
+
+    "outDir": "dist",
+    "sourceMap": true,
+
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+
+    "target": "ES2022",
+
     "skipLibCheck": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "src/commands", "src/events"]
+  "include": ["src/**/*", "config.ts"],
+  "exclude": ["node_modules", "dist"]
 }
