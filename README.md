@@ -6,7 +6,7 @@ Awesome Discord bot that performs various duties on my server.
 
 ## Architecture
 
-At its core **Quetza** is simply a **[database](./prisma/schema.prisma)**-connected **[user-client](./src/lib/client.ts)** with a **[logger](./src/lib/logger.ts)**.
+At its core **Quetza** is simply a **[user-client](./src/lib/client.ts)** with a **[logger](./src/lib/logger.ts)**.
 
 ### Modules
 
