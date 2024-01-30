@@ -1,84 +1,132 @@
-import { PrismaClient } from "@prisma/client";
 import { Client as DiscordClient, ClientOptions, Collection } from "discord.js";
-import { existsSync, lstatSync, readdirSync } from "fs";
-import path from "path";
-import { pathToFileURL } from "url";
+import { readdirSync } from "fs";
 
-import config from "../config.js";
-import { ApplicationStatus, Command, Event, Module } from "./types.js";
+import config from "$config.js";
+import { importDir, pathThrough } from "$lib/misc.js";
+import {
+    ApplicationStatus,
+    Command,
+    CommandBase,
+    Event,
+    EventBase,
+    Module,
+    ModuleBase
+} from "$lib/types.js";
 
-const MODULE_ENTRY = "module.js";
-const MODULE_COMMANDS = "commands";
-const MODULE_EVENTS = "events";
+/**
+ * Creating path to {@link Module | Module's} declaration file.
+ *
+ * @internal
+ */
+const toModuleDeclaration = pathThrough([config.path.modules], ["module.js"]);
 
-export default class Client extends DiscordClient {
+/**
+ * Creating path to {@link Module | Module's} commands directory.
+ *
+ * @internal
+ */
+const toModuleCommands = pathThrough([config.path.modules], ["commands"]);
+
+/**
+ * Creating path to {@link Module | Module's} events directory.
+ *
+ * @internal
+ */
+const toModuleEvents = pathThrough([config.path.modules], ["events"]);
+
+/**
+ * Bot client enchanced with module handling and database access.
+ *
+ * @typeparam T - True if client ready, false otherwise.
+ *
+ * @public
+ */
+export default class Client<T extends boolean = boolean> extends DiscordClient<T> {
+    /**
+     * Mapping command name to its {@link Command | instance}.
+     */
     public readonly commands = new Collection<string, Command>();
 
+    /**
+     * Mapping event name to its {@link Event | instance}.
+     */
     public readonly events = new Collection<string, Event>();
 
+    /**
+     * Mapping module name to its {@link Module | instance}.
+     */
     public readonly modules = new Collection<string, Module>();
 
-    public readonly db = new PrismaClient();
-
+    /**
+     * Constructs Quetza Client.
+     *
+     * @param options - Discord.js client options
+     */
     public constructor(options: ClientOptions) {
         super(options);
 
-        for (const module of readdirSync(config.modulesDir)) {
-            const modulePath = path.join(config.modulesDir, module);
-
-            if (!lstatSync(modulePath).isDirectory()) {
-                continue;
-            }
-
-            import(pathToFileURL(path.join(modulePath, MODULE_ENTRY)).toString()).then(
-                (data: Module) => this.loadModule(data, modulePath)
-            );
-        }
+        readdirSync(config.path.modules).forEach((module) =>
+            this.importModule(
+                toModuleDeclaration(module),
+                toModuleCommands(module),
+                toModuleEvents(module)
+            )
+        );
     }
 
-    private loadModule(data: Module, rootDir: string): void {
-        function importModule(dir: string, importThen: (data: Command & Event) => void) {
-            if (existsSync(dir)) {
-                for (const source of readdirSync(dir)) {
-                    const file = path.join(dir, source);
+    /**
+     * Generates client's status by providing Bot User and Loaded Modules info.
+     *
+     * @returns Status of application.
+     * Additional info such as Application ID provided if {@link Client} is ready.
+     */
+    public generateApplicationStatus(): ApplicationStatus {
+        const modules = Array.from(this.modules.values());
 
-                    if (!lstatSync(file).isFile() || !file.endsWith(".js")) {
-                        continue;
-                    }
-
-                    import(pathToFileURL(file).toString()).then(importThen);
-                }
-            }
+        if (!this.isReady()) {
+            return {
+                applicationId: null,
+                tag: null,
+                modules
+            };
         }
-
-        importModule(path.join(rootDir, MODULE_COMMANDS), (command: Command) => {
-            this.commands.set(command.data.name, command);
-        });
-
-        importModule(path.join(rootDir, MODULE_EVENTS), (event: Event) => {
-            this.on(
-                event.name,
-                async (...eventee: unknown[]) => await event.execute(this, eventee)
-            );
-        });
-
-        this.modules.set(data.name, data);
-    }
-
-    public generateApplicationStatus(): ApplicationStatus<"OK" | "UNAUTHORIZED"> {
-        const modules = Array.from(this.modules.keys());
-        const commands = Array.from(this.commands.keys());
-        const events = Array.from(this.events.keys());
-
-        const status: "OK" | "UNAUTHORIZED" = this.user && this.application ? "OK" : "UNAUTHORIZED";
 
         return {
-            status,
-            applicationId: this.application?.id,
-            userTag: this.user?.tag,
-            modules,
-            commands,
-            events
+            applicationId: this.application.id,
+            tag: this.user.tag,
+            modules
         };
+    }
+
+    /**
+     * Imports module metadata, commands and events to the client.
+     *
+     * @param declaration - File declaring module information.
+     * @param commands - Directory containing module's commands.
+     * @param events - Directory containing module's events.
+     */
+    private async importModule(
+        declaration: string,
+        commands: string,
+        events: string
+    ): Promise<void> {
+        const module = await import(declaration).then((module: ModuleBase) =>
+            this.modules.ensure(module.name, () => ({ ...module, commands: [], events: [] }))
+        );
+
+        importDir<CommandBase>(commands, (command) => {
+            const saved = this.commands.ensure(command.data.name, () => ({ ...command, module }));
+
+            module.commands.push(saved);
+        });
+
+        importDir<EventBase>(events, (event) => {
+            const saved = this.events.ensure(event.name, () => ({ ...event, module }));
+
+            module.events.push(saved);
+            this.on(event.name, (...eventee: unknown[]) =>
+                saved.execute(this, eventee, module.controller)
+            );
+        });
     }
 }

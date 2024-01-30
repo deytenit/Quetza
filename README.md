@@ -35,7 +35,8 @@ modules/example/
 interface Module {
   name: string; // Name of the module.
   description?: string; // Description of the module.
-  controller?: unknown; // The service orchestrating the module. (use it in commands or events)
+  controller?: unknown;
+  // The service orchestrating the module. (passed as third argument to command or event executor)
 }
 ```
 
@@ -49,7 +50,7 @@ Each **command** has to be defined in its own file, preferably named after **the
 ```ts
 interface Command {
   data: ApplicationCommandData; // Definition of command specifically for the Discord API.
-  execute: (client: Client, interaction: CommandInteraction) => Promise<void>;
+  execute: (client: Client, interaction: CommandInteraction, controller?: unknown) => Promise<void>;
   // Function that will be called upon interaction invocation.
 }
 ```
@@ -66,7 +67,7 @@ bound to **them** by **modules**, despite being declared similarly to **commands
 ```ts
 export interface Event {
   name: string;
-  execute: (client: Client, eventee: unknown[]) => Promise<void>;
+  execute: (client: Client, eventee: unknown[], controller?: unknown) => Promise<void>;
 }
 ```
 
@@ -97,7 +98,6 @@ that shall be located at _bin/_ directory or be accessible from _the environment
 
 | **Base/Module** | **Dependency**                             |
 | --------------- | ------------------------------------------ |
-| Base            | [postgres](https://www.postgresql.org/)    |
 | Music           | [yt-dlp](https://github.com/yt-dlp/yt-dlp) |
 
 ### Shipping
@@ -113,7 +113,6 @@ provided by the respective
 
 ```bash
 docker run \
--e DATABASE_URL=*as required by prisma - postgres connection url* \
 -e DISCORD_TOKEN=*aquired via Discord Developer Portal* \
 --name quetza -d \
 unknowableshade/quetza-bot:latest
@@ -122,12 +121,6 @@ unknowableshade/quetza-bot:latest
 #### From Source
 
 Although it is possible to run it directly from the source, some additional steps are required.
-
-- Push _SQL migrations_ using _prisma_ CLI (that will also generate _client_)
-
-```bash
-pnpx prisma migrate deploy
-```
 
 - Compile _TypeScript_
 
@@ -147,9 +140,6 @@ In any case, you have to provide **environmental variables** for **bot** to run.
 
 - **DISCORD_TOKEN**: generated token issued by **Discord** itself at
   **[Developer Portal](https://discord.com/developers/applications)**.
-
-- **DATABASE_URL**: _postgres_ connection URL,
-  if _prisma_ database provider has not been changed.
 
 ## Licence
 

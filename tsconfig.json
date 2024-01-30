@@ -7,6 +7,7 @@
     "resolveJsonModule": true,
     "types": ["node"],
 
+    "outDir": "./dist",
     "sourceMap": true,
 
     "esModuleInterop": true,

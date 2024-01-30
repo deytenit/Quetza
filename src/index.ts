@@ -1,8 +1,13 @@
 import { GatewayIntentBits } from "discord.js";
 
-import config from "./config.js";
-import Client from "./lib/client.js";
+import config from "$config.js";
+import Client from "$lib/client.js";
 
+/**
+ * Ready to go bot instance.
+ *
+ * @remarks Quetza itself.
+ */
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
@@ -11,4 +16,4 @@ const client = new Client({
     ]
 });
 
-client.login(config.discordToken);
+client.login(config.application.token);

@@ -5,12 +5,15 @@
 !Dockerfile
 
 # Source
+!config.ts
 !src/
-!prisma/
+!modules/
 
 # Dependencies
 !package.json
 !pnpm-lock.yaml
 
-# Typescript compiller config
+# Build
+!build.sh
+!config.tsconfig.json
 !tsconfig.json

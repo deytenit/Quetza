@@ -13,7 +13,7 @@ dependencies:
     version: 0.16.1(@discordjs/opus@0.9.0)
   "@prisma/client":
     specifier: 5.7.0
-    version: 5.7.0(prisma@5.7.0)
+    version: 5.7.0
   discord.js:
     specifier: ^14.14.1
     version: 14.14.1
@@ -55,9 +55,9 @@ devDependencies:
   prettier:
     specifier: ^3.1.0
     version: 3.1.0
-  prisma:
-    specifier: ^5.7.0
-    version: 5.7.0
+  tsc-alias:
+    specifier: ^1.8.8
+    version: 1.8.8
   typescript:
     specifier: ^5.3.3
     version: 5.3.3
@@ -352,7 +352,7 @@ packages:
       fastq: 1.15.0
     dev: true
 
-  /@prisma/client@5.7.0(prisma@5.7.0):
+  /@prisma/client@5.7.0:
     resolution:
       {
         integrity: sha512-cZmglCrfNbYpzUtz7HscVHl38e9CrUs31nrVoGUK1nIPXGgt8hT4jj2s657UXcNdQ/jBUxDgGmHyu2Nyrq1txg==
@@ -364,51 +364,7 @@ packages:
     peerDependenciesMeta:
       prisma:
         optional: true
-    dependencies:
-      prisma: 5.7.0
     dev: false
-
-  /@prisma/debug@5.7.0:
-    resolution:
-      {
-        integrity: sha512-tZ+MOjWlVvz1kOEhNYMa4QUGURY+kgOUBqLHYIV8jmCsMuvA1tWcn7qtIMLzYWCbDcQT4ZS8xDgK0R2gl6/0wA==
-      }
-
-  /@prisma/engines-version@5.7.0-41.79fb5193cf0a8fdbef536e4b4a159cad677ab1b9:
-    resolution:
-      {
-        integrity: sha512-V6tgRVi62jRwTm0Hglky3Scwjr/AKFBFtS+MdbsBr7UOuiu1TKLPc6xfPiyEN1+bYqjEtjxwGsHgahcJsd1rNg==
-      }
-
-  /@prisma/engines@5.7.0:
-    resolution:
-      {
-        integrity: sha512-TkOMgMm60n5YgEKPn9erIvFX2/QuWnl3GBo6yTRyZKk5O5KQertXiNnrYgSLy0SpsKmhovEPQb+D4l0SzyE7XA==
-      }
-    requiresBuild: true
-    dependencies:
-      "@prisma/debug": 5.7.0
-      "@prisma/engines-version": 5.7.0-41.79fb5193cf0a8fdbef536e4b4a159cad677ab1b9
-      "@prisma/fetch-engine": 5.7.0
-      "@prisma/get-platform": 5.7.0
-
-  /@prisma/fetch-engine@5.7.0:
-    resolution:
-      {
-        integrity: sha512-zIn/qmO+N/3FYe7/L9o+yZseIU8ivh4NdPKSkQRIHfg2QVTVMnbhGoTcecbxfVubeTp+DjcbjS0H9fCuM4W04w==
-      }
-    dependencies:
-      "@prisma/debug": 5.7.0
-      "@prisma/engines-version": 5.7.0-41.79fb5193cf0a8fdbef536e4b4a159cad677ab1b9
-      "@prisma/get-platform": 5.7.0
-
-  /@prisma/get-platform@5.7.0:
-    resolution:
-      {
-        integrity: sha512-ZeV/Op4bZsWXuw5Tg05WwRI8BlKiRFhsixPcAM+5BKYSiUZiMKIi713tfT3drBq8+T0E1arNZgYSA9QYcglWNA==
-      }
-    dependencies:
-      "@prisma/debug": 5.7.0
 
   /@sapphire/async-queue@1.5.1:
     resolution:
@@ -1069,6 +1025,14 @@ packages:
       color: 3.2.1
       text-hex: 1.0.0
     dev: false
+
+  /commander@9.5.0:
+    resolution:
+      {
+        integrity: sha512-KRs7WVDKg86PWiuAqhDrAQnTXZKraVcCc6vFdL14qrZ/DcWwuRo7VoiYXalXO7S5GKpqYiVEwCbgFDfxNHKJBQ==
+      }
+    engines: { node: ^12.20.0 || >=14 }
+    dev: true
 
   /concat-map@0.0.1:
     resolution:
@@ -2555,6 +2519,14 @@ packages:
         integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==
       }
 
+  /mylas@2.1.13:
+    resolution:
+      {
+        integrity: sha512-+MrqnJRtxdF+xngFfUUkIMQrUUL0KsxbADUkn23Z/4ibGg192Q+z+CQyiYwvWTsYjJygmMR8+w3ZDa98Zh6ESg==
+      }
+    engines: { node: ">=12.0.0" }
+    dev: true
+
   /nanoid@3.3.3:
     resolution:
       {
@@ -2804,6 +2776,16 @@ packages:
     engines: { node: ">=8.6" }
     dev: true
 
+  /plimit-lit@1.6.1:
+    resolution:
+      {
+        integrity: sha512-B7+VDyb8Tl6oMJT9oSO2CW8XC/T4UcJGrwOVoNGwOQsQYhlpfajmrMj5xeejqaASq3V/EqThyOeATEOMuSEXiA==
+      }
+    engines: { node: ">=12" }
+    dependencies:
+      queue-lit: 1.5.2
+    dev: true
+
   /prelude-ls@1.2.1:
     resolution:
       {
@@ -2844,23 +2826,20 @@ packages:
       "@discordjs/opus": 0.9.0
     dev: false
 
-  /prisma@5.7.0:
-    resolution:
-      {
-        integrity: sha512-0rcfXO2ErmGAtxnuTNHQT9ztL0zZheQjOI/VNJzdq87C3TlGPQtMqtM+KCwU6XtmkoEr7vbCQqA7HF9IY0ST+Q==
-      }
-    engines: { node: ">=16.13" }
-    hasBin: true
-    requiresBuild: true
-    dependencies:
-      "@prisma/engines": 5.7.0
-
   /punycode@2.3.1:
     resolution:
       {
         integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==
       }
     engines: { node: ">=6" }
+    dev: true
+
+  /queue-lit@1.5.2:
+    resolution:
+      {
+        integrity: sha512-tLc36IOPeMAubu8BkW8YDBV+WyIgKlYU7zUNs0J5Vk9skSZ4JfGlPOqplP0aHdfv7HL0B2Pg6nwiq60Qc6M2Hw==
+      }
+    engines: { node: ">=12" }
     dev: true
 
   /queue-microtask@1.2.3:
@@ -3301,6 +3280,21 @@ packages:
         integrity: sha512-k43M7uCG1AkTyxgnmI5MPwKoUvS/bRvLvUb7+Pgpdlmok8AoqmUaZxUUw8zKM5B1lqZrt41GjYgnvAi0fppqgQ==
       }
     dev: false
+
+  /tsc-alias@1.8.8:
+    resolution:
+      {
+        integrity: sha512-OYUOd2wl0H858NvABWr/BoSKNERw3N9GTi3rHPK8Iv4O1UyUXIrTTOAZNHsjlVpXFOhpJBVARI1s+rzwLivN3Q==
+      }
+    hasBin: true
+    dependencies:
+      chokidar: 3.5.3
+      commander: 9.5.0
+      globby: 11.1.0
+      mylas: 2.1.13
+      normalize-path: 3.0.0
+      plimit-lit: 1.6.1
+    dev: true
 
   /tsconfig-paths@3.14.2:
     resolution:
