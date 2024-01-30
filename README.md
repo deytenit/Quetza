@@ -145,4 +145,4 @@ In any case, you have to provide **environmental variables** for **bot** to run.
 
 **Quetza's** source code is licensed under **[the MIT Licence](,/LICENSE)**.
 
-**Notice!** This does not cover '**_Quetza_**' branding such as **[logo](./assets/quetza-logo.png)** or other **[assets listed](./assets/)**, as these are protected by **the copyright law**.
+**Notice!** This does not cover '**_Quetza_**' branding such as **[logo](./assets/quetza-logo.png)** or other **[assets listed](./assets/)**, as these are protected by **[the separate licence](./assets/LICENSE)**.
