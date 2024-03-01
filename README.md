@@ -6,7 +6,7 @@ Awesome Discord bot that performs various duties on my server.
 
 ## Architecture
 
-At its core **Quetza** is simply a **[database](./prisma/schema.prisma)**-connected **[user-client](./src/lib/client.ts)** with a **[logger](./src/lib/logger.ts)**.
+At its core **Quetza** is simply a **[user-client](./src/lib/client.ts)** with a **[logger](./src/lib/logger.ts)**.
 
 ### Modules
 
@@ -145,4 +145,4 @@ In any case, you have to provide **environmental variables** for **bot** to run.
 
 **Quetza's** source code is licensed under **[the MIT Licence](,/LICENSE)**.
 
-**Notice!** This does not cover '**_Quetza_**' branding such as **[logo](./assets/quetza-logo.png)** or other **[assets listed](./assets/)**, as these are protected by **the copyright law**.
+**Notice!** This does not cover '**_Quetza_**' branding such as **[logo](./assets/quetza-logo.png)** or other **[assets listed](./assets/)**, as these are protected by **[the separate licence](./assets/LICENSE)**.
