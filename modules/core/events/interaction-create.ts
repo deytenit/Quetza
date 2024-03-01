@@ -1,16 +1,17 @@
+/**
+ * InteractionCreate
+ *
+ * Resolves creation of an interaction by users.
+ *
+ * @remark Only {@link ChatInputCommand} currently being resolved.
+ *
+ * @packageDocumentation
+ */
 import { Events, Interaction } from "discord.js";
 
 import Client from "$lib/client.js";
 import logger from "$lib/logger.js";
 
-/**
- * Resolves creation of an interaction by users.
- *
- * @remark Only {@link ChatInputCommand} currently being resolved.
- *
- * @param client - Quetza client.
- * @param eventee - List containing invoked interaction.
- */
 async function execute(client: Client, eventee: [Interaction]): Promise<void> {
     const [interaction] = eventee;
 
@@ -36,7 +37,6 @@ async function execute(client: Client, eventee: [Interaction]): Promise<void> {
     }
 }
 
-/** Event name. */
 const name = Events.InteractionCreate;
 
 export { execute, name };

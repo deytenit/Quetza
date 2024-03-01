@@ -4,6 +4,8 @@ import { dlpExtractorsValues } from "./fetch/extractors.js";
 
 /**
  * Track information fetched by Dlp.
+ *
+ * @public
  */
 export interface TrackBase {
     /** URL of track. */
@@ -21,6 +23,8 @@ export interface TrackBase {
 
 /**
  * Track information with {@link User} that requested it.
+ *
+ * @public
  */
 export interface Track extends TrackBase {
     /** User requested this track. */
@@ -31,21 +35,33 @@ export interface Track extends TrackBase {
  * Player loop options.
  *
  * @remarks LOOP - Looping queue;
- *              SONG - Looping single song;
- *              NONE - Stops after queue end; (default)
- *              AUTO - Random order;
+ *          SONG - Looping single song;
+ *          NONE - Stops after queue end; (default)
+ *          AUTO - Random order;
+ *
+ * @public
  */
 export type LoopOption = "LOOP" | "SONG" | "NONE" | "AUTO";
 
-/** Dlp fetched track list. */
+/**
+ * Dlp fetched track list.
+ *
+ * @public
+ */
 export type DlpInfo = TrackBase[];
 
-/** Dlp supported extractors as types. */
+/**
+ * Dlp supported extractors as types.
+ *
+ * @public
+ */
 export type dlpExtractorKey = (typeof dlpExtractorsValues)[number];
 
 /**
  * Actual Dlp dump that later translates to {@link DlpInfo}.
- * */
+ *
+ * @public
+ */
 export interface DlpDump {
     /** Id of resource. */
     id: string;
@@ -71,6 +87,8 @@ export interface DlpDump {
 
 /**
  * Options that shall be passed to DlpStream function.
+ *
+ * @public
  */
 export interface dlpStreamOptions {
     /** Amount of seconds to start playback from. */

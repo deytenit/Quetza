@@ -1,3 +1,9 @@
+/**
+ * @see ../../../src/lib/error.ts
+ *
+ * @packageDocumentation
+ */
+
 import QuetzaError from "$lib/error.js";
 
 export default class MusicError extends QuetzaError {

@@ -1,3 +1,12 @@
+/**
+ * voiceStateUpdate
+ *
+ * Monitors voice states of attended guilds.
+ * If Quetza happens to be alone in the Voice Channel - destroys guilds player and disconnects.
+ *
+ * @packageDocumentation
+ */
+
 import { BaseGuildVoiceChannel, User, VoiceState } from "discord.js";
 
 import Client from "$lib/client.js";
@@ -16,6 +25,8 @@ const TIME_TILL_DISCONNECT = 30_000;
  *
  * @param user - User that might be in one of a channels.
  * @param channels - List of channels that might have user as it member.
+ *
+ * @internal
  */
 function resolveVoiceChannel(
     user: User,
@@ -26,15 +37,6 @@ function resolveVoiceChannel(
     );
 }
 
-/**
- * Tracks voice channel Quetza is connected to.
- *
- * @remark Destroys player if Quetza appears to be alone.
- *
- * @param client - Quetza client.
- * @param eventee - Old and new {@link VoiceState}.
- * @param controller - Module's controller.
- */
 async function execute(
     client: Client<true>,
     eventee: [VoiceState, VoiceState],
@@ -59,7 +61,6 @@ async function execute(
     }
 }
 
-/** Event name. */
 const name = "voiceStateUpdate";
 
 export { execute, name };

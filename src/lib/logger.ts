@@ -3,10 +3,16 @@ import winston from "winston";
 
 import config from "$config.js";
 
-/** Error logging file path. */
+/** Error logging file path.
+ *
+ * @internal
+ */
 const errorLog = path.join(config.path.log, "error.log");
 
-/** Combined logging file path. */
+/** Combined logging file path.
+ *
+ * @internal
+ */
 const combinedLog = path.join(config.path.log, "combined.log");
 
 /**

@@ -16,16 +16,22 @@ const execFileAsync = promisify(execFile);
 
 /**
  * Maximum length of dlp search stack.
+ *
+ * @internal
  */
 const DLPINFO_DEPTH = 3;
 
 /**
  * Path to the Dlp binary.
+ *
+ * @internal
  */
 const DLP_BINARY = path.join(config.path.binaries, "/yt-dlp");
 
 /**
  * Base arguments for Ffmpeg transcoder.
+ *
+ * @internal
  */
 const FFMPEG_BASE_ARGS = [
     "-analyzeduration",
@@ -48,6 +54,8 @@ const FFMPEG_BASE_ARGS = [
  * @returns true if given string is a valid URL, false otherwise
  *
  * @param str - Any string
+ *
+ * @internal
  */
 function isURL(str: string): boolean {
     return /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)$/.test(
@@ -64,6 +72,8 @@ function isURL(str: string): boolean {
  *
  * @param query - Dlp search request or compatible URL
  * @param depth - Recursion depth (force stops at 0)
+ *
+ * @internal
  */
 async function dlpInfoRecursive(query: string, depth = DLPINFO_DEPTH): Promise<DlpInfo> {
     const error = (message: string, reason: number, ...meta: unknown[]): DlpInfo => {
@@ -119,6 +129,8 @@ async function dlpInfoRecursive(query: string, depth = DLPINFO_DEPTH): Promise<D
  * @returns Metadata to a youtube video that related to query by title or URL of findings
  *
  * @param query - Dlp search request or compatible URL
+ *
+ * @public
  */
 export async function dlpInfo(query: string): Promise<DlpInfo> {
     return await dlpInfoRecursive(isURL(query) ? query : "ytsearch1:" + query);
@@ -131,6 +143,8 @@ export async function dlpInfo(query: string): Promise<DlpInfo> {
  *
  * @param url - Dlp compatible URL to the requested resource
  * @param options - Transcoders and dlp options
+ *
+ * @public
  */
 export function dlpStream(url: string, options?: dlpStreamOptions): Promise<Readable> {
     let ffmpegArgs = FFMPEG_BASE_ARGS;

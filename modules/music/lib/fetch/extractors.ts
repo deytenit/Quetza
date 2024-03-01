@@ -1,5 +1,10 @@
 import { DlpDump, dlpExtractorKey, DlpInfo } from "$mlib/types.js";
 
+/**
+ * Avaliable extractors.
+ *
+ * @internal
+ */
 export const dlpExtractorsValues = ["Youtube", "Soundcloud"] as const;
 
 /**
@@ -8,6 +13,8 @@ export const dlpExtractorsValues = ["Youtube", "Soundcloud"] as const;
  * For example:
  *
  * @see the {@link youtubeExtractor | youtubeExtractor(...) } function
+ *
+ * @internal
  */
 type dlpExtractor = (arg0: DlpDump, arg1: (arg0: string) => Promise<DlpInfo>) => Promise<DlpInfo>;
 
@@ -19,6 +26,8 @@ type dlpExtractor = (arg0: DlpDump, arg1: (arg0: string) => Promise<DlpInfo>) =>
  * @param dump - Parsed dlp output
  * @param dlpInfo - Function to call if any other information needed
  * (will recurcively call next extractor after its run)
+ *
+ * @public
  */
 const youtubeExtractor: dlpExtractor = async (dump, dlpInfo) => {
     if (dump.id && dump.title && dump.duration) {
@@ -55,6 +64,8 @@ const soundcloudExtractor: dlpExtractor = async (dump, dlpInfo) => {
 
 /**
  * DlpDump extractor_key values mapped to corresponding extractor.
+ *
+ * @public
  */
 const extractors: Record<dlpExtractorKey, dlpExtractor> = {
     Youtube: youtubeExtractor,

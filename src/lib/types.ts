@@ -9,6 +9,8 @@ import Client from "$lib/client.js";
 
 /**
  * Quetza's module declaration.
+ *
+ * @public
  */
 export interface ModuleBase {
     /** Name of a module. */
@@ -22,7 +24,9 @@ export interface ModuleBase {
 }
 
 /**
- * Complete {@link ModuleBase | Module} declaration with commands and events.
+ * Complete {@link ModuleBase} declaration with commands and events.
+ *
+ * @public
  */
 export interface Module extends ModuleBase {
     /** Module's commands. */
@@ -34,6 +38,8 @@ export interface Module extends ModuleBase {
 
 /**
  * Quetza's command interaction declaration.
+ *
+ * @public
  */
 export interface CommandBase {
     /** Command metadata that will be passed to the Discord API. */
@@ -48,7 +54,9 @@ export interface CommandBase {
 }
 
 /**
- * Command with module included.
+ * {@link ModuleBase} with {@link Module} included.
+ *
+ * @public
  */
 export interface Command extends CommandBase {
     /** Module containing this Command. */
@@ -57,6 +65,8 @@ export interface Command extends CommandBase {
 
 /**
  * Quetza's event declaration.
+ *
+ * @public
  */
 export interface EventBase {
     /** Name of an event to listen. */
@@ -67,7 +77,9 @@ export interface EventBase {
 }
 
 /**
- * {@link EventBase | Event} with {@link Module} included.
+ * {@link EventBase} with {@link Module} included.
+ *
+ * @public
  */
 export interface Event extends EventBase {
     /** Module containing this Event. */
@@ -76,6 +88,8 @@ export interface Event extends EventBase {
 
 /**
  * Application status provides information that may be useful at initialization.
+ *
+ * @public
  */
 export interface ApplicationStatus<Ready extends boolean = boolean> {
     /** Discord's ID of an application. */

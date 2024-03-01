@@ -1,3 +1,13 @@
+/**
+ * /ping
+ *
+ * Replies websocket ping (ping between bot and discord) and real ping (ping to fetch + process).
+ *
+ * @remarks Probably should double their value as two ways, but nvm.
+ *
+ * @packageDocumentation
+ */
+
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
 
 import Client from "$lib/client.js";

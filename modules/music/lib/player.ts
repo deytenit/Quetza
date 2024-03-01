@@ -219,7 +219,7 @@ export default class Player {
     }
 
     /**
-     * Plays current {@link queue} track from position specified.
+     * Plays current {@link Queue} track from position specified.
      *
      * @param seek - Amount of seconds to start playback from
      */

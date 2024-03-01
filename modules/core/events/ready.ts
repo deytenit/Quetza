@@ -1,3 +1,14 @@
+/**
+ * Ready
+ *
+ * Will execute upon emitting Client's Ready event.
+ *
+ * @remarks Will push slash commands, set activity status,
+ * and log bot's initials.
+ *
+ * @packageDocumentation
+ */
+
 import { generateDependencyReport } from "@discordjs/voice";
 import { Events } from "discord.js";
 
@@ -5,14 +16,6 @@ import config from "$config.js";
 import Client from "$lib/client.js";
 import logger from "$lib/logger.js";
 
-/**
- * Function that will execute upon emitting Client's Ready event.
- *
- * @remarks Will push slash commands, set activity status,
- * and log bot's initials.
- *
- * @param client - Quetza client.
- */
 async function execute(client: Client<true>): Promise<void> {
     const commandData = client.commands.map((value) => value.data);
 
@@ -42,7 +45,6 @@ async function execute(client: Client<true>): Promise<void> {
     client.user.setActivity(config.application.activity);
 }
 
-/** Event name. */
 const name = Events.ClientReady;
 
 export { execute, name };

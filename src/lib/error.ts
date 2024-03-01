@@ -26,13 +26,10 @@ export default class QuetzaError extends Error {
      *
      * @param msg - Error message (that shall not be displayed to end user)
      * @param code - {@link code | Code} unique to error in module
-     * @param prefix - Indentifier of module where error has occured
+     * @param prefix - Identifier of module where error has occurred
      */
     public constructor(msg: string, code: number, prefix = QuetzaError.DEFAULT_PREFIX) {
         super(msg);
-
-        Object.setPrototypeOf(this, QuetzaError.prototype);
-
         this.code = code;
         this.prefix = prefix;
     }
@@ -40,7 +37,7 @@ export default class QuetzaError extends Error {
     /**
      * Must create a unique error ID if no collision bugs were written.
      *
-     * @returns error ID as concatination of {@link prefix} and {@link code}
+     * @returns error ID as concatenation of {@link prefix} and {@link code}
      *
      * @example
      * ```ts

@@ -1,11 +1,16 @@
+/**
+ * Music module definition.
+ *
+ * Module to play media content from various sites.
+ * @see ./lib/fetch/extractors.ts for site extractors.
+ *
+ * @packageDocumentation
+ */
 import Music from "./lib/music.js";
 
-/** Module's name. */
 const name = "music";
-/** Module's description. */
 const description = "Music module";
 
-/** Module's controller. */
 const controller = new Music();
 
 export { controller, description, name };
