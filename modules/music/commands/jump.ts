@@ -1,12 +1,29 @@
+/**
+ * /jump (query)
+ *
+ * Jumps to the specified Track from the queue.
+ * If number was provided - resolves as position at where queue position should be set.
+ * If string was provided - jumps to the most similar if terms of {@link ../lib/misc#LargestCommonSequence} Track title.
+ *
+ * Possible replies:
+ * - Success with selected track data.
+ * - Such track does not exists, though cannot be jumped to.
+ * - Player does not exists.
+ */
+
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
 
 import Client from "$lib/client.js";
 import logger from "$lib/logger.js";
+import Music from "$mlib/music.js";
 
 import replies from "../lib/replies.js";
-import { controller } from "../module.js";
 
-async function execute(client: Client, interaction: ChatInputCommandInteraction) {
+async function execute(
+    _: Client,
+    interaction: ChatInputCommandInteraction,
+    controller: Music
+): Promise<void> {
     if (!interaction.isChatInputCommand() || !interaction.inCachedGuild() || !interaction.channel) {
         logger.warn("Interaction rejected.", { interaction });
 

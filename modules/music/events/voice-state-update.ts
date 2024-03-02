@@ -3,8 +3,6 @@
  *
  * Monitors voice states of attended guilds.
  * If Quetza happens to be alone in the Voice Channel - destroys guilds player and disconnects.
- *
- * @packageDocumentation
  */
 
 import { BaseGuildVoiceChannel, User, VoiceState } from "discord.js";

@@ -1,12 +1,27 @@
+/**
+ * /play <query>
+ *
+ * Starts up the Player.
+ * If query provided searches corresponding track/album and adds it to the queue end.
+ *
+ * Possible replies:
+ * - Success with first added track info.
+ * - Denies if requester is not connected to the Voice Channel.
+ * - No track was added, but player was set.
+ */
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
 
 import Client from "$lib/client.js";
 import logger from "$lib/logger.js";
+import Music from "$mlib/music.js";
 
 import replies from "../lib/replies.js";
-import { controller } from "../module.js";
 
-async function execute(client: Client, interaction: ChatInputCommandInteraction) {
+async function execute(
+    _: Client,
+    interaction: ChatInputCommandInteraction,
+    controller: Music
+): Promise<void> {
     if (!interaction.isChatInputCommand() || !interaction.inCachedGuild() || !interaction.channel) {
         logger.warn("Interaction rejected.", { interaction });
 

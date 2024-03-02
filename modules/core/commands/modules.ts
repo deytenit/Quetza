@@ -4,8 +4,6 @@
  * Replies module listing as well as description of each.
  *
  * Just for the information I guess...
- *
- * @packageDocumentation
  */
 
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";

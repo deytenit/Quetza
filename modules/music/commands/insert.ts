@@ -1,12 +1,26 @@
+/**
+ * /insert (query) (position)
+ *
+ * Inserts specified track/album to the position specified.
+ *
+ * Possible replies:
+ * - Success with first added track info.
+ * - Player does not exists.
+ * - No track was added.
+ */
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
 
 import Client from "$lib/client.js";
 import logger from "$lib/logger.js";
+import Music from "$mlib/music.js";
 
 import replies from "../lib/replies.js";
-import { controller } from "../module.js";
 
-async function execute(client: Client, interaction: ChatInputCommandInteraction) {
+async function execute(
+    _: Client,
+    interaction: ChatInputCommandInteraction,
+    controller: Music
+): Promise<void> {
     if (!interaction.isChatInputCommand() || !interaction.inCachedGuild() || !interaction.channel) {
         logger.warn("Interaction rejected.", { interaction });
 

@@ -5,8 +5,6 @@
  *
  * @remarks Will push slash commands, set activity status,
  * and log bot's initials.
- *
- * @packageDocumentation
  */
 
 import { generateDependencyReport } from "@discordjs/voice";

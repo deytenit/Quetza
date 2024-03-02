@@ -1,13 +1,29 @@
+/**
+ * /loop (option)
+ *
+ * Changes loop option.
+ *
+ * @remarks
+ * @see {@link ../lib/types} for LoopOption definition.
+ *
+ * Possible replies:
+ * - Success with new loop option.
+ * - Player does not exists.
+ */
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
 
 import Client from "$lib/client.js";
 import logger from "$lib/logger.js";
+import Music from "$mlib/music.js";
 
 import replies from "../lib/replies.js";
 import { LoopOption } from "../lib/types.js";
-import { controller } from "../module.js";
 
-async function execute(client: Client, interaction: ChatInputCommandInteraction) {
+async function execute(
+    _: Client,
+    interaction: ChatInputCommandInteraction,
+    controller: Music
+): Promise<void> {
     if (!interaction.isChatInputCommand() || !interaction.inCachedGuild() || !interaction.channel) {
         logger.warn("Interaction rejected.", { interaction });
 

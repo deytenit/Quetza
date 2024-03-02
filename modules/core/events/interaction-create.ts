@@ -4,9 +4,8 @@
  * Resolves creation of an interaction by users.
  *
  * @remark Only {@link ChatInputCommand} currently being resolved.
- *
- * @packageDocumentation
  */
+
 import { Events, Interaction } from "discord.js";
 
 import Client from "$lib/client.js";

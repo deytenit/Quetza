@@ -1,3 +1,20 @@
+/**
+ * /queue
+ *
+ * Replies interactive queue with current playing track at the top and 10 tracks from queue on each page.
+ * Interactiveness provided by buttons:
+ * - First page.
+ * - Previous page.
+ * - Next page.
+ * - Last page.
+ *
+ * Buttons live up to 30 seconds.
+ *
+ * Possible replies:
+ * - Success with interactive queue.
+ * - Player does not exists.
+ */
+
 import {
     ActionRowBuilder,
     ButtonBuilder,
@@ -10,11 +27,15 @@ import {
 
 import Client from "$lib/client.js";
 import logger from "$lib/logger.js";
+import Music from "$mlib/music.js";
 
 import replies from "../lib/replies.js";
-import { controller } from "../module.js";
 
-async function execute(client: Client, interaction: ChatInputCommandInteraction) {
+async function execute(
+    _: Client,
+    interaction: ChatInputCommandInteraction,
+    controller: Music
+): Promise<void> {
     if (!interaction.isChatInputCommand() || !interaction.inCachedGuild() || !interaction.channel) {
         logger.warn("Interaction rejected.", { interaction });
 

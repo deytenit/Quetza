@@ -53,6 +53,18 @@ export default class Filter {
     private switches_ = new Map<filterPreset, filterValue>();
 
     /**
+     * Returns filters as Discord API Choices compatible array.
+     *
+     * @returns {@link Filter#FILTERS} as { name: FILTERS[key].name, value: key }.
+     */
+    public static filterChoices(): { name: string; value: string }[] {
+        return Object.entries(Filter.FILTERS).map(([key, value]) => ({
+            name: value.name,
+            value: key
+        }));
+    }
+
+    /**
      * Converts active {@link filterValue | filterValues} to array.
      *
      * @returns Array of active filter values.
@@ -101,9 +113,9 @@ export default class Filter {
     }
 
     /**
-     * Converts active filters to FFmpeg compatable argument.
+     * Converts active filters to FFmpeg compatible argument.
      *
-     * @returns FFmpeg compatable argument representing active filters.
+     * @returns FFmpeg compatible argument representing active filters.
      */
     public toString(): string {
         return this.toggled()

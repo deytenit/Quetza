@@ -11,7 +11,7 @@
  *
  *  There a lot of speaking because it's as important as $lib.
  *
- * @packageDocumentation
+ *  @packageDocumentation
  */
 
 const name = "core";

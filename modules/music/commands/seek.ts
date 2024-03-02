@@ -1,12 +1,31 @@
+/**
+ * /seek <hrs> <mins> <secs>
+ *
+ * Changes current Track playback duration to value given.
+ *
+ * @remarks
+ * If not stated - default value for all imputs is 0.
+ * Input resolution is defined by FFmpeg.
+ *
+ * Possible replies:
+ * - Success with previous and new playback duration.
+ * - Player does not exists.
+ * - No resource is currently playing.
+ */
+
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
 
 import Client from "$lib/client.js";
 import logger from "$lib/logger.js";
+import Music from "$mlib/music.js";
 
 import replies from "../lib/replies.js";
-import { controller } from "../module.js";
 
-async function execute(client: Client, interaction: ChatInputCommandInteraction) {
+async function execute(
+    _: Client,
+    interaction: ChatInputCommandInteraction,
+    controller: Music
+): Promise<void> {
     if (!interaction.isChatInputCommand() || !interaction.inCachedGuild() || !interaction.channel) {
         logger.warn("Interaction rejected.", { interaction });
 
