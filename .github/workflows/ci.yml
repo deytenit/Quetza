@@ -35,11 +35,6 @@ jobs:
       - name: ESLint & Prettier
         run: pnpm run lint
 
-      - name: Prisma Migration
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: pnpm exec prisma migrate deploy
-
       - name: Build
         run: pnpm run build
 
