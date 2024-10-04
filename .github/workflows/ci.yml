@@ -42,7 +42,7 @@ jobs:
         run: pnpm run --if-present test
 
   docker-arm64:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     needs: mocha
 
     steps:
