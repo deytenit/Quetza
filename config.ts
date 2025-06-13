@@ -47,12 +47,19 @@ const dev = {
     guild: testGuild
 };
 
+/** AI module secrets. */
+const llama = {
+    apiUrl: process.env.LLAMA_API_URL,
+    model: process.env.LLAMA_MODEL
+};
+
 /** Exported bundled configuration object. */
 const config = {
     application,
     colors,
     path,
-    dev
+    dev,
+    llama
 };
 
 export default config;

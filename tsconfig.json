@@ -17,5 +17,9 @@
 
     "skipLibCheck": true
   },
-  "references": [{ "path": "./modules/core" }, { "path": "./modules/music" }]
+  "references": [
+    { "path": "./modules/core" },
+    { "path": "./modules/music" },
+    { "path": "./modules/ai" }
+  ]
 }
