@@ -19,8 +19,17 @@ Welcome to the comprehensive documentation for Quetza, a modular TypeScript Disc
 - [Environment Configuration](./02-installation-deployment/03-environment-configuration.md) - Environment variables and secrets
 - [External Dependencies](./02-installation-deployment/04-external-dependencies.md) - yt-dlp and FFmpeg setup
 
-### 3. Core Architecture _(Coming Soon)_
-Deep dive into Quetza's modular architecture and design patterns.
+### 3. [Core Architecture](./03-core-architecture/)
+**Deep dive into Quetza's modular architecture and design patterns.**
+
+- [Overview](./03-core-architecture/01-overview.md) - Architecture diagrams and design patterns
+- [Client System](./03-core-architecture/02-client-system.md) - Custom client class and Discord.js integration
+- [Module System](./03-core-architecture/03-module-system.md) - Plugin architecture and module loading
+- [Command System](./03-core-architecture/04-command-system.md) - Slash command handling
+- [Event System](./03-core-architecture/05-event-system.md) - Discord event processing
+- [Logger System](./03-core-architecture/06-logger-system.md) - Winston logging integration
+- [Configuration Management](./03-core-architecture/07-configuration-management.md) - Application settings
+- [Type System](./03-core-architecture/08-type-system.md) - TypeScript type definitions
 
 ### 4. Modules _(Coming Soon)_
 Comprehensive documentation for each module (Core, Music, AI).
