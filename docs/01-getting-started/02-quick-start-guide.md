@@ -342,15 +342,11 @@ The bot will:
 /queue
 ```
 
-**Pause playback:**
+**Toggle pause/resume:**
 ```
 /pause
 ```
-
-**Resume playback:**
-```
-/pause
-```
+(Use `/pause` again to resume playback)
 
 **Stop and disconnect:**
 ```
