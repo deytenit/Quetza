@@ -11,8 +11,13 @@ Welcome to the comprehensive documentation for Quetza, a modular TypeScript Disc
 - [Quick Start Guide](./01-getting-started/02-quick-start-guide.md) - Get up and running in minutes
 - [System Requirements](./01-getting-started/03-system-requirements.md) - Check if your system is ready
 
-### 2. Installation & Deployment _(Coming Soon)_
-Detailed guides for various deployment scenarios.
+### 2. [Installation & Deployment](./02-installation-deployment/)
+**Comprehensive deployment guides for all scenarios.**
+
+- [Docker Deployment](./02-installation-deployment/01-docker-deployment.md) - Recommended production method
+- [Source Installation](./02-installation-deployment/02-source-installation.md) - Building from source
+- [Environment Configuration](./02-installation-deployment/03-environment-configuration.md) - Environment variables and secrets
+- [External Dependencies](./02-installation-deployment/04-external-dependencies.md) - yt-dlp and FFmpeg setup
 
 ### 3. Core Architecture _(Coming Soon)_
 Deep dive into Quetza's modular architecture and design patterns.
