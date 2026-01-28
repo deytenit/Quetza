@@ -4,145 +4,63 @@
 
 Awesome Discord bot that performs various duties on my server.
 
-## Architecture
+## Quick Start
 
-At its core **Quetza** is simply a **[user-client](./src/lib/client.ts)** with a **[logger](./src/lib/logger.ts)**.
+- [Documentation](<https://docs.ermnvldmr.com/en/quetza/>)
+- [Docker Image](<https://ghcr.io/deytenit/quetza>)
+- [Report an issue](<https://github.com/deyteit/Quetza/issues>)
 
-### Modules
+## Who Are You?
 
-**Modules** define the features of **Quetza**.
+### Visitor
 
-> 🗂 **The structure** of a **module**
+Just interested in what Quetza can do.
 
-```sh
-modules/example/
-├ module.ts
-├ commands/
-│ ├ [command-name].ts
-├ events/
-│ ├ [event-name].ts
-├ lib/
-│ ├ [...libraries] // Including controller if exists.
-```
+- **See Quetza in Action by running an image**: [ghcr.io: quetza image](https://ghcr.io/deytenit/quetza)
 
-#### **module.ts**
+### Developer
 
-**The module** must have a definition file that **adheres** to the following **interface** as _export_.
+Want to run or contribute to the bot.
 
-> 📐 **Module** export **interface** [defined in _[src/lib/types.ts](./src/lib/types.ts)_]
+- **Documentation**: [Docs: Quetza](https://docs.ermnvldmr.com/en/quetza/)
+- **Run with Docker** (recommended):
+  ```bash
+  docker run \
+    -e DISCORD_TOKEN=<your-token> \
+    --name quetza -d \
+    ghcr.io/deyteit/quetza:latest
+  ```
+- **Build from Source**:
+  ```bash
+  pnpm install
+  pnpm run build
+  pnpm start
+  ```
+- **Environment Variables**:
+  - `DISCORD_TOKEN`: Generated at [Discord Developer Portal](https://discord.com/developers/applications)
 
-```ts
-interface Module {
-  name: string; // Name of the module.
-  description?: string; // Description of the module.
-  controller?: unknown;
-  // The service orchestrating the module. (passed as third argument to command or event executor)
-}
-```
+### Designer
 
-#### commands/[command-name].ts
+Interested in the visual design and messaging.
 
-Each **command** has to be defined in its own file, preferably named after **the command** itself.
-**The client** indexes **the commands** of each **module** and sends them to **the Discord API**.
+- **Icons & Branding**: See [assets/](./assets/) directory for logos and visual elements
+- **Message Typography**: Explore Discord embeds and message formatting in the `lib/replies.ts` files of the respectful modules.
+- **Design License**: Branding assets are separately licensed (see [LICENSE](./assets/LICENSE))
 
-> 📐 **Command** **interface** to export [defined in _[src/lib/types.ts](./src/lib/types.ts)_]
+### Contributor
 
-```ts
-interface Command {
-  data: ApplicationCommandData; // Definition of command specifically for the Discord API.
-  execute: (client: Client, interaction: CommandInteraction, controller?: unknown) => Promise<void>;
-  // Function that will be called upon interaction invocation.
-}
-```
+Want to submit improvements?
 
-> ⚠️ Each **command** must comply with the _command interaction_ requirements of **the Discord API**.
+Just create a Pull-Request, and I would be greatful. (or just fork repo for yourself, then I won't even be needed)
 
-#### events/[event-name].ts
+## Communication & Support
 
-**Events** are pre-defined by **the Discord API** and can only have new functions
-bound to **them** by **modules**, despite being declared similarly to **commands**.
+- **Issues**: [Github: issues](https://github.com/deyteit/Quetza/issues)
 
-> 📐 **Event** **interface** to export [defined in _[src/lib/types.ts](./src/lib/types.ts)_]
+> Not a fact that I would care about that
 
-```ts
-export interface Event {
-  name: string;
-  execute: (client: Client, eventee: unknown[], controller?: unknown) => Promise<void>;
-}
-```
+## License
 
-> ✅ **These** can be re-defined so that they can operate independently in their own **module**.
-
-#### lib/[...libraries] & controller
-
-If you expand the provided **module** **structure**, it will still be a valid **module**.
-**_lib/_** is simply a suggestion to add consistency to the codebase.
-
-**The controller** is responsible for orchestrating the behaviour of your **module**.
-_Imagine it like a web application service._
-
-> 📘 **For example**, creating players for listening to music on voice channels
-
-## Build System
-
-**Quetza** relies on various dependencies to function correctly. The **[package.json](./package.json)** file lists the _engines_, _toolchain_, _dependencies_, and other _metadata_.
-
-> ⚠️ **pnpm** is being used as package manager.
-
-### External Dependencies
-
-**Modules** (or maybe **Quetza** itself) can leverage external _binaries_
-that shall be located at _bin/_ directory or be accessible from _the environment_.
-
-> 🔗 **Listing** of extenal _dependencies_
-
-| **Base/Module** | **Dependency**                             |
-| --------------- | ------------------------------------------ |
-| Music           | [yt-dlp](https://github.com/yt-dlp/yt-dlp) |
-
-### Shipping
-
-#### Docker
-
-[![Build Status](https://github.com/unknowableshade/quetza/actions/workflows/ci.yml/badge.svg?branch=master&event=push)](https://github.com/unknowableshade/quetza/actions/workflows/ci.yml)
-
-The primary method of deploying **Quetza** is through
-a **[Docker Image](https://hub.docker.com/repository/docker/unknowableshade/quetza)**
-provided by the respective
-**[action](./.github/workflows/ci.yml)**.
-
-```bash
-docker run \
--e DISCORD_TOKEN=*aquired via Discord Developer Portal* \
---name quetza -d \
-unknowableshade/quetza-bot:latest
-```
-
-#### From Source
-
-Although it is possible to run it directly from the source, some additional steps are required.
-
-- Compile _TypeScript_
-
-```bash
-pnpm run build
-```
-
-- Run **Quetza**
-
-```bash
-pnpm start
-```
-
-#### Environment
-
-In any case, you have to provide **environmental variables** for **bot** to run.
-
-- **DISCORD_TOKEN**: generated token issued by **Discord** itself at
-  **[Developer Portal](https://discord.com/developers/applications)**.
-
-## Licence
-
-**Quetza's** source code is licensed under **[the MIT Licence](,/LICENSE)**.
+**Quetza's** source code is licensed under **[the MIT Licence](./LICENSE)**.
 
 **Notice!** This does not cover '**_Quetza_**' branding such as **[logo](./assets/quetza-logo.png)** or other **[assets listed](./assets/)**, as these are protected by **[the separate licence](./assets/LICENSE)**.
