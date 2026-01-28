@@ -55,18 +55,19 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Log in to Docker Hub
+      - name: Log in to GitHub Container Registry
         uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Docker Generate Meta
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: |
-            deytenit/quetza
+            ghcr.io/deytenit/quetza
           # generate Docker tags based on the following events/attributes
           # on tag event: tag using git tag, and as latest if the tag doesn't contain hyphens (pre-releases)
           # on push event: tag using git sha, branch name and as latest-dev
