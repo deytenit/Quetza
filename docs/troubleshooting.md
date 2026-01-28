@@ -10,7 +10,7 @@ When modules fail to load or aren't recognized by the framework, the root cause 
 
 **Structural Convention Misalignment**: The framework discovers modules through filesystem structure, not explicit registration. If a module doesn't load, the first diagnostic step is structural validation: Does the module directory exist in /modules/? Does it contain a module.ts file? Do command files reside in a commands/ subdirectory? Do event files reside in an events/ subdirectory? Any deviation from this structure renders the module invisible to the framework. The framework doesn't report missing conventions as errors—it simply doesn't find what isn't structured correctly.
 
-**Export Interface Violations**: Modules, commands, and events must export specific properties. Modules export name, description, and optionally controller. Commands export data and execute. Events export name and execute. If these exports are missing or misspelled (exports.execute vs export function execute), the framework receives undefined values and fails silently or with cryptic errors. Diagnostic approach: validate that exports match the expected interface exactly, including property names and types.
+**Export Interface Violations**: Modules, commands, and events must export specific properties. Modules export name, description, and optionally controller. Commands export data and execute. Events export name and execute. If these exports are missing or misspelled (`exports.execute` vs `export function execute`), the framework receives undefined values and fails silently or with cryptic errors. Diagnostic approach: validate that exports match the expected interface exactly, including property names and types.
 
 **Build System Disconnects**: Quetza runs compiled JavaScript, not raw TypeScript. Developers edit .ts files, but the runtime loads .js files from the dist/ directory. If modules aren't loading after changes, the build step might have failed or not been executed. Diagnostic approach: verify that pnpm run build completed successfully and that the dist/ directory contains compiled versions of your modules with the same structure as src/.
 
@@ -62,7 +62,7 @@ Quetza provides minimal abstraction over Discord's API, meaning Discord's constr
 
 **Rate Limiting Realities**: Discord rate-limits API calls. Modules making frequent API calls might hit limits, causing temporary failures. Diagnostic approach: implement client-side rate limiting for high-frequency operations. Cache Discord data where possible to reduce API calls. Respect Discord's retry-after headers when rate-limited.
 
-**Interaction Type Confusion**: Discord has multiple interaction types—slash commands, buttons, modals, autocomplete. The interaction object's type determines available methods. Calling reply() on a modal submission or expecting commandOptions on a button interaction fails. Diagnostic approach: check interaction type before processing and implement type-specific handling.
+**Interaction Type Confusion**: Discord has multiple interaction types—slash commands, buttons, modals, autocomplete. The interaction object's type determines available methods. Calling `reply()` on a modal submission or expecting `commandOptions` on a button interaction fails. Diagnostic approach: check interaction type before processing and implement type-specific handling.
 
 ## Environment and Configuration Issues
 
